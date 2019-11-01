@@ -73,6 +73,7 @@ by Infocyte. This API can be broken down into various parts:
 
 - [Logging and Output](#logging-and-output)
 - [Environmental](#environmental)
+- [File System](#file-system)
 - [Network](#network)
 - [Web](#web)
 - [Process](#process)
@@ -119,6 +120,49 @@ hunt.log("Domain: " .. host_info:domain())
 | **hunt.env.has_python3()** | Returns a boolean indicating if Python 3 is available on the system. |
 | **hunt.env.has_powershell()** | Returns a boolean indicating if Powershell is available on the system. |
 | **hunt.env.has_sh()** | Returns a boolean indicating if the bourne shell is available on the system. |
+
+#### File System
+
+**Example**
+```lua
+for _,file in pairs(hunt.fs.ls('/etc/')) do
+    print(file:full() .. ": " .. tostring(file:size()))
+end
+```
+
+| Function | Description |
+| --- | --- |
+| **hunt.fs.ls(path1: string, path2: string, ..)** | Takes one or more paths and returns a list of files. |
+
+Filters can be used to cull the items returned by the `ls()` command. File size filters can take
+numbers in either raw bytes, "kb", "mb", or "gb". Spaces in filters are not permitted.
+
+```lua
+-- hunt.fs.ls() takes an optional filters
+-- use one or more of these together, but they must all be true for the item to return
+opts = {
+    "files", -- only return files
+    "dirs", -- only return dirs
+    "size>10mb", -- only return items greater than 10mb
+    "size<1gb", -- only return items less than 1gb
+    "size=123456", -- only return files whose size is 123456 bytes
+    "recurse", -- recurse through all directories
+    "recurse=3", -- recurse through directories, but only up to 3 levels deep
+}
+
+files = hunt.fs.ls('/usr/', opts)
+```
+
+```lua
+-- the file object has some useful properties
+file:full() -- returns the full path to the file
+file:path() -- returns the path relative to the ls() 
+file:full() -- returns the name of the file
+file:size() -- returns the size of the file in bytes
+file:is_dir() -- returns if the item is a directory
+file:is_file() -- returns if the item is a non-directory file 
+```
+
 
 #### Network
 
