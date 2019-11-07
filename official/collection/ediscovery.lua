@@ -2,8 +2,8 @@
 	Infocyte Extension
 	Name: E-Discovery
 	Type: Collection
-	Description: Searches the hard drive for office documents with specified
-		keywords. Returns a csv with a list of files.
+	Description: Proof of Concept. Searches the hard drive for office documents
+        with specified keywords. Returns a csv with a list of files.
 	Author: Infocyte
 	Created: 20190919
 	Updated: 20190919 (Gerritz)

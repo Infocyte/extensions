@@ -36,6 +36,10 @@ if hunt.env.is_windows() then
     agenturl = "https://s3.us-east-2.amazonaws.com/infocyte-support/executables/agent.windows.exe"
     installpath = [[C:\Program Files\Infocyte\Agent\agent.windows.exe]]
 
+    r = hunt.registry.list_values("Registry\Machine\SYSTEM\CurrentControlSet\Services\HUNTAgent")
+    table.print(r)
+    if r then agentinstalled = true end
+
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
     agenturl = "https://s3.us-east-2.amazonaws.com/infocyte-support/executables/agent.osx.exe"

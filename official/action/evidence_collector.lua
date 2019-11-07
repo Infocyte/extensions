@@ -10,8 +10,6 @@
 ]]--
 
 -- SECTION 1: Inputs (Variables)
-aws_key_id = ''
-s3_secret = ''
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 
@@ -60,9 +58,9 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() and hunt.env.has_powershell() then
-  -- Insert your Windows code
+    -- Insert your Windows code
 
-  LogPath = [[C:\Windows\System32\winevt\Logs\Security.evtx]]
+    LogPath = [[C:\Windows\System32\winevt\Logs\Security.evtx]]
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
@@ -77,27 +75,9 @@ end
 
 ----------------------------------------------------
 -- SECTION 4: Results
---  Threat status is a set of static results used to aggregate and stack
---  results:
---      Good, Low Risk, Unknown, Suspicious, or Bad
---    Include any host-side processing and analysis necessary to report the
---   appropriate status.
---
---  In addition, one or more log statements can be used to send data in text
---   format.
 
 
--- Set the returned threat status of the host based on the extension results
-if string.find(result, "test") then
-  hunt.status.good()
-elseif string.find(result, "bad") then
-  hunt.status.bad()
-else
-  hunt.status.unknown()
-end
 
--- one or more log statements can be used to send resulting data or messages in
--- text format to your Infocyte instance
 hunt.log("Result: Extension successfully executed on " .. hostname)
 
 ----------------------------------------------------
