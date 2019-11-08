@@ -20,8 +20,9 @@
 -- S3 Bucket (Destination)
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
+proxy = nil -- "myuser:password@10.11.12.88:8888"
 
-workingfolder = os.getenv("TEMP")
+workingfolder = os.getenv("temp")
 
 ----------------------------------------------------
 -- SECTION 2: Functions
@@ -34,22 +35,27 @@ host_info = hunt.env.host_info()
 os = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
+
 mempath = workingfolder.."\\physmem.map"
-hunt.Verbose("Memory Dump for "..OS.." Initiated")
 
 if hunt.env.is_windows() then
     -- Insert your Windows code
-    -- Load winpmem driver
-    result = os.execute("winpmem_1.3.exe -L")
-    if not result then
-      hunt.error("Winpmem driver failed to install. [Error: "..result.."]")
-      exit()
+    -- Download winpmem
+    url = "https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/winpmem.exe"
+    client = hunt.web.new(url)
+    if proxy then
+        client:proxy(proxy)
     end
+    --client:download_file(workingfolder .. "\\winpmem.exe")
 
     -- Dump Memory to disk
-    hunt.log("Memory dump started to local "..mempath)
-    -- os.execute("winpmem.exe --output - --format map | ")
-    os.execute("winpmem.exe --output "..mempath.." --format map")
+    hunt.verbose("Memory dump on "..host_info:os().." host started to local path "..mempath)
+    -- os.execute("winpmem.exe --output - --format map | ")    --split 1000M
+    result = os.execute(workingfolder .. "\\winpmem.exe --output "..mempath.." --format map")
+    if not result then
+      hunt.error("Winpmem driver failed. [Error: "..result.."]")
+      exit()
+    end
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
@@ -63,25 +69,19 @@ else
 end
 
 
--- Compress results
+-- hash memdump
 hash = hunt.hash.sha1(mempath)
-hunt.verbose("Compressing (gzip) " .. temppath .. " to " .. outpath)
-hunt.gzip(temppath, outpath, nil)
 
 ----------------------------------------------------
 -- SECTION 4: Output
 
--- Dump memory to S3 bucket
-hunt.log("Memory dump started to S3 Bucket X")
-
 -- Recover evidence to S3
 recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
-s3path = host_info:hostname() .. '/mem.zip'
-hunt.verbose("Uploading Memory Dump (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+s3path = host_info:hostname()..".physmem.map"
+hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
 recovery:upload_file(mempath, s3path)
-hunt.log("MFT uploaded to S3 with sha1: " .. hash)
+hunt.verbose("Memory successfully uploaded to S3.")
 hunt.good()
 
-log("Memory dump completed. Evidence uploaded to "..destination)
 
 ----------------------------------------------------
