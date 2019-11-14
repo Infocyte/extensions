@@ -118,58 +118,105 @@ function Get-FileSignature {
 }
 
 Function Get-StringsMatch {
+    [CmdletBinding()]
 	param (
 		[string]$path = $env:systemroot,
 		[string[]]$Strings,
         [string]$Temppath,
-		[int]$charactersAround = 30
+		[int]$charactersAround = 30,
+        [switch]$unzipmethod
 	)
     $results = @()
-	try {
-		$application = New-Object -comobject word.application
-	} catch {
-		throw "Error opening com object"
-	}
-    $application.visible = $False
     $files = Get-Childitem $path -recurse -filter *.doc |
             Get-FileSignature | where { $_.HexSignature -match "504B|D0CF" }
-    # Loop through all *.doc files in the $path directory
-    Foreach ($file In $files) {
-		try {
-			$document = $application.documents.open($file.FullName,$false,$true)
-		} catch {
-			Write-Warning "Could not open $($file.FullName)"
-            $properties = @{
-               File = $file.FullName
-               Filesize = $Null
-               Match = "ERROR: Could not open file"
-               TextAround = $Null
-            }
-            $results += New-Object -TypeName PsCustomObject -Property $properties
-			continue
-		}
-        $range = $document.content
-		$filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
 
-		foreach ($String in $Strings) {
-			If($range.Text -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
-				 $properties = @{
-					File = $file.FullName
-					Filesize = $filesize
-					Match = $String
-					TextAround = $Matches[0]
-				 }
-				 $results += New-Object -TypeName PsCustomObject -Property $properties
-			}
-		}
-        $document.close()
+    if ($unzipmethod) {
+        [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression') | Out-Null
+
+        Foreach ($file In $files) {
+            try {
+                Write-Verbose "Reading bytes an uncompressing $($file.FullName)"
+                $ZipBytes = Get-Content -path $file.FullName -Encoding Byte -ReadCount 0
+            } catch {
+                Write-Warning "Could not open $($file.FullName)"
+                $properties = @{
+                   File = $file.FullName
+                   Filesize = $Null
+                   Match = "ERROR: Could not open file"
+                   TextAround = $Null
+                }
+                $results += New-Object -TypeName PsCustomObject -Property $properties
+    			continue
+            }
+            $ZipStream = New-Object System.IO.Memorystream
+            $ZipStream.Write($ZipBytes,0,$ZipBytes.Length)
+            $ZipArchive = New-Object System.IO.Compression.ZipArchive($ZipStream)
+            $ZipEntry = $ZipArchive.GetEntry('word/document.xml')
+            $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
+            $xml = $EntryReader.ReadToEnd()
+
+            $filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
+
+            foreach ($String in $Strings) {
+    			If($xml -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
+                    Write-Verbose "Found a match for $string in $($file.FullName)"
+    				 $properties = @{
+    					File = $file.FullName
+    					Filesize = $filesize
+    					Match = $String
+    					TextAround = $Matches[0]
+    				 }
+    				 $results += New-Object -TypeName PsCustomObject -Property $properties
+    			}
+    		}
+        }
+    } else {
+        try {
+    		$application = New-Object -comobject word.application
+    	} catch {
+    		throw "Error opening com object"
+    	}
+        $application.visible = $False
+
+        # Loop through all *.doc files in the $path directory
+        Foreach ($file In $files) {
+    		try {
+    			$document = $application.documents.open($file.FullName)
+    		} catch {
+    			Write-Warning "Could not open $($file.FullName)"
+                $properties = @{
+                   File = $file.FullName
+                   Filesize = $Null
+                   Match = "ERROR: Could not open file"
+                   TextAround = $Null
+                }
+                $results += New-Object -TypeName PsCustomObject -Property $properties
+    			continue
+    		}
+            $range = $document.content
+    		$filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
+
+    		foreach ($String in $Strings) {
+    			If($range.Text -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
+    				 $properties = @{
+    					File = $file.FullName
+    					Filesize = $filesize
+    					Match = $String
+    					TextAround = $Matches[0]
+    				 }
+    				 $results += New-Object -TypeName PsCustomObject -Property $properties
+    			}
+    		}
+            $document.close()
+        }
+
+        $application.quit()
+    	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($application)
     }
 
-    $application.quit()
-	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($application)
     If($results){
         $results | Export-Csv $Temppath -NoTypeInformation -Encoding ASCII
-        # return $results
+        return $results
     }
 }
 
@@ -203,7 +250,7 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
 	-- Create powershell process and feed script/commands to its stdin
 	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
 	pipe:write(initscript) -- load up powershell functions and vars
-	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
+	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -unzipmethod -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
 	r = pipe:close()
 	hunt.verbose("Powershell Returned: "..tostring(r))
 

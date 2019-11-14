@@ -26,16 +26,22 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 
 
 if string.find(OS, "windows xp") then
-	-- TO DO
-elseif string.find(OS, "windows") then
+	-- TO DO: XP's netsh
+
+elseif hunt.env.is_windows() then
 	os.execute("netsh advfirewall firewall delete rule name='Infocyte Host Isolation'")
 	os.execute("netsh advfirewall import " .. workingfolder .. "\\fwbackup.wfw")
-	os.execute("netsh advfirewall reset")
-elseif string.find(OS, "osx") or string.find(OS, "") then
-	-- TO DO: ifw
-else
+	-- os.execute("netsh advfirewall reset")
+
+elseif hunt.env.is_macos() then
+	-- TO DO: ipfw (old) or pf (10.6+)
+
+elseif  hunt.env.has_sh() then
 	-- Assume linux-type OS and iptables
-	-- TO DO: IPTables
+	hunt.log("Restoring iptables from backup")
+	handle = assert(io.popen('iptables-restore < /opt/iptables-bkup', 'r'))
+	output = assert(handle:read('*a'))
+	handle:close()
 end
 
 ----------------------------------------------------
