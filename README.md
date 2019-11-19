@@ -81,6 +81,7 @@ by Infocyte. This API can be broken down into various parts:
 - [Hashing](#hashing)
 - [Recovery](#recovery)
 - [Yara](#yara)
+- [Status](#status)
 - [Extras](#extras)
 
 #### Logging and Output
@@ -429,6 +430,16 @@ hunt.survey.add(a)
 | **artifact:executed(string)** | Sets *executed on* metadata, must be `2019-11-30 12:11:10` format |
 | **artifact:modified(string)** | Sets *modified on* metadata, must be `2019-11-30 12:11:10` format |
 
+#### Status
+The result of an extension can optionally carry a threat status which influences the rest
+of the Infocyte HUNT analysis system.
+
+| Function | Description |
+| --- | --- |
+| **hunt.status.good()** | Marks the extension output as benign |
+| **hunt.status.suspicious()** | Marks the extension output as suspicious |
+| **hunt.status.bad()** | Marks the extension output as bad/malicious |
+
 #### Extras
 
 **base64 a string**
@@ -449,12 +460,22 @@ back_to_string = hunt.unbase64(psscript_b64)
 hunt.log("back to string: " .. hunt.bytes_to_string(back_to_string))
 ```
 
+**Install HUNT Agent**
+
+```lua
+-- Will download and start the agent, it will then wait to be "approved"
+hunt.install_agent()
+-- Using a pre-defined authentication key will automatically be approved
+hunt.install_agent("server_key")
+```
+
 | Function | Description |
 | --- | --- |
 | **hunt.base64(data: bytes)** | Takes a `table` of bytes and returns a base64 encoded `string`. |
 | **hunt.unbase64(data: string)** | Takes a base64 encoded `string` and returns a `table` of bytes. |
 | **hunt.bytes_to_string(data: bytes)** | Takes a `table` of bytes and returns a `string`. |
 | **hunt.gzip(from: string, to: string, level: int)** | Compresses `from` into an archive `to`, level is optional (0-9) |
+| **hunt.install_agent()** | Downloads and configures an agent for the current instance |
 
 
 ### Examples
