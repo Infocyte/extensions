@@ -306,9 +306,9 @@ end
 --		Good, Low Risk, Unknown, Suspicious, or Bad
 
 if output then
-    hunt.suspicious()
+    hunt.status.suspicious()
 else
-    hunt.good()
+    hunt.status.good()
 end
 
 ----------------------------------------------------

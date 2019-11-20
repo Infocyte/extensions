@@ -85,7 +85,7 @@ s3path = host_info:hostname() .. '/mft.zip'
 hunt.verbose("Uploading MFT(sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
 recovery:upload_file(outpath, s3path)
 hunt.log("MFT uploaded to S3 with sha1: " .. hash)
-hunt.good()
+hunt.status.good()
 
 -- Cleanup
 os.remove(temppath)

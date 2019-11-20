@@ -4748,13 +4748,13 @@ end
 -- SECTION 4: Results
 
 if bad then
-    hunt.bad()
+    hunt.status.bad()
 elseif suspicious then
-    hunt.suspicious()
+    hunt.status.suspicious()
 elseif lowrisk then
-    hunt.lowrisk()
+    hunt.status.lowrisk()
 else
-    hunt.good()
+    hunt.status.good()
 end
 
 hunt.verbose("Result: Extension successfully executed on " .. host_info:hostname())
