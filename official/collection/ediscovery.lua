@@ -275,7 +275,6 @@ end
 -- SECTION 3: Collection / Inspection
 
 host_info = hunt.env.host_info()
-os = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
@@ -285,7 +284,7 @@ end
 if all_office_docs then
     opts = {
         "files",
-        "size<10mb",
+        "size<1mb",
         "recurse=2"
     }
     officedocs = {}

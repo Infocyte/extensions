@@ -16,19 +16,20 @@
 if hunt.env.is_windows() then
     additionalpaths = {
         'c:\\windows\\system32\\calc.exe',
-        'c:\\windows\\system32\\notepad.exe'
+        'c:\\windows\\system32\\notepad.exe',
+        "c:\\windows\\"
     }
 
 elseif hunt.env.is_macos() then
     additionalpaths = {
         '/bin/sh',
-        'bin/ls'
+        '/bin/ls'
     }
 
 elseif hunt.env.is_linux() then
     additionalpaths = {
         '/bin/cat',
-        'bin/tar'
+        '/bin/tar'
     }
 
 end
@@ -4688,7 +4689,7 @@ rule EmiratesStatement
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-os = host_info:os()
+osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
@@ -4713,7 +4714,14 @@ end
 -- Add additional paths
 for i, path in pairs(additionalpaths) do
     hunt.debug("Adding additionalpath["..i.."]: " .. path)
-    paths[path] = true
+    files = hunt.fs.ls(path)
+    if files.type() == "table" then
+        for _,path in pairs(files) do
+            paths[path:full()] = true
+        end
+    else
+        paths[files] = true
+    end
 end
 
 -- Scan all paths with Yara signatures

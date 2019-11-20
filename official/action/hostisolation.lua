@@ -129,7 +129,7 @@ end
 -- SECTION 3: Actions
 
 host_info = hunt.env.host_info()
-os = host_info:os()
+osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
@@ -140,7 +140,7 @@ if not is_agent_installed() then
 end
 
 
-if string.find(OS, "windows xp") then
+if string.find(osversion, "windows xp") then
 	-- TODO: XP's netsh
 
 elseif hunt.env.is_windows() then

@@ -22,11 +22,11 @@ iptables_bkup = "/opt/iptables-bkup"
 -- SECTION 3: Actions
 
 host_info = hunt.env.host_info()
-os = host_info:os()
+osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
-if string.find(OS, "windows xp") then
+if string.find(osversion, "windows xp") then
 	-- TO DO: XP's netsh firewall
 
 elseif hunt.env.is_windows() then

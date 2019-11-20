@@ -25,11 +25,11 @@ cmd /c mklink /d C:\vssbackup "$vssvolume"
 -- SECTION 3: Actions
 
 host_info = hunt.env.host_info()
-os = host_info:os()
+osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
-if string.find(OS, "windows") and hunt.env.has_powershell() then
+if hunt.env.is_windows() and hunt.env.has_powershell() then
   -- Insert your Windows Code
 
   -- Create powershell process and feed script/commands to its stdin
