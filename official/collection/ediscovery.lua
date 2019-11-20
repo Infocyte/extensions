@@ -11,7 +11,7 @@
 ]]--
 
 -- SECTION 1: Inputs (Variables)
-all_office_docs = false
+all_office_docs = true
 strings = {'Gerritz', 'test'}
 searchpath = [[C:\Users]]
 
@@ -215,6 +215,14 @@ Function Get-StringsMatch {
 ]==]
 -- #endregion
 
+function GetFileName(str)
+  return str:match("^.+/(.+)$")
+end
+
+function GetFileExtension(str)
+  return str:match("^.+(%..+)$")
+end
+
 function make_psstringarray(list)
     -- Converts a lua list (table) into a string powershell list
     psarray = "@("
@@ -224,6 +232,43 @@ function make_psstringarray(list)
     end
     psarray = psarray:sub(1, -2) .. ")"
     return psarray
+end
+
+
+function table.val_to_str ( v )
+  if  type( v ) == "string" then
+    v = string.gsub( v, "\n", "\\n" )
+    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+      return "'" .. v .. "'"
+    end
+    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+  else
+    return type( v ) == "table" and table.tostring( v ) or
+      tostring( v )
+  end
+end
+
+function table.key_to_str ( k )
+  if type( k ) == "string" and string.match( k, "^[_%a][_%a%d]*$" ) then
+    return k
+  else
+    return "[" .. table.val_to_str( k ) .. "]"
+  end
+end
+
+function table.tostring( tbl )
+  local result, done = {}, {}
+  for k, v in ipairs( tbl ) do
+    table.insert( result, table.val_to_str( v ) )
+    done[ k ] = true
+  end
+  for k, v in pairs( tbl ) do
+    if not done[ k ] then
+      table.insert( result,
+        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+    end
+  end
+  return "{" .. table.concat( result, "," ) .. "}"
 end
 
 ----------------------------------------------------
@@ -241,36 +286,52 @@ if all_office_docs then
     opts = {
         "files",
         "size<10mb",
-        "recurse"
+        "recurse=2"
     }
-    $files = hunt.fs.ls(C:\Users)
     officedocs = {}
     extensions = {
         "doc",
-        "docx",
         "xls",
-        "xlsx",
         "pdf",
-        "ppt",
-        "pptx"
+        "ppt"
     }
 
     -- Recover evidence to S3
     recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
 
-    for _,path in pairs(hunt.fs.ls(searchpath)) do
-        ext = path:sub(-4)
+    for _,path in pairs(hunt.fs.ls(searchpath, opts)) do
+        ext = GetFileExtension(path:name())
         for _,e in ipairs(extensions) do
-            if ext:match(e) then
-                hash = hunt.hash.sha1(path)
-                officedocs.add(hash, path)
-                s3path = host_info:hostname().."-"..path
-                hunt.verbose("Uploading "..path.." (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
-                -- recovery:upload_file(path, s3path)
+            if ext and ext:match(e) then
+                hash = hunt.hash.sha1(path:full())
+                --print("["..ext.."] "..path:full().." ["..hash.."]")
+                local file = {
+                    hash = hash,
+                    path = path:full(),
+                    size = path:size()
+                }
+                officedocs[hash] = file
+                s3path = "ediscovery/"..host_info:hostname().."/"..hash..ext
+                --print("Uploading "..path:full().." ("..path:size().." Bytes) to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+                --recovery:upload_file(path:full(), s3path)
                 break
             end
         end
     end
+    tmpfile = os.getenv("TEMP").."\\asdf.csv"
+    tmpfile = "C:\\windows\\temp\\asdf.csv"
+    tmp = io.open(tmpfile, "w")
+    tmp:write("sha1,path,size\n")
+    for hash, file in pairs(officedocs) do
+        tmp:write(hash..","..file.path..","..file.size.."\n")
+        hunt.log(hash..","..file.path..","..file.size)
+    end
+    tmp:flush()
+    tmp:close()
+    s3path = "ediscovery/"..host_info:hostname().."/index.csv"
+    --recovery:upload_file(tmpfile, s3path)
+    ok, err = os.remove(tmpfile)
+    if not ok then hunt.error(err) end
     hunt.verbose("Files successfully uploaded to S3.")
     hunt.status.good()
 else
@@ -293,12 +354,13 @@ else
             if output then
                 hunt.log(output) -- send to Infocyte
                 ok, err = os.remove(tempfile)
-                if not ok then hunt.error(err)
+                if not ok then hunt.error(err) end
             end
             file:close()
         end
     end
 end
+
 
 ----------------------------------------------------
 -- SECTION 4: Results
