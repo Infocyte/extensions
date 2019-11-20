@@ -108,10 +108,4 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
     print("Powershell Returned: "..tostring(r))
 end
 
-
-----------------------------------------------------
--- SECTION 4: Output
-
 hunt.log("VSS is now enforced for Drive C") -- send to Infocyte
-
-----------------------------------------------------

@@ -19,8 +19,10 @@ s3_bucket = 'test-extensions'
 
 initscript = [==[
 $n = Get-PackageProvider -name NuGet
-if ($n.version.major -ne 2) {
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
+if ($n.version.major -lt 2) {
+    if ($n.version.minor -lt 8) {
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
+    }
 }
 if (-NOT (Get-Module PowerForensics)) {
     Write-Host "Installing PowerForensics"

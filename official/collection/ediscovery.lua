@@ -3,17 +3,28 @@
 	Name: E-Discovery
 	Type: Collection
 	Description: Proof of Concept. Searches the hard drive for office documents
-        with specified keywords. Returns a csv with a list of files.
+        (currently only .doc and .docx files) with specified keywords.
+        Returns a csv with a list of files.
 	Author: Infocyte
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)
+all_office_docs = false
 strings = {'Gerritz', 'test'}
 searchpath = [[C:\Users]]
 
+-- S3 Bucket (Destination)
+s3_region = 'us-east-2' -- US East (Ohio)
+s3_bucket = 'test-extensions'
+proxy = nil -- "myuser:password@10.11.12.88:8888"
 
+--[[
+1. Find any office doc on a desktop/server
+2. Upload doc directly to S3 Bucket
+3. Upload metadata csv with filehash as key
+]]--
 
 ----------------------------------------------------
 -- SECTION 2: Functions
@@ -47,13 +58,14 @@ function Get-FileSignature {
     Process {
         ForEach ($item in $Path) {
             Try {
-                $item = Get-Item -LiteralPath (Convert-Path $item) -Force -ErrorAction Stop
+                $item = Get-Item $item -Force -ErrorAction Stop
             } Catch {
                 Write-Warning "$($item): $($_.Exception.Message)"
                 Return
             }
             If (Test-Path -Path $item -Type Container) {
-                Write-Warning ("Cannot find signature on directory: {0}" -f $item)
+                #Write-Warning ("Cannot find signature on directory: {0}" -f $item)
+                continue
             } Else {
                 Try {
                     If ($Item.length -ge $TotalBytes) {
@@ -91,12 +103,13 @@ function Get-FileSignature {
                         }
                         If (($hexstringBuilder.ToString() -replace '\s','') -match $pattern) {
                             $object = [pscustomobject]@{
-                                Name = ($item -replace '.*\\(.*)','$1')
-                                FullName = $item
+                                FullName = $item.FullName
                                 HexSignature = $hexstringBuilder.ToString()
                                 ASCIISignature = $stringBuilder.ToString()
                                 Length = $item.length
-                                Extension = $Item.fullname -replace '.*\.(.*)','$1'
+                                Extension = $item.Extension #$Item.fullname -replace '.*\.(.*)','$1'
+                                CreationTimeUtc = $item.CreationTimeUtc
+                                ModifiedTimeUtc = $item.LastWriteTimeUtc
                             }
                             $object.pstypenames.insert(0,'System.IO.FileInfo.Signature')
                             Write-Output $object
@@ -123,95 +136,75 @@ Function Get-StringsMatch {
 		[string]$path = $env:systemroot,
 		[string[]]$Strings,
         [string]$Temppath,
-		[int]$charactersAround = 30,
-        [switch]$unzipmethod
+		[int]$charactersAround = 30
 	)
     $results = @()
-    $files = Get-Childitem $path -recurse -filter *.doc |
+    $files = Get-Childitem $path -recurse -filter *.doc -File | where { $_.length -lt 10000000} |
             Get-FileSignature | where { $_.HexSignature -match "504B|D0CF" }
 
-    if ($unzipmethod) {
-        [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression') | Out-Null
+    $sha1provider = New-Object System.Security.Cryptography.SHA1CryptoServiceProvider
+    [System.Reflection.Assembly]::LoadWithPartialName('System.IO.Compression') | Out-Null
 
-        Foreach ($file In $files) {
-            try {
-                Write-Verbose "Reading bytes an uncompressing $($file.FullName)"
-                $ZipBytes = Get-Content -path $file.FullName -Encoding Byte -ReadCount 0
-            } catch {
-                Write-Warning "Could not open $($file.FullName)"
-                $properties = @{
-                   File = $file.FullName
-                   Filesize = $Null
-                   Match = "ERROR: Could not open file"
-                   TextAround = $Null
-                }
-                $results += New-Object -TypeName PsCustomObject -Property $properties
-    			continue
-            }
-            $ZipStream = New-Object System.IO.Memorystream
-            $ZipStream.Write($ZipBytes,0,$ZipBytes.Length)
-            $ZipArchive = New-Object System.IO.Compression.ZipArchive($ZipStream)
-            $ZipEntry = $ZipArchive.GetEntry('word/document.xml')
-            $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
-            $xml = $EntryReader.ReadToEnd()
-
-            $filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
-
-            foreach ($String in $Strings) {
-    			If($xml -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
-                    Write-Verbose "Found a match for $string in $($file.FullName)"
-    				 $properties = @{
-    					File = $file.FullName
-    					Filesize = $filesize
-    					Match = $String
-    					TextAround = $Matches[0]
-    				 }
-    				 $results += New-Object -TypeName PsCustomObject -Property $properties
-    			}
-    		}
-        }
-    } else {
+    Foreach ($file In $files) {
         try {
-    		$application = New-Object -comobject word.application
-    	} catch {
-    		throw "Error opening com object"
-    	}
-        $application.visible = $False
-
-        # Loop through all *.doc files in the $path directory
-        Foreach ($file In $files) {
-    		try {
-    			$document = $application.documents.open($file.FullName)
-    		} catch {
-    			Write-Warning "Could not open $($file.FullName)"
-                $properties = @{
-                   File = $file.FullName
-                   Filesize = $Null
-                   Match = "ERROR: Could not open file"
-                   TextAround = $Null
-                }
-                $results += New-Object -TypeName PsCustomObject -Property $properties
-    			continue
-    		}
-            $range = $document.content
-    		$filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
-
-    		foreach ($String in $Strings) {
-    			If($range.Text -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
-    				 $properties = @{
-    					File = $file.FullName
-    					Filesize = $filesize
-    					Match = $String
-    					TextAround = $Matches[0]
-    				 }
-    				 $results += New-Object -TypeName PsCustomObject -Property $properties
-    			}
-    		}
-            $document.close()
+            if ($file.Extension -match "X") {
+                Write-Verbose "Uncompressing and reading $($file.FullName)"
+                $ZipBytes = Get-Content -path $file.FullName -Encoding Byte -ReadCount 0
+                $ZipStream = New-Object System.IO.Memorystream
+                $ZipStream.Write($ZipBytes,0,$ZipBytes.Length)
+                $ZipArchive = New-Object System.IO.Compression.ZipArchive($ZipStream)
+                $ZipEntry = $ZipArchive.GetEntry('word/document.xml')
+                $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
+                $text = $EntryReader.ReadToEnd()
+            } else {
+                Write-Verbose "Reading file $($file.FullName)"
+                $text = Get-Content -path $file.FullName -ReadCount 0 -Encoding UTF8
+            }
+        } catch {
+            Write-Warning "Could not open $($file.FullName)"
+            $properties = @{
+                SHA1 = $Null
+                File = $file.FullName
+                Filesize = $Null
+                Match = "ERROR: Could not open file"
+                TextAround = $Null
+                CreationTimeUtc = $Null
+                ModifiedTimeUtc = $Null
+            }
+            $results += New-Object -TypeName PsCustomObject -Property $properties
+            $text = $Null
+			continue
         }
 
-        $application.quit()
-    	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($application)
+        $filesize = [math]::Round($($file.length)/1KB)
+        $hash = $NULL
+
+        foreach ($String in $Strings) {
+            $Pattern = [Regex]::new(".{0,$($charactersAround)}$($String).{0,$($charactersAround)}")
+            $match = $Pattern.Match($text)
+            if ($match) {
+                Write-Verbose "Found a match for $string in $($file.FullName)"
+                if (-NOT $hash) {
+                    try {
+                        $sha1 = [System.BitConverter]::ToString($sha1provider.ComputeHash([System.IO.File]::ReadAllBytes($file.fullname)))
+                        $hash = $sha1.Replace('-','').ToUpper()
+                    } catch {
+                        $hash = $Null
+                    }
+                }
+				$properties = @{
+                    SHA1 = $hash
+					File = $file.FullName
+					FilesizeKB = $filesize
+					Match = $String
+					TextAround = $match
+                    CreationTimeUtc = $file.CreationTimeUtc
+                    ModifiedTimeUtc = $file.ModifiedTimeUtc
+				 }
+				 $results += New-Object -TypeName PsCustomObject -Property $properties
+			}
+		}
+        $text = $Null
     }
 
     If($results){
@@ -219,7 +212,6 @@ Function Get-StringsMatch {
         return $results
     }
 }
-
 ]==]
 -- #endregion
 
@@ -241,40 +233,59 @@ host_info = hunt.env.host_info()
 os = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
-
-if hunt.env.is_windows() and hunt.env.has_powershell() then
-	-- Insert your Windows Code
-	hunt.debug("Operating on Windows")
-    tempfile = [[c:\windows\temp\icext.csv]]
-
-	-- Create powershell process and feed script/commands to its stdin
-	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-	pipe:write(initscript) -- load up powershell functions and vars
-	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -unzipmethod -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
-	r = pipe:close()
-	hunt.verbose("Powershell Returned: "..tostring(r))
-
-    -- read output file from powershell
-	file = io.open(tempfile, "r") -- r read mode
-	if file then
-        output = file:read("*all") -- *a or *all reads the whole file
-        if output then
-            hunt.log(output) -- send to Infocyte
-            os.remove(temp)
-        end
-        file:close()
-    end
-
-elseif hunt.env.is_macos() then
-    -- Insert your MacOS Code
-
-elseif hunt.env.is_linux() or hunt.env.has_sh() then
-    -- Insert your POSIX (linux) Code
-
-else
-    hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+if not hunt.env.is_windows() then
+    return
 end
 
+if all_office_docs then
+    opts = {
+        "files",
+        "size<10mb",
+        "recurse"
+    }
+    $files = hunt.fs.ls(C:\Users)
+    officedocs = {}
+    for _,path in pairs(hunt.fs.ls(searchpath)) do
+
+    end
+
+    -- hash memdump
+    hash = hunt.hash.sha1(mempath)
+
+    -- Recover evidence to S3
+    recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
+    s3path = host_info:hostname()..".physmem.map"
+    hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+    recovery:upload_file(mempath, s3path)
+
+    hunt.verbose("Memory successfully uploaded to S3.")
+    hunt.status.good()
+else
+    if hunt.env.has_powershell() then
+    	-- Insert your Windows Code
+    	hunt.debug("Operating on Windows")
+        tempfile = [[c:\windows\temp\icext.csv]]
+
+    	-- Create powershell process and feed script/commands to its stdin
+    	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    	pipe:write(initscript) -- load up powershell functions and vars
+    	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
+    	r = pipe:close()
+    	hunt.verbose("Powershell Returned: "..tostring(r))
+
+        -- read output file from powershell
+    	file = io.open(tempfile, "r") -- r read mode
+    	if file then
+            output = file:read("*all") -- *a or *all reads the whole file
+            if output then
+                hunt.log(output) -- send to Infocyte
+                ok, err = os.remove(tempfile)
+                if not ok then hunt.error(err)
+            end
+            file:close()
+        end
+    end
+end
 
 ----------------------------------------------------
 -- SECTION 4: Results

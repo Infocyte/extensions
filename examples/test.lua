@@ -115,11 +115,14 @@ hunt.log("Reverse Lookup: " .. table.tostring(hunt.net.nslookup("8.8.8.8")))
 -- Test Process functions
 procs = hunt.process.list()
 hunt.log("ProcessList: " .. table.tostring(procs))
+n = 0
 for _, proc in pairs(procs) do
+    if n == 3 then break end
     hunt.log("Found pid " .. proc:pid() .. " @ " .. proc:path())
     hunt.log("- Owned by: " .. proc:owner())
     hunt.log("- Started by: " .. proc:ppid())
     hunt.log("- Command Line: " .. proc:cmd_line())
+    n = n+1
 end
 
 hunt.log("Killing calc.exe")
@@ -169,3 +172,53 @@ if  fs.exists(temppath) then hunt.log("Zip Succeeded") else hunt.log('Zip Failed
 s3 = hunt.recovery.s3(aws_id, aws_secret, s3_region, s3_bucket)
 hunt.log('Uploading ' .. temppath .. ' to S3 Bucket [' ..s3_region .. ':' .. s3_bucket .. ']' )
 s3:upload_file(temppath, 'snarf/evidence.bin')
+
+-- Test Filesystem Functions
+opts = {
+    "files",
+    "size<500kb"
+}
+print("Testing filesystem functions against "..path)
+-- Note. Paths will be presented in their absolute DOS Device Path Convention (\\?\path)
+for _,file in pairs(hunt.fs.ls('C:\\windows\\system32\\calc.exe'), opts) do
+    hunt.log(file:full() .. ": " .. tostring(file:size()))
+end
+for _,file in pairs(hunt.fs.ls('/etc/'), opts) do
+    hunt.log(file:full() .. ": " .. tostring(file:size()))
+end
+
+-- Test status Functions
+hunt.status.good()
+--hunt.status.lowrisk()
+hunt.status.bad()
+hunt.status.suspicious()
+
+
+
+-- Create a new autostart
+a = hunt.survey.autostart()
+-- Add the location of the executed file
+a:exe("C:\\windows\\system32\\calc.exe")
+-- Add optional parameter information
+a:params("--listen 1337")
+-- Custom 'autostart type'
+a:type("Custom")
+-- Where the reference was found
+a:location("A log file only I know of.")
+-- Add this information to the collection
+hunt.survey.add(a)
+
+-- Create a new artifact
+a = hunt.survey.artifact()
+-- Add the location of the executed file
+a:exe("/usr/local/bin/nc")
+-- Add optional parameter information
+a:params("-l -p 1337")
+-- Custom 'autostart type'
+a:type("Log File Entry")
+-- Executed on
+a:executed("2019-05-01 11:23:00")
+-- Modified on
+a:modified("2018-01-01 01:00:00")
+-- Add this information to the collection
+hunt.survey.add(a)

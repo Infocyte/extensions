@@ -12,6 +12,8 @@
 -- SECTION 1: Inputs (Variables)
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
+proxy = nil -- "myuser:password@10.11.12.88:8888"
+
 
 --[[
 Win2k3/XP: \%SystemRoot%\System32\Config\*.evt
@@ -34,18 +36,6 @@ https://www.exabeam.com/siem-guide/siem-concepts/event-log/
 ----------------------------------------------------
 -- SECTION 2: Functions
 
--- You can define shell scripts here if using any.
-initscript = [==[
-#Requires -Version 3.0
-if (-NOT (Get-Module PowerForensics)) {
-    Install-Module -name 7Zip4Powershell -Force -Scope CurrentUser
-}
-function get-logs ($outpath="C:\windows\temp\logs.7z") {
-    $securitylogs = C:\Windows\System32\winevt\Logs\Security.evtx
-    Compress-7Zip -Path $securitylogs -ArchiveFileName $outpath
-}
-]==]
-
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
 
@@ -57,10 +47,13 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 
 
 -- All OS-specific instructions should be behind an 'if' statement
-if hunt.env.is_windows() and hunt.env.has_powershell() then
+if hunt.env.is_windows() then
     -- Insert your Windows code
 
     LogPath = [[C:\Windows\System32\winevt\Logs\Security.evtx]]
+    if hunt.fs.ls(LogPath) then
+        
+    end
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code

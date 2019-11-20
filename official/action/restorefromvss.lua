@@ -40,10 +40,4 @@ if string.find(OS, "windows") and hunt.env.has_powershell() then
   hunt.log(output) -- send to Infocyte
 end
 
-
-----------------------------------------------------
--- SECTION 4: Output
-
 hunt.log([[ Volume Shadow Copy has been mounted to C:\vssbackup\ ]])
-
-----------------------------------------------------
