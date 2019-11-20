@@ -245,20 +245,33 @@ if all_office_docs then
     }
     $files = hunt.fs.ls(C:\Users)
     officedocs = {}
-    for _,path in pairs(hunt.fs.ls(searchpath)) do
-
-    end
-
-    -- hash memdump
-    hash = hunt.hash.sha1(mempath)
+    extensions = {
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "pdf",
+        "ppt",
+        "pptx"
+    }
 
     -- Recover evidence to S3
     recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
-    s3path = host_info:hostname()..".physmem.map"
-    hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
-    recovery:upload_file(mempath, s3path)
 
-    hunt.verbose("Memory successfully uploaded to S3.")
+    for _,path in pairs(hunt.fs.ls(searchpath)) do
+        ext = path:sub(-4)
+        for _,e in ipairs(extensions) do
+            if ext:match(e) then
+                hash = hunt.hash.sha1(path)
+                officedocs.add(hash, path)
+                s3path = host_info:hostname().."-"..path
+                hunt.verbose("Uploading "..path.." (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+                -- recovery:upload_file(path, s3path)
+                break
+            end
+        end
+    end
+    hunt.verbose("Files successfully uploaded to S3.")
     hunt.status.good()
 else
     if hunt.env.has_powershell() then
