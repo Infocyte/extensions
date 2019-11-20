@@ -4713,14 +4713,13 @@ end
 
 -- Add additional paths
 for i, path in pairs(additionalpaths) do
-    hunt.debug("Adding additionalpath["..i.."]: " .. path)
     files = hunt.fs.ls(path)
-    if files.type() == "table" then
+    if type(files) == "table" then
         for _,path in pairs(files) do
             paths[path:full()] = true
         end
     else
-        paths[files] = true
+        paths[files:path()] = true
     end
 end
 
