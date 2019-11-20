@@ -284,7 +284,7 @@ end
 if all_office_docs then
     opts = {
         "files",
-        "size<1mb",
+        "size<1000kb",
         "recurse=2"
     }
     officedocs = {}
@@ -311,14 +311,13 @@ if all_office_docs then
                 }
                 officedocs[hash] = file
                 s3path = "ediscovery/"..host_info:hostname().."/"..hash..ext
-                --print("Uploading "..path:full().." ("..path:size().." Bytes) to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
-                --recovery:upload_file(path:full(), s3path)
+                print("Uploading "..path:full().." ("..path:size().." Bytes) to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+                recovery:upload_file(path:full(), s3path)
                 break
             end
         end
     end
-    tmpfile = os.getenv("TEMP").."\\asdf.csv"
-    tmpfile = "C:\\windows\\temp\\asdf.csv"
+    tmpfile = os.tmpname()
     tmp = io.open(tmpfile, "w")
     tmp:write("sha1,path,size\n")
     for hash, file in pairs(officedocs) do
@@ -328,7 +327,7 @@ if all_office_docs then
     tmp:flush()
     tmp:close()
     s3path = "ediscovery/"..host_info:hostname().."/index.csv"
-    --recovery:upload_file(tmpfile, s3path)
+    recovery:upload_file(tmpfile, s3path)
     ok, err = os.remove(tmpfile)
     if not ok then hunt.error(err) end
     hunt.verbose("Files successfully uploaded to S3.")
