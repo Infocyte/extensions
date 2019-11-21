@@ -52,8 +52,9 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 if is_agent_installed() then
     hunt.log("Infocyte Agent is already installed")
     if force then
-		-- overwrite existing config
+		-- TODO overwrite existing config
         hunt.install_agent(regkey)
+	end
 else
 	hunt.install_agent(regkey)
 end
