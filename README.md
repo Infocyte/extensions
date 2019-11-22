@@ -73,6 +73,7 @@ by Infocyte. This API can be broken down into various parts:
 
 - [Logging and Output](#logging-and-output)
 - [Environmental](#environmental)
+- [File System](#file-system)
 - [Network](#network)
 - [Web](#web)
 - [Process](#process)
@@ -119,6 +120,48 @@ hunt.log("Domain: " .. host_info:domain())
 | **hunt.env.has_python3()** | Returns a boolean indicating if Python 3 is available on the system. |
 | **hunt.env.has_powershell()** | Returns a boolean indicating if Powershell is available on the system. |
 | **hunt.env.has_sh()** | Returns a boolean indicating if the bourne shell is available on the system. |
+
+#### File System
+
+**Example**
+```lua
+for _,file in pairs(hunt.fs.ls('/etc/')) do
+    print(file:full() .. ": " .. tostring(file:size()))
+end
+```
+
+| Function | Description |
+| --- | --- |
+| **hunt.fs.ls(path1: string, path2: string, ..)** | Takes one or more paths and returns a list of files. |
+
+Filters can be used to cull the items returned by the `ls()` command. File size filters can take
+numbers in either raw bytes, "kb", "mb", or "gb". Spaces in filters are not permitted.
+
+```lua
+-- hunt.fs.ls() takes an optional filters
+-- use one or more of these together, but they must all be true for the item to return
+opts = {
+    "files", -- only return files
+    "dirs", -- only return dirs
+    "size>10mb", -- only return items greater than 10mb
+    "size<1gb", -- only return items less than 1gb
+    "size=123456", -- only return files whose size is 123456 bytes
+    "recurse", -- recurse through all directories
+    "recurse=3", -- recurse through directories, but only up to 3 levels deep
+}
+
+files = hunt.fs.ls('/usr/', opts)
+```
+
+```lua
+-- the file object has some useful properties
+file:full() -- returns the full path to the file
+file:path() -- returns the path relative to the ls() 
+file:name() -- returns the name of the file
+file:size() -- returns the size of the file in bytes
+file:is_dir() -- returns if the item is a directory
+file:is_file() -- returns if the item is a non-directory file 
+```
 
 #### Network
 
@@ -326,6 +369,65 @@ end
 | **hunt.yara.new()** | New yara instance. |
 | **add_rule(rule: string)** | Add a rule to the yara instance. Once a scan is executed, no more rules can be added. |
 | **scan(path: string)** | Scan a file at `path`, returns a list of the rules matched. |
+
+#### Survey API
+```lua
+-- Create a new autostart 
+a = hunt.survey.autostart()
+
+-- Add the location of the executed file
+a:exe("/home/user/.zDj289d/.tmp.sh")
+-- Add optional parameter information
+a:params("--listen 1337")
+-- Custom 'autostart type'
+a:type("Bash Config")
+-- Where the reference was found
+a:location("/home/user/.bashrc")
+
+-- Add this information to the collection
+hunt.survey.add(a)
+```
+
+```lua
+-- Create a new artifact 
+a = hunt.survey.artifact()
+
+-- Add the location of the executed file
+a:exe("/usr/local/bin/nc")
+-- Add optional parameter information
+a:params("-l -p 1337")
+-- Custom 'autostart type'
+a:type("Log File Entry")
+-- Executed on
+a:executed("2019-05-01 11:23:00")
+-- Modified on
+a:modified("2018-01-01 01:00:00")
+
+-- Add this information to the collection
+hunt.survey.add(a)
+```
+
+| Function | Description |
+| --- | --- |
+| **hunt.survey.autostart()** | Create an object to be added to the `autostart` collection |
+| **hunt.survey.artifact()** | Create an object to be added to the `artifact` collection |
+
+##### Autostarts
+| Function | Description |
+| --- | --- |
+| **artifact:exe(string)** | Sets the path to the executed file [REQUIRED] |
+| **artifact:params(string)** | Sets the parameters of executed file |
+| **artifact:type(string)** | Sets the custom *type* of artifact |
+| **artifact:location(string)** | Where the autostart was located (config file, registry path, etc) [REQUIRED] |
+
+##### Artifacts
+| Function | Description |
+| --- | --- |
+| **artifact:exe(string)** | Sets the path to the executed file [REQUIRED] |
+| **artifact:params(string)** | Sets the parameters of executed file |
+| **artifact:type(string)** | Sets the custom *type* of artifact |
+| **artifact:executed(string)** | Sets *executed on* metadata, must be `2019-11-30 12:11:10` format |
+| **artifact:modified(string)** | Sets *modified on* metadata, must be `2019-11-30 12:11:10` format |
 
 #### Extras
 

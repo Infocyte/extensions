@@ -29,11 +29,6 @@ There are several good editors out there but we suggest using [Atom](https://ato
 #### Atom Plugins
  - [language-lua](https://atom.io/packages/language-lua)
  - [autocomplete-lua](https://atom.io/packages/autocomplete-lua)
- - [linter](https://atom.io/packages/linter)
- - [linter-luacheck](https://atom.io/packages/linter-luacheck)
-
- Note: For Windows users you need to download the [Luacheck Windows Binary](https://github.com/mpeterv/luacheck/releases/download/0.23.0/luacheck.exe) <-- Add this to your PATH variable
-
 
 #### Visual Studio Code Plugins
  - [vscode-lua](https://marketplace.visualstudio.com/items?itemName=trixnz.vscode-lua)
@@ -43,7 +38,7 @@ There are several good editors out there but we suggest using [Atom](https://ato
 You will typically run extensions using the Infocyte Survey but for experimenting with Lua syntax, we recommend installing a Lua interpreter locally and adding it to your PATH variable.
   - [Install Lua (from source)](https://www.lua.org/download.html)
   - [Install Lua (pre-compiled)](http://luabinaries.sourceforge.net/download.html)
-  
+
 *Note: Lua doesn't really have a maintained Windows distribution but it's a simple program consisting of a compiler (luac.exe), an interpreter (lua.exe) and a library (lua.dll). Download them to a folder like C:\lua and add the folder to your PATH variable like so:*
 
 #### Windows:
@@ -51,12 +46,16 @@ You will typically run extensions using the Infocyte Survey but for experimentin
 
 
 ## Running Your Extension
-Your extension will be tested and run with the Infocyte Survey (e.g. `s1.exe`). You can download the latest survey from your Infocyte instance's Admin:Downloads panel (also included in dev/windows for you windows users) here: `https://<instance_name>.infocyte.com/admin/download`
+Your extension will be tested and run with the Infocyte Survey (e.g. `s1.exe`). You can download the latest survey from your Infocyte instance's Admin:Downloads panel here: `https://<instance_name>.infocyte.com/admin/download`. Additionally, installing an Agent on your development host will make the latest s1.exe available here: `C:\Program Files\Infocyte\Agent\s1.exe`
 
 To run your extension, open a shell window in Administrator mode and run:
 > s1.exe --no-delete --no-compress --verbose --only-extensions --extensions <path_to_extension>
 
 Standard output will go to the screen (including any print statements used for debugging). You can find the survey results payload with your log statements in the same folder as s1.exe named `HostSurvey.json`
 
+#### Windows Development
+On Windows, you can install the [Infocyte HUNT Powershell Module](https://www.powershellgallery.com/packages/InfocyteHUNTAPI) and run `Invoke-ICExtension`
+Ensure the latest copy of `s1.exe` is in `C:\Program Files\Infocyte\dev\` in order for this to run.
 
-## Examples
+PS> `Install-Module -Name InfocyteHUNTAPI`
+PS> `Invoke-ICExtension -Path <pathtoextension>`

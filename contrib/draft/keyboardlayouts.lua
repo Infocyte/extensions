@@ -4,7 +4,7 @@
     Type: Collection
     Description: Discovers if a second keyboard layout has been added and returns
      which ones. (e.g. Flag if Russian Keyboard is added in UK system)
-    Author: Stephen Ramage
+    Author: TBD
     Created: 20191028
     Updated: 20191031
 ]]--
