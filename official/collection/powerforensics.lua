@@ -78,7 +78,7 @@ hash = hunt.hash.sha1(temppath)
 hunt.log("Compressing (gzip) " .. temppath .. " (sha1=".. hash .. ") to " .. outpath)
 hunt.gzip(temppath, outpath, nil)
 if file_exists(outpath) then
-    file = hunt.fs.ls(outpath, { "files" })
+    file = hunt.fs.ls(outpath)
     print(file[1]:path())
 else
     hunt.error("Compression failed.")
