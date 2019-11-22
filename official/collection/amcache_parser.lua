@@ -155,7 +155,6 @@ else
 end
 os.execute('powershell.exe -nologo -nop -command "Remove-Item '..outpath..' -force"')
 
---[==[
 
 -- Add uniques to artifacts
 paths = {}
@@ -173,8 +172,6 @@ for _, item in pairs(csv) do
         hunt.survey.add(artifact)
     end
 end
-
-]==]
 
 hunt.status.good()
 
