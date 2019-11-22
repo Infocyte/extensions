@@ -21,6 +21,7 @@ initscript = [==[
 
 ]==]
 
+
 ----------------------------------------------------
 -- SECTION 3: Actions
 
@@ -36,7 +37,7 @@ if hunt.env.is_windows() then
 
     --[[
     local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script) -- load up powershell functions and vars
+    pipe:write(initscript) -- load up powershell functions and vars
     pipe:write("Get-Process")
     r = pipe:close()
     ]]--

@@ -10,8 +10,10 @@
 
 -- SECTION 1: Inputs (Variables)
 
+-- This extension will yara scan files below
+scanactiveprocesses = true
+scanappdata = true
 
--- This extension will yara scan running processes.
 -- Provide additional paths below
 if hunt.env.is_windows() then
     additionalpaths = {
@@ -4684,6 +4686,41 @@ rule EmiratesStatement
 ]==]
 -- #endregion
 
+function GetFileName(path)
+  return path:match("^.+/(.+)$")
+end
+
+function GetFileExtension(path)
+  return path:match("^.+(%..+)$")
+end
+
+function is_executable(path)
+    magicnumbers = {
+        "MZ",
+        ".ELF"
+    }
+    local f,msg = io.open(path, "rb")
+    if not f then
+        hunt.debug(msg)
+        return nil
+    end
+    local bytes = f:read(4)
+    if bytes then
+        -- print(bytes)
+        for _,n in pairs(magicnumbers) do
+            magicheader = string.find(bytes, n)
+            if magicheader then
+                -- print(string.byte(magicheader))
+                f:close()
+                return true
+            end
+        end
+        f:close()
+        return false
+    end
+end
+
+
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
 
@@ -4703,12 +4740,31 @@ yara_suspicious:add_rule(suspicious_rules)
 yara_info = hunt.yara.new()
 yara_info:add_rule(info_rules)
 
--- Get list of processes
+
+-- Add active processes
 paths = {}
-procs = hunt.process.list()
-for i, proc in pairs(procs) do
-    hunt.debug("Adding processpath["..i.."]: " .. proc:path())
-    paths[proc:path()] = true
+if scanactiveprocesses then
+    procs = hunt.process.list()
+    for i, proc in pairs(procs) do
+        --hunt.debug("Adding processpath["..i.."]: " .. proc:path())
+        paths[proc:path()] = true
+    end
+end
+
+-- Add appdata paths
+if scanappdata then
+    for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
+        opts = {
+            "files",
+            "size<1mb",
+            "recurse=1" --depth of 1
+        }
+        for _, path in pairs(hunt.fs.ls(userfolder:path().."\\appdata\\roaming", opts)) do
+            if is_executable(path:path()) then
+                paths[path:path()] = true
+            end
+        end
+    end
 end
 
 -- Add additional paths
@@ -4716,10 +4772,14 @@ for i, path in pairs(additionalpaths) do
     files = hunt.fs.ls(path)
     if type(files) == "table" then
         for _,path in pairs(files) do
-            paths[path:full()] = true
+            if is_executable(path:name()) then
+                paths[path:name()] = true
+            end
         end
     else
-        paths[files:path()] = true
+        if is_executable(path:name()) then
+            paths[files:name()] = true
+        end
     end
 end
 

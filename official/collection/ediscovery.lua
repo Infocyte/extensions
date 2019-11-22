@@ -215,12 +215,12 @@ Function Get-StringsMatch {
 ]==]
 -- #endregion
 
-function GetFileName(str)
-  return str:match("^.+/(.+)$")
+function GetFileName(path)
+  return path:match("^.+/(.+)$")
 end
 
-function GetFileExtension(str)
-  return str:match("^.+(%..+)$")
+function GetFileExtension(path)
+  return path:match("^.+(%..+)$")
 end
 
 function make_psstringarray(list)

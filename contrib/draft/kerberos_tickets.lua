@@ -3,7 +3,7 @@
     Name: Kerberos Tickets
     Type: Collection
     Description: Collects Kerberos Tickets and TGTs on each host
-    Author: Infocyte
+    Author: TBD
     Created: 20191105
     Updated: 20191105 (Gerritz)
 ]]--

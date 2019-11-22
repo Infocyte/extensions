@@ -41,8 +41,8 @@ if hunt.env.is_windows() then
 
   -- Create powershell process and feed script/commands to its stdin
   -- local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-  -- pipe:write(initscript) -- load up powershell functions and vars
-  -- pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
+  -- pipe:write(ps_script) -- load up powershell functions and vars
+  -- pipe:write('Get-Process | export-CSV C:\\processlist.csv')
   -- r = pipe:close()
 
 elseif hunt.env.is_macos() then
@@ -52,21 +52,12 @@ elseif hunt.env.is_macos() then
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
 
-    -- os.execute("python -u -c \"" .. python_script.. "\"" )
+    -- os.execute("python -u -c \"" .. python_cmd.. "\"" )
 
 else
-    hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
-
-
-----------------------------------------------------
--- SECTION 4: Results
---  Threat status is a set of static results used to aggregate and stack
---  results:
---      Good, Low Risk, Unknown, Suspicious, or Bad
---    Include any host-side processing and analysis necessary to report the
---   appropriate status.
 
 result = "Test" -- filler [DELETE ME]
 
@@ -82,5 +73,3 @@ end
 -- one or more log statements can be used to send resulting data or messages in
 -- text format to your Infocyte instance
 hunt.log("Result: Extension successfully executed on " .. hostname)
-
-----------------------------------------------------

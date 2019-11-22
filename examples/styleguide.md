@@ -8,7 +8,7 @@ Extension filenames should be `<Name>.lua`
 
 #### Preamble
 All extensions should have a comment block on top using the below format.
-In the future, we may introduce a filetype that includes metadata like this.
+In the future, we intend to introduce an extension filetype that includes metadata like this.
 
 >>
 --[[
@@ -40,21 +40,18 @@ Infocyte exposes the functionality of its' Survey and Agent to Lua via the `hunt
 #### Threat status
 Threat Status provides aggregation for display in the Infocyte app. Use this feature to highlight interesting results.
 
-You must use one of the built-in statuses below:
-- Blacklist (will set host as compromised)
-- Bad (will set host as compromised)
+The built-in statuses are below:
+- Bad (will flag the host as compromised)
 - Suspicious
+- Unknown (default)
 - Low Risk
-- Unknown
 - Good
-- Whitelist
 
 
 #### Logs/messages
 `hunt.log()` is the function to send data to Infocyte as part of the survey results. Use this for any textual data. It can be viewed in raw form in the app or extracted via the API.
 
-**Max Size of Log Messages:** 1MB
-**Max Number of Log Messages:** 100
+**Max Number of Log Messages:** 1000
 
 #### Binary or Large Evidence Data Recovery
 If your extension recovers Binary data or other types of large evidence files (i.e. memory dump, files, .evt or .dat files), you should send it to a user-provided 3rd party bucket.
