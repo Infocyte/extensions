@@ -12,7 +12,7 @@
 
 -- This extension will yara scan files below
 scanactiveprocesses = true
-scanappdata = true
+scanappdata = false
 
 -- Provide additional paths below
 if hunt.env.is_windows() then
