@@ -144,6 +144,9 @@ print("Initiatializing Powershell")
 pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
 pipe:write(script)
 pipe:close()
+
+-- Caseful... popen is async
+os.execute('powershell.exe -nologo -nop -command "Start-Sleep 4"')
 os.execute('powershell.exe -nologo -nop -command "Remove-Item '..tmppath..' -force -Recurse"')
 
 -- Read csv into array

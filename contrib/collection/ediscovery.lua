@@ -5,7 +5,7 @@
 	Description: Proof of Concept. Searches the hard drive for office documents
         (currently only .doc and .docx files) with specified keywords.
         Returns a csv with a list of files.
-	Author: Infocyte
+	Author: Multiple (Maintained by Gerritz)
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
 ]]--
@@ -342,7 +342,8 @@ else
     	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
     	pipe:write(initscript) -- load up powershell functions and vars
     	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
-    	r = pipe:close()
+        os.execute('powershell.exe -nologo -nop -command "Start-Sleep 30"')
+        r = pipe:close()
     	hunt.verbose("Powershell Returned: "..tostring(r))
 
         -- read output file from powershell
