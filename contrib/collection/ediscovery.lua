@@ -3,8 +3,10 @@
 	Name: E-Discovery
 	Type: Collection
 	Description: Proof of Concept. Searches the hard drive for office documents
-        (currently only .doc and .docx files) with specified keywords.
-        Returns a csv with a list of files.
+        (currently only .doc and .docx files) with specified keywords or alldocs.
+        1. Find any office doc on a desktop/server
+        2. Upload doc directly to S3 Bucket
+        3. Upload metadata csv with filehash as key
 	Author: Multiple (Maintained by Gerritz)
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
@@ -12,19 +14,20 @@
 
 -- SECTION 1: Inputs (Variables)
 all_office_docs = true
-strings = {'Gerritz', 'test'}
+strings = {'test'}
 searchpath = [[C:\Users]]
 
--- S3 Bucket (Destination)
+-- S3 Bucket (Mandatory)
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
---[[
-1. Find any office doc on a desktop/server
-2. Upload doc directly to S3 Bucket
-3. Upload metadata csv with filehash as key
-]]--
+-- Check required inputs
+if not s3_region or not s3_bucket then
+    hunt.error("s3_region and s3_bucket not set")
+    return
+end
+
 
 ----------------------------------------------------
 -- SECTION 2: Functions
@@ -285,7 +288,7 @@ if all_office_docs then
     opts = {
         "files",
         "size<1000kb",
-        "recurse=2"
+        "recurse=4"
     }
     officedocs = {}
     extensions = {

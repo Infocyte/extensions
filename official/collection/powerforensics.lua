@@ -11,8 +11,15 @@
 
 
 -- SECTION 1: Inputs (Variables)
+-- S3 Bucket (Mandatory)
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
+
+-- Check required inputs
+if not s3_region or not s3_bucket then
+    hunt.error("s3_region and s3_bucket not set")
+    return
+end
 
 ----------------------------------------------------
 -- SECTION 2: Functions
