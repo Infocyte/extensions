@@ -24,6 +24,12 @@ s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
+-- Check required inputs
+if not s3_region or not s3_bucket then
+    hunt.error("s3_region and s3_bucket not set")
+    return
+end
+
 ----------------------------------------------------
 -- SECTION 2: Functions
 
@@ -100,9 +106,10 @@ hash = hunt.hash.sha1(mempath)
 
 -- Recover evidence to S3
 recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
-s3path = host_info:hostname()..".physmem.map"
-hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+s3path = host_info:hostname().."/mem.map"
+link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3.")
 recovery:upload_file(mempath, s3path)
 
-hunt.verbose("Memory successfully uploaded to S3.")
+hunt.log("Memory successfully uploaded to S3: "..link)
 hunt.status.good()
