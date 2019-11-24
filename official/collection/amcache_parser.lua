@@ -50,7 +50,6 @@ function parse_csv(path, sep)
     tonum = true
     sep = sep or ','
     local csvFile = {}
-    local file = assert(io.open(path, "r"))
     local file,msg = io.open(path, "r")
     if not file then
         hunt.error("AmcacheParser failed: ".. msg)

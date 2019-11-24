@@ -13,7 +13,7 @@
 ]]--
 
 -- SECTION 1: Inputs (Variables)
-all_office_docs = true
+all_office_docs = false
 strings = {'test'}
 searchpath = [[C:\Users]]
 
@@ -36,7 +36,6 @@ end
 
 -- #region initscript
 initscript = [==[
-#Requires -Version 3.0
 function Get-FileSignature {
     [CmdletBinding()]
     Param(
@@ -346,7 +345,9 @@ else
     	-- Create powershell process and feed script/commands to its stdin
     	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
     	pipe:write(initscript) -- load up powershell functions and vars
-    	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
+        cmd = 'Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings)
+        print("Running: "..cmd)
+    	pipe:write(cmd)
         os.execute('powershell.exe -nologo -nop -command "Start-Sleep 30"')
         r = pipe:close()
     	hunt.verbose("Powershell Returned: "..tostring(r))
@@ -354,13 +355,13 @@ else
         -- read output file from powershell
     	file = io.open(tempfile, "r") -- r read mode
     	if file then
-            output = file:read("*all") -- *a or *all reads the whole file
-            if output then
-                hunt.log(output) -- send to Infocyte
-                ok, err = os.remove(tempfile)
-                if not ok then hunt.error(err) end
+            for line in file:lines() do
+                hunt.log(line)
             end
+            --output = file:read("*all") -- *a or *all reads the whole file
             file:close()
+        else
+            hunt.error("Powershell failed to produce temp csv.")
         end
     end
 end
