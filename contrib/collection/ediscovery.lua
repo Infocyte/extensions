@@ -238,41 +238,37 @@ function make_psstringarray(list)
     return psarray
 end
 
-
-function table.val_to_str ( v )
-  if  type( v ) == "string" then
-    v = string.gsub( v, "\n", "\\n" )
-    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-      return "'" .. v .. "'"
+function parse_csv(path, sep)
+    tonum = true
+    sep = sep or ','
+    local csvFile = {}
+    local file,msg = io.open(path, "r")
+    if not file then
+        hunt.error("AmcacheParser failed: ".. msg)
+        return nil
     end
-    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-  else
-    return type( v ) == "table" and table.tostring( v ) or
-      tostring( v )
-  end
-end
-
-function table.key_to_str ( k )
-  if type( k ) == "string" and string.match( k, "^[_%a][_%a%d]*$" ) then
-    return k
-  else
-    return "[" .. table.val_to_str( k ) .. "]"
-  end
-end
-
-function table.tostring( tbl )
-  local result, done = {}, {}
-  for k, v in ipairs( tbl ) do
-    table.insert( result, table.val_to_str( v ) )
-    done[ k ] = true
-  end
-  for k, v in pairs( tbl ) do
-    if not done[ k ] then
-      table.insert( result,
-        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+    header = {}
+    for line in file:lines() do
+        n = 1
+        local fields = {}
+        for str in string.gmatch(line, "([^"..sep.."]+)") do
+            s = str:gsub('"(.+)"', "%1")
+            if #header == 0 then
+                fields[n] = s
+            else
+                v = header[n]
+                fields[v] = tonumber(s) or s
+            end
+            n = n + 1
+        end
+        if #header == 0 then
+            header = fields
+        else
+            table.insert(csvFile, fields)
+        end
     end
-  end
-  return "{" .. table.concat( result, "," ) .. "}"
+    file:close()
+    return csvFile
 end
 
 ----------------------------------------------------
@@ -353,16 +349,26 @@ else
     	hunt.debug("Powershell Returned: "..tostring(r))
 
         -- read output file from powershell
+        --[[
     	file = io.open(tempfile, "r") -- r read mode
     	if file then
             for line in file:lines() do
-                hunt.log(line)
+                hunt.verbose(line)
             end
             --output = file:read("*all") -- *a or *all reads the whole file
         else
             hunt.error("Powershell failed to produce temp csv.")
         end
         file:close()
+        ]]
+        csv = parse_csv(tempfile, ',')
+        if csv then
+            for _, item in pairs(csv) do
+                hunt.log(item["File"].." ["..item["Filesize"].." KB] matched on keyword "..item["Match"].." ("..item["TextAround"]..")")
+            end
+        else
+            hunt.error("Could not parse CSV.")
+        end
     end
 end
 
