@@ -344,23 +344,21 @@ else
         cmd = 'Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings)
         hunt.verbose("Running: "..cmd)
     	pipe:write(cmd)
-        os.execute('powershell.exe -nologo -nop -command "Start-Sleep 30"')
+        os.execute('powershell.exe -nologo -nop -command "Start-Sleep 10"')
         r = pipe:close()
     	hunt.debug("Powershell Returned: "..tostring(r))
 
         -- read output file from powershell
-        --[[
     	file = io.open(tempfile, "r") -- r read mode
     	if file then
             for line in file:lines() do
-                hunt.verbose(line)
+                hunt.log(line)
             end
             --output = file:read("*all") -- *a or *all reads the whole file
+            file:close()
         else
             hunt.error("Powershell failed to produce temp csv.")
         end
-        file:close()
-        ]]
         csv = parse_csv(tempfile, ',')
         if csv then
             for _, item in pairs(csv) do
