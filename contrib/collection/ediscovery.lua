@@ -349,7 +349,6 @@ else
     	-- Create powershell process and feed script/commands to its stdin
     	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
         --initscript = initscript .. '\nGet-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. make_psstringarray(strings)
-        print(initscript)
     	pipe:write(initscript) -- load up powershell functions and vars
     	pipe:write('Get-StringsMatch -Path "' .. searchpath .. '" -temppath "' .. tempfile .. '" -Strings ' .. make_psstringarray(strings))
         os.execute('powershell.exe -nologo -nop -command "Start-Sleep 15"')
@@ -357,6 +356,7 @@ else
     	hunt.debug("Powershell Returned: "..tostring(r))
 
         -- read output file from powershell
+        --[[
     	file = io.open(tempfile, "r") -- r read mode
     	if file then
             for line in file:lines() do
@@ -367,6 +367,7 @@ else
         else
             hunt.error("Powershell failed to produce temp csv.")
         end
+        ]]
         csv = parse_csv(tempfile, ',')
         if csv then
             for _, item in pairs(csv) do
