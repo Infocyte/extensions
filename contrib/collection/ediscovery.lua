@@ -137,9 +137,9 @@ function Get-FileSignature {
 Function Get-StringsMatch {
     [CmdletBinding()]
 	param (
-		[string]$path = $env:systemroot,
+		[string]$Path = $env:systemroot,
 		[string[]]$Strings,
-        [string]$Temppath,
+        [string]$Temppath="C:\windows\temp\icext.csv",
 		[int]$charactersAround = 30
 	)
     $results = @()
@@ -167,13 +167,13 @@ Function Get-StringsMatch {
         } catch {
             Write-Warning "Could not open $($file.FullName)"
             $properties = @{
-                SHA1 = $Null
+                SHA1 = ''
                 File = $file.FullName
-                Filesize = $Null
+                FilesizeKB = ''
                 Match = "ERROR: Could not open file"
-                TextAround = $Null
-                CreationTimeUtc = $Null
-                ModifiedTimeUtc = $Null
+                TextAround = ''
+                CreationTimeUtc = ''
+                ModifiedTimeUtc = ''
             }
             $results += New-Object -TypeName PsCustomObject -Property $properties
             $text = $Null
@@ -211,11 +211,12 @@ Function Get-StringsMatch {
         $text = $Null
     }
 
-    If($results){
-        $results | Export-Csv $Temppath -NoTypeInformation -Encoding ASCII
+    If($results) {
+        $results | Export-Csv -Path $Temppath -NoTypeInformation
         return $results
     }
 }
+
 ]==]
 -- #endregion
 
@@ -276,6 +277,7 @@ end
 
 host_info = hunt.env.host_info()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+date = os.date("%Y%m%d")
 
 if not hunt.env.is_windows() then
     return
@@ -311,8 +313,14 @@ if all_office_docs then
                 }
                 officedocs[hash] = file
                 s3path = "ediscovery/"..host_info:hostname().."/"..hash..ext
-                print("Uploading "..path:full().." ("..path:size().." Bytes) to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
-                recovery:upload_file(path:full(), s3path)
+                link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+                upload = recovery:upload_file(path:path(), s3path)
+                if upload then
+                    -- hunt.log(path:path()..","..hash..","..link)
+                    hunt.log("Uploading "..path:path().." (sha1="..hash..") ("..path:size().." Bytes) to S3 bucket " .. link)
+                else
+                    hunt.error("Could not upload "..path)
+                end
                 break
             end
         end
@@ -340,11 +348,11 @@ else
 
     	-- Create powershell process and feed script/commands to its stdin
     	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+        --initscript = initscript .. '\nGet-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. make_psstringarray(strings)
+        print(initscript)
     	pipe:write(initscript) -- load up powershell functions and vars
-        cmd = 'Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings)
-        hunt.verbose("Running: "..cmd)
-    	pipe:write(cmd)
-        os.execute('powershell.exe -nologo -nop -command "Start-Sleep 10"')
+    	pipe:write('Get-StringsMatch -Path "' .. searchpath .. '" -temppath "' .. tempfile .. '" -Strings ' .. make_psstringarray(strings))
+        os.execute('powershell.exe -nologo -nop -command "Start-Sleep 15"')
         r = pipe:close()
     	hunt.debug("Powershell Returned: "..tostring(r))
 
@@ -362,7 +370,9 @@ else
         csv = parse_csv(tempfile, ',')
         if csv then
             for _, item in pairs(csv) do
-                hunt.log(item["File"].." ["..item["Filesize"].." KB] matched on keyword "..item["Match"].." ("..item["TextAround"]..")")
+                if item then
+                    hunt.log(item["File"].." ["..item["FilesizeKB"].." KB] matched on keyword "..item["Match"].." ("..item["TextAround"]..")")
+                end
             end
         else
             hunt.error("Could not parse CSV.")
