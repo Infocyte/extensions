@@ -23,6 +23,7 @@
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
+hash_image = false -- set to true if you need the sha1 of the memory image
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -42,7 +43,8 @@ osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 workingfolder = os.getenv("temp")
-mempath = workingfolder.."\\physmem.map"
+date = os.date("%Y%m%d")
+mempath = workingfolder.."\\physmem"..date..".map"
 
 if hunt.env.is_windows() then
     -- Insert your Windows code
@@ -96,20 +98,41 @@ end
 -- Dump Memory to disk
 hunt.verbose("Memory dump on "..host_info:os().." host started to local path "..mempath)
 -- os.execute("winpmem.exe --output - --format map | ")    --split 1000M
-result = os.execute(pmempath.." --output "..mempath.." --format map")
+result = os.execute(pmempath.." --output "..mempath.." --format map --split 1000M")
 if not result then
   hunt.error("Winpmem driver failed. [Error: "..result.."]")
   exit()
 end
--- hash memdump
-hash = hunt.hash.sha1(mempath)
 
--- Recover evidence to S3
-recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
-s3path = host_info:hostname().."/mem.map"
-link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-hunt.log("Uploading Memory Dump (sha1=".. hash .. ") to S3.")
-recovery:upload_file(mempath, s3path)
 
-hunt.log("Memory successfully uploaded to S3: "..link)
+-- Scans have 1 hour timeouts currently so we're gunna spawn a background task to
+-- upload it in case it takes a few hours.
+script = 'recovery = hunt.recovery.s3(nil, nil, "'..s3_region..'","'..s3_bucket..'")\n'
+
+for _, path in pairs(hunt.fs.ls(os.getenv("temp"))) do
+    if (path:path()):match("physmem") then
+        if hash_image then
+            hash = hunt.hash.sha1(mempath)
+        else
+            hash = 'Hashing Skipped'
+        end
+        s3path = host_info:hostname().."/"..path:name()
+        link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+        hunt.log("Scheduling the Upload of Memory Dump "..s3path.." (sha1=".. hash .. ") to S3 at "..link)
+        script = script .. 'recovery:upload_file([['..path:path()..']], "'..s3path..'")\n'
+        script = script .. 'os.remove([['..path:path()..']])\n'
+    end
+end
+
+-- Schedule Background Task to Recover Memory to S3
+scriptpath = workingfolder.."\\upload.lua"
+scriptfile = io.open(scriptpath, "w")
+scriptfile:write(script)
+scriptfile:close()
+timeout = 6*60*60 -- 6 hours to upload?
+os.execute('Powershell.exe -nologo -nop -command "Copy-Item C:\\windows\\temp\\s1.exe  -Destination C:\\windows\\temp\\survey.exe -Force')
+os.execute('SCHTASKS /CREATE /SC ONCE /RU "SYSTEM" /TN "Infocyte\\Upload" /TR "cmd.exe /c C:\\windows\\temp\\survey.exe -r '..timeout..' --only-extensions --extensions '..scriptpath..'" /ST 23:59 /F')
+os.execute('SCHTASKS /RUN /TN "Infocyte\\Upload"')
+
 hunt.status.good()
+os.remove(pmempath)
