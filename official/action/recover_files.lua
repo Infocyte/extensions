@@ -11,6 +11,8 @@
 -- SECTION 1: Inputs (Variables)
 
 -- S3 Bucket (mandatory)
+s3_user = nil
+s3_pass = nil
 s3_region = 'us-east-2' -- 'us-east-2'
 s3_bucket = 'test-extensions' -- 'test-extensions'
 
@@ -60,7 +62,7 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 date = os.date("%Y%m%d")
 os.execute("mkdir "..os.getenv("temp").."\\ic")
 
-s3 = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
+s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
 
 for _, p in pairs(paths) do
     for _, path in pairs(hunt.fs.ls(p)) do

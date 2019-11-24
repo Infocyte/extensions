@@ -20,6 +20,8 @@
 -- SECTION 1: Inputs (Variables)
 
 -- S3 Bucket (Destination)
+s3_user = nil
+s3_pass = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
@@ -107,7 +109,11 @@ end
 
 -- Scans have 1 hour timeouts currently so we're gunna spawn a background task to
 -- upload it in case it takes a few hours.
-script = 'recovery = hunt.recovery.s3(nil, nil, "'..s3_region..'","'..s3_bucket..'")\n'
+if s3_user then
+    script = 'recovery = hunt.recovery.s3("'..s3_user..'", "'..s3_pass..'", "'..s3_region..'","'..s3_bucket..'")\n'
+else
+    script = 'recovery = hunt.recovery.s3(nil, nil, "'..s3_region..'","'..s3_bucket..'")\n'
+end
 
 for _, path in pairs(hunt.fs.ls(os.getenv("temp"))) do
     if (path:path()):match("physmem") then

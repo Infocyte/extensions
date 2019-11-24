@@ -12,6 +12,8 @@
 -- SECTION 1: Inputs (Variables)
 
 -- S3 Bucket (mandatory)
+s3_user = nil
+s3_pass = nil
 s3_region = 'us-east-2' -- 'us-east-2'
 s3_bucket = 'test-extensions' -- 'test-extensions'
 
@@ -171,16 +173,29 @@ else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
+date = os.date("%Y%m%d")
+os.execute("mkdir "..os.getenv("temp").."\\ic")
 
 -- Upload Evidence
 -- use s3 upload, without authentication (bucket must be writable without auth)
-s3 = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
+s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+
 for name,path in pairs(paths) do
     f = hunt.fs.ls(path)
     if #f > 0 and f then
+        -- If file is being used or locked, this copy will get passed it (usually)
+       infile = io.open(path:path(), "rb")
+       data = infile:read("*all")
+       infile:close()
+
+       outpath = os.getenv("temp").."\\ic\\"..path:name()
+       outfile = io.open(outpath, "wb")
+       outfile:write(data)
+       outfile:flush()
+       outfile:close()
 
         -- hash file
-        hash = hunt.hash.sha1(path)
+        hash = hunt.hash.sha1(outpath)
         if hash:match("error") then
             hunt.error("Could not hash "..name.." from "..path..": "..hash)
             goto continue
@@ -188,15 +203,17 @@ for name,path in pairs(paths) do
 
         s3path = host_info:hostname().."/"..name.."_"..f[1]:name()
         link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-        upload = s3:upload_file(path, s3path)
+        upload = s3:upload_file(outpath, s3path)
         if upload then
             hunt.log(name..","..hash..","..path..","..link)
         else
             hunt.error("Could not upload "..name.." from "..path)
         end
+        os.remove(outpath)
         ::continue::
     end
 end
+os.execute("RMDIR /Q "..os.getenv("temp").."\\ic")
 
 ----------------------------------------------------
 -- SECTION 4: Results

@@ -12,6 +12,8 @@
 
 -- SECTION 1: Inputs (Variables)
 -- S3 Bucket (Mandatory)
+s3_user = nil
+s3_pass = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 
@@ -97,7 +99,7 @@ end
 
 
 -- Recover evidence to S3
-recovery = hunt.recovery.s3(nil, nil, s3_region, s3_bucket)
+recovery = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
 s3path = host_info:hostname() .. '/mft.zip'
 hunt.verbose("Uploading gzipped MFT(size = "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
 recovery:upload_file(outpath, s3path)
