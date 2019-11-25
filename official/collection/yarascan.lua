@@ -4780,9 +4780,6 @@ for path, i in pairs(paths) do
 end
 
 
-----------------------------------------------------
--- SECTION 4: Results
-
 if bad then
     hunt.status.bad()
 elseif suspicious then

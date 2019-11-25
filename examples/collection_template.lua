@@ -17,11 +17,7 @@
 
 
 -- You can define shell scripts here if using any.
-ps_script = [==[
-
-]==]
-
-python_cmd = [==[
+script = [==[
 
 ]==]
 
@@ -40,9 +36,10 @@ if hunt.env.is_windows() then
   -- Insert your Windows code
 
   -- Create powershell process and feed script/commands to its stdin
-  -- local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-  -- pipe:write(ps_script) -- load up powershell functions and vars
-  -- pipe:write('Get-Process | export-CSV C:\\processlist.csv')
+  -- pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+  -- cmd = 'Get-Process | export-CSV C:\\processlist.csv'
+  -- scriptcmd = script .. '\ncmd'
+  -- pipe:write(scriptcmd) -- load up powershell functions and vars
   -- r = pipe:close()
 
 elseif hunt.env.is_macos() then
@@ -52,7 +49,7 @@ elseif hunt.env.is_macos() then
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
 
-    -- os.execute("python -u -c \"" .. python_cmd.. "\"" )
+    -- os.execute("python -u -c \"" .. cmd.. "\"" )
 
 else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")

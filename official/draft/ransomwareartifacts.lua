@@ -321,11 +321,6 @@ else
 end
 
 
-----------------------------------------------------
--- SECTION 4: Results
---	Set threat status to aggregate and stack results in the Infocyte app:
---		Good, Low Risk, Unknown, Suspicious, or Bad
-
 if output then
     hunt.status.bad()
 else

@@ -9,6 +9,15 @@
 	Updated: 20191025 (Gerritz)
 ]]--
 
+host_info = hunt.env.host_info()
+date = os.date("%Y%m%d")
+instance = hunt.net.api()
+if instance == '' then
+    instancename = 'offline'
+elseif instance:match("http") then
+    -- get instancename
+    instancename = instance:match(".+//(.+).infocyte.com")
+end
 
 -- SECTION 1: Inputs (Variables)
 -- S3 Bucket (Mandatory)
@@ -16,6 +25,7 @@ s3_user = nil
 s3_pass = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
+s3path_preamble = instancename..'/'..date..'/'..(hunt.env.host_info()):hostname().."/evidence" -- /filename will be appended
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -26,31 +36,42 @@ end
 ----------------------------------------------------
 -- SECTION 2: Functions
 
-script = [==[
-$n = Get-PackageProvider -name NuGet
-if ($n.version.major -lt 2) {
-    if ($n.version.minor -lt 8) {
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
-    }
-}
-if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
-    Write-Host "Installing PowerForensics"
-    Install-Module -name PowerForensics -Scope CurrentUser -Force
-}
-function Get-ICMFT ([String]$outpath = "$env:temp\icmft.csv") {
-    Write-Host "Getting MFT and exporting to $outpath"
-    Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path $outpath -Force
-    Write-Host "MFT Got."
-}
-Get-ICMFT
-return
-]==]
+function install_powerforensic()
+    local debug = debug or true
+    script = [==[
+        # Download/Install PowerForensics
+        $n = Get-PackageProvider -name NuGet
+        if ($n.version.major -lt 2) {
+            if ($n.version.minor -lt 8) {
+                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
+            }
+        }
+        if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
+            Write-Host "Installing PowerForensics"
+            Install-Module -name PowerForensics -Scope CurrentUser -Force
+        }
+    ]==]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+    end
 
--- Note: Powershell EncodedCommand only accepts UTF-16LE Character Sets. Use an external program to make your base64 string like here https://www.base64encode.org/
-b64script = [[
-JABuACAAPQAgAEcAZQB0AC0AUABhAGMAawBhAGcAZQBQAHIAbwB2AGkAZABlAHIAIAAtAG4AYQBtAGUAIABOAHUARwBlAHQADQAKAGkAZgAgACgAJABuAC4AdgBlAHIAcwBpAG8AbgAuAG0AYQBqAG8AcgAgAC0AbAB0ACAAMgApACAAewANAAoAIAAgACAAIABpAGYAIAAoACQAbgAuAHYAZQByAHMAaQBvAG4ALgBtAGkAbgBvAHIAIAAtAGwAdAAgADgAKQAgAHsADQAKACAAIAAgACAAIAAgACAAIABJAG4AcwB0AGEAbABsAC0AUABhAGMAawBhAGcAZQBQAHIAbwB2AGkAZABlAHIAIAAtAE4AYQBtAGUAIABOAHUARwBlAHQAIAAtAE0AaQBuAGkAbQB1AG0AVgBlAHIAcwBpAG8AbgAgADIALgA4AC4ANQAuADIAMAAxACAALQBTAGMAbwBwAGUAIABDAHUAcgByAGUAbgB0AFUAcwBlAHIAIAAtAEYAbwByAGMAZQANAAoAIAAgACAAIAB9AA0ACgB9AA0ACgBpAGYAIAAoAC0ATgBPAFQAIAAoAEcAZQB0AC0ATQBvAGQAdQBsAGUAIAAtAEwAaQBzAHQAQQB2AGEAaQBsAGEAYgBsAGUAIAAtAE4AYQBtAGUAIABQAG8AdwBlAHIARgBvAHIAZQBuAHMAaQBjAHMAKQApACAAewANAAoAIAAgACAAIABXAHIAaQB0AGUALQBIAG8AcwB0ACAAIgBJAG4AcwB0AGEAbABsAGkAbgBnACAAUABvAHcAZQByAEYAbwByAGUAbgBzAGkAYwBzACIADQAKACAAIAAgACAASQBuAHMAdABhAGwAbAAtAE0AbwBkAHUAbABlACAALQBuAGEAbQBlACAAUABvAHcAZQByAEYAbwByAGUAbgBzAGkAYwBzACAALQBTAGMAbwBwAGUAIABDAHUAcgByAGUAbgB0AFUAcwBlAHIAIAAtAEYAbwByAGMAZQANAAoAfQANAAoAZgB1AG4AYwB0AGkAbwBuACAARwBlAHQALQBJAEMATQBGAFQAIAAoAFsAUwB0AHIAaQBuAGcAXQAkAG8AdQB0AHAAYQB0AGgAIAA9ACAAIgAkAGUAbgB2ADoAdABlAG0AcABcAGkAYwBtAGYAdAAuAGMAcwB2ACIAKQAgAHsADQAKACAAIAAgACAAVwByAGkAdABlAC0ASABvAHMAdAAgACIARwBlAHQAdABpAG4AZwAgAE0ARgBUACAAYQBuAGQAIABlAHgAcABvAHIAdABpAG4AZwAgAHQAbwAgACQAbwB1AHQAcABhAHQAaAAiAA0ACgAgACAAIAAgAEcAZQB0AC0ARgBvAHIAZQBuAHMAaQBjAEYAaQBsAGUAUgBlAGMAbwByAGQAIAB8ACAARQB4AHAAbwByAHQALQBDAHMAdgAgAC0ATgBvAFQAeQBwAGUASQBuAGYAbwByAG0AYQB0AGkAbwBuACAALQBQAGEAdABoACAAJABvAHUAdABwAGEAdABoACAALQBGAG8AcgBjAGUADQAKACAAIAAgACAAVwByAGkAdABlAC0ASABvAHMAdAAgACIATQBGAFQAIABHAG8AdAAuACIADQAKAH0ADQAKAEcAZQB0AC0ASQBDAE0ARgBUAA0ACgByAGUAdAB1AHIAbgA=
-]]
-
+    print("Initiatializing PowerForensics")
+    -- Create powershell process and feed script+commands to its stdin
+    logfile = os.getenv("temp").."\\ic\\iclog.log"
+    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - >> "..logfile, "w")
+    pipe:write(script) -- load up powershell functions and vars (Powerforensics)
+    r = pipe:close()
+    if debug then
+        hunt.debug("Powershell Returned: "..tostring(r))
+        local file,msg = io.open(logfile, "r")
+        if file then
+            hunt.debug("Powershell Output:")
+            hunt.debug(file:read("*all"))
+        end
+        file:close()
+        os.remove(logfile)
+    end
+end
 
 function file_exists(name)
     local f=io.open(name,"r")
@@ -60,54 +81,69 @@ end
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
 
-host_info = hunt.env.host_info()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then
-	-- Insert your Windows Code
-    hunt.debug("Operating on Windows")
-    temppath = os.getenv("TEMP").."\\icmft.csv"
-    outpath = os.getenv("TEMP").."\\icmft.zip"
 
-    print("Initiatializing Powershell")
-    r = os.execute("powershell.exe -nologo -noprofile -encodedcommand "..b64script)
-    hunt.verbose("Powershell Executed: "..tostring(r))
+    install_powerforensic()
+
+    temppath = os.getenv("TEMP").."\\ic\\icmft.csv"
+    outpath = os.getenv("TEMP").."\\ic\\icmft.zip"
+    logfile = os.getenv("TEMP").."\\ic\\iclog.log"
+
+    cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
+    hunt.verbose("Getting MFT with PowerForensics and exporting to "..temppath)
+    hunt.verbose("Executing Powershell command: "..cmd)
+    local pipe = io.popen('powershell.exe -noexit -nologo -nop -command "'..cmd..'" >> '..logfile, 'r')
+    hunt.debug(pipe:read('*a'))
+    r = pipe:close()
+    if debug then
+        hunt.debug("Powershell Returned: "..tostring(r))
+        local file,msg = io.open(logfile, "r")
+        if file then
+            hunt.debug("Powershell Output:")
+            hunt.debug(file:read("*all"))
+        end
+        file:close()
+        os.remove(logfile)
+    end
+
 else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
     return
 end
 
 -- Compress results
-if not file_exists(temppath) then
+file = hunt.fs.ls(temppath)
+if #file > 0 then
+    hunt.debug("Compressing (gzip) " .. temppath .. " to " .. outpath)
+    hunt.gzip(temppath, outpath, nil)
+else
     hunt.error("PowerForensics MFT Dump failed.")
     return
 end
-hash = hunt.hash.sha1(temppath)
-hunt.log("Compressing (gzip) " .. temppath .. " (sha1=".. hash .. ") to " .. outpath)
-hunt.gzip(temppath, outpath, nil)
-if file_exists(outpath) then
-    file = hunt.fs.ls(outpath)
-    print(file[1]:path())
+
+file = hunt.fs.ls(outpath)
+if #file > 0 then
+    hash = hunt.hash.sha1(temppath)
 else
     hunt.error("Compression failed.")
     return
 end
 
-----------------------------------------------------
--- SECTION 4: Results
-
 
 -- Recover evidence to S3
 recovery = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
-s3path = host_info:hostname() .. '/mft.zip'
-hunt.verbose("Uploading gzipped MFT(size = "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+s3path = s3path_preamble .. '/mft.zip'
+hunt.verbose("Uploading gzipped MFT (size= "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
 recovery:upload_file(outpath, s3path)
 hunt.log("MFT successfully uploaded to S3.")
 hunt.status.good()
 
 -- Cleanup
-print("Cleaning up "..temppath..": "..tostring(os.remove(temppath)))
-print("Cleaning up "..outpath..": "..tostring(os.remove(outpath)))
+os.remove(temppath)
+os.remove(outpath)
+os.remove(logfile)
 
 ----------------------------------------------------

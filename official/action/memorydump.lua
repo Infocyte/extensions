@@ -17,6 +17,15 @@
 
 ]]--
 
+date = os.date("%Y%m%d")
+instance = hunt.net.api()
+if instance == '' then
+    instancename = 'offline'
+elseif instance:match("http") then
+    -- get instancename
+    instancename = instance:match(".+//(.+).infocyte.com")
+end
+
 -- SECTION 1: Inputs (Variables)
 
 -- S3 Bucket (Destination)
@@ -26,6 +35,7 @@ s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 hash_image = false -- set to true if you need the sha1 of the memory image
+s3path_preamble = instancename..'/'..date..'/'..(hunt.env.host_info()):hostname()..'/memory' -- /filename will be appended
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -41,11 +51,9 @@ end
 -- SECTION 3: Actions
 
 host_info = hunt.env.host_info()
-osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 workingfolder = os.getenv("temp")
-date = os.date("%Y%m%d")
 mempath = workingfolder.."\\physmem"..date..".map"
 
 if hunt.env.is_windows() then
@@ -122,7 +130,7 @@ for _, path in pairs(hunt.fs.ls(os.getenv("temp"))) do
         else
             hash = 'Hashing Skipped'
         end
-        s3path = host_info:hostname().."/"..path:name()
+        s3path = s3path_preamble.."/"..path:name()
         link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
         hunt.log("Scheduling the Upload of Memory Dump "..s3path.." (sha1=".. hash .. ") to S3 at "..link)
         script = script .. 'recovery:upload_file([['..path:path()..']], "'..s3path..'")\n'
