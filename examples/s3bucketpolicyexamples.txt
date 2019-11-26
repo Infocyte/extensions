@@ -1,0 +1,52 @@
+{
+    "Version": "2012-10-17",
+    "Id": "InfocyteExtensionsBucketPolicy01",
+    "Statement": [
+        {
+            "Sid": "UploaderPolicy01",
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Principal": {
+                "AWS": "arn:aws:iam::485621232789:user/uploader"
+            },
+            "Resource": [
+                "arn:aws:s3:::infocyte-extensions/*"
+            ]
+        }
+    ]
+}
+
+------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+	"Id": "InfocyteExtensionsAnalystUserPolicy01",
+    "Statement": [
+        {
+            "Sid": "AnalystGroupPolicy01",
+            "Effect": "Allow",
+            "Action": [
+                "s3:List*",
+                "s3:Get*",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::infocyte-extensions",
+                "arn:aws:s3:::infocyte-extensions/*"
+            ]
+        }
+    ]
+}
+
+------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+	"Id": "InfocyteExtensionsadminUserPolicy01",
+    "Statement": [
+		{
+			"Sid": "AdminGroupPolicy01",
+			"Effect": "Allow",
+			"Action": "s3:*",
+			"Resource": "arn:aws:s3:::*"
+		}
+	]
+}
