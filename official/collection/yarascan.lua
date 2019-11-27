@@ -4752,6 +4752,8 @@ for i, path in pairs(additionalpaths) do
     end
 end
 
+matchedpaths = {}
+
 -- Scan all paths with Yara signatures
 for path, i in pairs(paths) do
     print('[i] Scanning ' .. path)
@@ -4761,6 +4763,7 @@ for path, i in pairs(paths) do
         end
         hunt.log('[BAD] Yara matched [' .. signature .. '] in file: ' .. path .. " <"..hash..">")
         bad = true
+		matchedpaths[path] = true
     end
     for _, signature in pairs(yara_suspicious:scan(path)) do
         if not hash then
@@ -4768,6 +4771,7 @@ for path, i in pairs(paths) do
         end
         hunt.log('[SUSPICIOUS] Yara matched [' .. signature .. '] in file: ' .. path .. " <"..hash..">")
         suspicious = true
+		matchedpaths[path] = true
     end
     for _, signature in pairs(yara_info:scan(path)) do
         if not hash then
@@ -4779,7 +4783,16 @@ for path, i in pairs(paths) do
     hash = nil
 end
 
+-- Add bad and suspicious files to Artifacts list for analysis
+for path,i in pairs(matchedpaths) do
+	-- Create a new artifact
+	artifact = hunt.survey.artifact()
+	artifact:exe(path)
+	artifact:type("Yara Match")
+	hunt.survey.add(artifact)
+end
 
+-- Set threat status
 if bad then
     hunt.status.bad()
 elseif suspicious then
