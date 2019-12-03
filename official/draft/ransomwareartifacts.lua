@@ -286,7 +286,7 @@ Function Get-RansomwareArtifacts {
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then
@@ -298,7 +298,7 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
 	pipe:write(initscript) -- load up powershell functions and vars
 	pipe:write('Get-RansomwareArtifacts -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
 	r = pipe:close()
-	-- hunt.verbose("Powershell Returned: "..tostring(r))
+	-- hunt.debug("Powershell Returned: "..tostring(r))
 
 	file = io.open(tempfile, "r") -- r read mode
 	if file then

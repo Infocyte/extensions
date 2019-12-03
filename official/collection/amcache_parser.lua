@@ -84,7 +84,7 @@ end
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
@@ -93,7 +93,7 @@ end
 -- Download Zimmerman's AmCacheParser
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 binpath = os.getenv("TEMP")..os.tmpname()..".exe"
-hunt.verbose("Downloading AmCacheParser.exe from ".. url)
+hunt.debug("Downloading AmCacheParser.exe from ".. url)
 client = hunt.web.new(url)
 if proxy then
     client:proxy(proxy)

@@ -1504,7 +1504,7 @@ end
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
 osversion = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 -- Load Yara rules
@@ -1611,6 +1611,6 @@ else
     hunt.status.good()
 end
 
-hunt.verbose("Result: Extension successfully executed on " .. host_info:hostname())
+hunt.debug("Result: Extension successfully executed on " .. host_info:hostname())
 
 ----------------------------------------------------

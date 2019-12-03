@@ -23,7 +23,7 @@ iptables_bkup = "/opt/iptables-bkup"
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if string.find(osversion, "windows xp") then

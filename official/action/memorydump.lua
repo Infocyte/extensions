@@ -55,7 +55,7 @@ end
 
 
 host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 workingfolder = os.getenv("temp")
 mempath = workingfolder.."\\physmem"..date..".map"
@@ -110,7 +110,7 @@ end
 
 
 -- Dump Memory to disk
-hunt.verbose("Memory dump on "..host_info:os().." host started to local path "..mempath)
+hunt.debug("Memory dump on "..host_info:os().." host started to local path "..mempath)
 -- os.execute("winpmem.exe --output - --format map | ")    --split 1000M
 result = os.execute(pmempath.." --output "..mempath.." --format map --split 1000M")
 if not result then

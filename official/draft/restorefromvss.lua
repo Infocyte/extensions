@@ -26,7 +26,7 @@ cmd /c mklink /d C:\vssbackup "$vssvolume"
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then

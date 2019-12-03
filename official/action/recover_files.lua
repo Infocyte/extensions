@@ -106,7 +106,7 @@ if not s3_region or not s3_bucket then
 end
 
 host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 os.execute("mkdir "..os.getenv("temp").."\\ic")
 
