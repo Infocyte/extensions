@@ -10,14 +10,6 @@
     Updated: 20191125 (Gerritz)
 ]]--
 
-date = os.date("%Y%m%d")
-instance = hunt.net.api()
-if instance == '' then
-    instancename = 'offline'
-elseif instance:match("http") then
-    -- get instancename
-    instancename = instance:match(".+//(.+).infocyte.com")
-end
 
 -- SECTION 1: Inputs (Variables)
 
@@ -26,7 +18,9 @@ s3_user = nil
 s3_pass = nil
 s3_region = 'us-east-2' -- 'us-east-2'
 s3_bucket = 'test-extensions' -- 'test-extensions'
-s3path_preamble = instancename..'/'..date..'/'..(hunt.env.host_info()):hostname()..'/evidence' -- /filename will be appended
+s3path_modifier = "evidence" -- /filename will be appended
+--S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+
 
 -- Proxy (optional)
 proxy = nil -- "myuser:password@10.11.12.88:8888"
@@ -98,10 +92,15 @@ function install_powerforensic()
         hunt.error("Powershell not found.")
     end
 
+    -- Make tempdir
+    logfolder = os.getenv("temp").."\\ic"
+    lf = hunt.fs.ls(logfolder)
+    if #lf == 0 then os.execute("mkdir "..logfolder) end
+
     print("Initiatializing PowerForensics")
     -- Create powershell process and feed script+commands to its stdin
     logfile = os.getenv("temp").."\\ic\\iclog.log"
-    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - >> "..logfile, "w")
+    local pipe = io.popen("powershell.exe -nologo -nop -command - >> "..logfile, "w")
     pipe:write(script) -- load up powershell functions and vars (Powerforensics)
     r = pipe:close()
     if debug then
@@ -127,7 +126,8 @@ if not s3_region or not s3_bucket then
 end
 
 host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+osversion = host_info:os()
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 -- Make tempdir
 os.execute("mkdir "..os.getenv("temp").."\\ic")
@@ -228,8 +228,8 @@ if hunt.env.is_windows() then
         logfile = os.getenv("TEMP").."\\ic\\iclog.log"
 
         cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
-        hunt.verbose("Getting MFT with PowerForensics and exporting to "..temppath)
-        hunt.verbose("Executing Powershell command: "..cmd)
+        hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
+        hunt.debug("Executing Powershell command: "..cmd)
         local pipe = io.popen('powershell.exe -noexit -nologo -nop -command "'..cmd..'" >> '..logfile, 'r')
         hunt.debug(pipe:read('*a'))
         r = pipe:close()
@@ -274,8 +274,15 @@ else
 end
 
 -- Upload Evidence
--- use s3 upload, without authentication (bucket must be writable without auth)
+instance = hunt.net.api()
+if instance == '' then
+    instancename = 'offline'
+elseif instance:match("infocyte") then
+    -- get instancename
+    instancename = instance:match("(.+).infocyte.com")
+end
 s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 
 for name,path in pairs(paths) do
     f = hunt.fs.ls(path)
@@ -286,7 +293,7 @@ for name,path in pairs(paths) do
         if not infile and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
-            hunt.verbose("File Locked. Executing: "..cmd)
+            hunt.debug("File Locked. Executing: "..cmd)
             local pipe = io.popen('powershell.exe -nologo -nop -command "'..cmd..'"', 'r')
             hunt.debug(pipe:read('*a'))
             pipe:close()
@@ -311,7 +318,7 @@ for name,path in pairs(paths) do
 
         os.remove(outpath)
     else
-        hunt.verbose(name.." failed. "..path.." does not exist.")
+        hunt.debug(name.." failed. "..path.." does not exist.")
     end
 end
 

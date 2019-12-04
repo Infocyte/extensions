@@ -1501,7 +1501,6 @@ end
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
 
--- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
 osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
@@ -1519,12 +1518,12 @@ yara_info:add_rule(info_rules)
 
 
 -- Add active processes
-paths = {}
+paths = {} -- add to keys of list to easily unique paths
 if scanactiveprocesses then
     procs = hunt.process.list()
     for i, proc in pairs(procs) do
         --hunt.debug("Adding processpath["..i.."]: " .. proc:path())
-        paths[proc:path()] = true
+        paths[proc:path()] = true -- add to keys of list to easily unique paths
     end
 end
 
@@ -1546,16 +1545,14 @@ end
 
 -- Add additional paths
 for i, path in pairs(additionalpaths) do
-    files = hunt.fs.ls(path)
-    if type(files) == "table" then
-        for _,path in pairs(files) do
-            if is_executable(path:name()) then
-                paths[path:name()] = true
-            end
-        end
-    else
-        if is_executable(path:name()) then
-            paths[files:name()] = true
+    opts = {
+        "files",
+        "size<1mb"
+    }
+    files = hunt.fs.ls(path, opts)
+    for _,path in pairs(files) do
+        if is_executable(path:path()) then
+            paths[path:path()] = true
         end
     end
 end
@@ -1563,8 +1560,10 @@ end
 matchedpaths = {}
 
 -- Scan all paths with Yara signatures
+n=1
 for path, i in pairs(paths) do
-    print('[i] Scanning ' .. path)
+    print('['..n..'] Scanning ' .. path)
+    n=n+1
     for _, signature in pairs(yara_bad:scan(path)) do
         if not hash then
             hash = hunt.hash.sha1(path)
