@@ -9,8 +9,8 @@
 ]]--
 
 -- SECTION 1: Inputs (Variables)
-regkey = nil
-force = false
+regkey = nil -- Optional Registration Key for installation
+force = false -- Force Reinstall with new config
 
 ----------------------------------------------------
 -- SECTION 2: Functions
