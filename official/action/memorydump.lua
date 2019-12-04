@@ -51,7 +51,7 @@ osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 workingfolder = os.getenv("temp")
-mempath = workingfolder.."\\physmem"..date..".map"
+mempath = workingfolder.."\\physmem.map"
 
 if hunt.env.is_windows() then
     -- Insert your Windows code
