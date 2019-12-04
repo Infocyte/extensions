@@ -68,9 +68,17 @@ function userfolders()
     return paths
 end
 
-function file_exists(name)
-    local f=io.open(name,"r")
-    if f~=nil then io.close(f) return true else return false end
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
 function install_powerforensic()
@@ -245,7 +253,7 @@ if hunt.env.is_windows() then
         end
 
         -- Compress results
-        if file_exists(temppath) then
+        if path_exists(temppath) then
             hash = hunt.hash.sha1(temppath)
             hunt.log("Compressing (gzip) " .. temppath .. " (sha1=".. hash .. ") to " .. outpath)
             hunt.gzip(temppath, outpath, nil)

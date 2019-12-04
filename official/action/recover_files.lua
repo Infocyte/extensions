@@ -47,9 +47,17 @@ end
 ----------------------------------------------------
 -- SECTION 2: Functions
 
-function file_exists(name)
-    local f=io.open(name,"r")
-    if f~=nil then io.close(f) return true else return false end
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
 function install_powerforensic()
@@ -153,7 +161,7 @@ for _, p in pairs(paths) do
         end
 
         -- Hash the file copy
-        if file_exists(outpath) then
+        if path_exists(outpath) then
             hash = hunt.hash.sha1(outpath)
             s3path = s3path_preamble.."/"..path:name().."-"..hash
             link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path

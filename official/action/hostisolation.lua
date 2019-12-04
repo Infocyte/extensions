@@ -125,6 +125,19 @@ function is_agent_installed()
 	end
 end
 
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
+end
+
 ----------------------------------------------------
 -- SECTION 3: Actions
 
@@ -145,8 +158,7 @@ if string.find(osversion, "windows xp") then
 
 elseif hunt.env.is_windows() then
 	-- Backup:
-    backup = hunt.fs.ls(backup_location)
-    if #backup > 0 then
+    if path_exists(backup_location) then
         hunt.log("System is already isolated.")
         return
     end
@@ -169,8 +181,7 @@ elseif  hunt.env.has_sh() then
 	-- Assume linux-type OS and iptables
 
 	--backup existing IP Tables Configuration
-    backup = hunt.fs.ls(iptables_bkup)
-    if #backup > 0 then
+    if path_exists(iptables_bkup) then
         hunt.log("System is already isolated.")
         return
     end

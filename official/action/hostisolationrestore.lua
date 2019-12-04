@@ -16,7 +16,18 @@ iptables_bkup = "/opt/iptables-bkup"
 ----------------------------------------------------
 -- SECTION 2: Functions
 
-
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
+end
 
 ----------------------------------------------------
 -- SECTION 3: Actions
@@ -30,8 +41,7 @@ if string.find(osversion, "windows xp") then
 	-- TO DO: XP's netsh firewall
 
 elseif hunt.env.is_windows() then
-	backup = hunt.fs.ls(backup_location)
-	if #backup > 0 then
+	if path_exists(backup_location) then
 		-- os.execute("netsh advfirewall firewall delete rule name='Infocyte Host Isolation (infocyte)'")
 		os.execute("netsh advfirewall import " .. backup_location)
 		os.remove(backup_location)
@@ -45,8 +55,7 @@ elseif hunt.env.is_macos() then
 
 elseif  hunt.env.has_sh() then
 	-- Assume linux-type OS and iptables
-	backup = hunt.fs.ls(iptables_bkup)
-	if #backup > 0 then
+	if path_exists(iptables_bkup) then
 		hunt.log("Restoring iptables from backup")
 		handle = assert(io.popen('iptables-restore < '..iptables_bkup, 'r'))
 		output = assert(handle:read('*a'))

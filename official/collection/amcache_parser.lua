@@ -1,12 +1,12 @@
 --[[
     Infocyte Extension
-    Name: Shimcache Parsing
+    Name: Amcache Parser
     Type: Collection
-    Description: Uses Zimmerman's Shimcache parser to parse shimcache and
+    Description: Uses Zimmerman's Amcache parser to parse Amcache and
         adds those entries to artifacts for analysis
     Author: Infocyte
     Created: 20191121
-    Updated: 20191121 (Gerritz)
+    Updated: 20191204 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)
@@ -41,9 +41,17 @@ function is_executable(path)
     end
 end
 
-function file_exists(name)
-   local f=io.open(name,"r")
-   if f~=nil then io.close(f) return true else return false end
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
 function parse_csv(path, sep)
@@ -99,7 +107,7 @@ if proxy then
     client:proxy(proxy)
 end
 client:download_file(binpath)
-if not file_exists(binpath) then hunt.error("Could not download "..url) end
+if not path_exists(binpath) then hunt.error("Could not download "..url) end
 
 -- Execute
 tmppath = os.getenv("TEMP").."\\icamcache"
@@ -122,7 +130,7 @@ os.execute('powershell.exe -nologo -nop -command "Start-Sleep 3"')
 os.execute('powershell.exe -nologo -nop -command "Remove-Item '..tmppath..' -force -Recurse"')
 
 -- Read csv into array
-if file_exists(outpath) then
+if path_exists(outpath) then
     csv = parse_csv(outpath)
 else
     hunt.error("AmcacheParser failed")
