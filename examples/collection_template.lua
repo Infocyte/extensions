@@ -38,7 +38,7 @@ if hunt.env.is_windows() then
   -- Create powershell process and feed script/commands to its stdin
   -- pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
   -- cmd = 'Get-Process | export-CSV C:\\processlist.csv'
-  -- scriptcmd = script .. '\ncmd'
+  -- scriptcmd = script .. '\n'..cmd
   -- pipe:write(scriptcmd) -- load up powershell functions and vars
   -- r = pipe:close()
 
@@ -48,7 +48,8 @@ elseif hunt.env.is_macos() then
 
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
-
+    
+    -- cmd = ''
     -- os.execute("python -u -c \"" .. cmd.. "\"" )
 
 else
@@ -56,17 +57,19 @@ else
 end
 
 
-result = "Test" -- filler [DELETE ME]
+-- example result string [DELETE ME]
+result = "test"
 
--- Set the returned threat status of the host based on the extension results
+-- Set the returned threat status of the host based on the string in "result"
 if string.find(result, "test") then
-  hunt.status.good()
+    -- if result == "test", set extension status to good
+    hunt.status.good()
 elseif string.find(result, "bad") then
-  hunt.status.bad()
+    hunt.status.bad()
 else
-  hunt.status.unknown()
+    hunt.status.unknown()
 end
 
 -- one or more log statements can be used to send resulting data or messages in
 -- text format to your Infocyte instance
-hunt.log("Result: Extension successfully executed on " .. hostname)
+hunt.log("Result: Extension successfully executed on " ..  host_info:hostname())

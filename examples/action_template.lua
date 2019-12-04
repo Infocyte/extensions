@@ -16,11 +16,6 @@
 -- SECTION 2: Functions
 
 
--- You can define shell scripts here if using any.
-initscript = [==[
-
-]==]
-
 
 ----------------------------------------------------
 -- SECTION 3: Actions
@@ -36,9 +31,12 @@ if hunt.env.is_windows() then
     -- Insert your Windows Code
 
     --[[
+    -- You can define shell scripts here if using any.
+    script = [==[
+        Get-Process
+    ]==]
     local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(initscript) -- load up powershell functions and vars
-    pipe:write("Get-Process")
+    pipe:write(script) -- pipe in powershell script
     r = pipe:close()
     ]]--
 
@@ -56,4 +54,4 @@ end
 
 -- one or more log statements can be used to send resulting data or messages in
 -- text format to your Infocyte instance
-hunt.log("Result: Extension successfully executed on " .. hostname)
+hunt.log("Result: Extension successfully executed on " .. host_info:hostname())
