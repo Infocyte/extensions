@@ -45,8 +45,7 @@ function install_powerforensic()
 
     -- Make tempdir
     logfolder = os.getenv("temp").."\\ic"
-    lf = hunt.fs.ls(logfolder)
-    if #lf == 0 then os.execute("mkdir "..logfolder) end
+    os.execute("mkdir "..logfolder)
 
     -- Create powershell process and feed script+commands to its stdin
     print("Initiatializing PowerForensics")
@@ -55,11 +54,9 @@ function install_powerforensic()
     pipe:write(script) -- load up powershell functions and vars (Powerforensics)
     r = pipe:close()
     if debug then
-        hunt.debug("Powershell Returned: "..tostring(r))
         local file,msg = io.open(logfile, "r")
         if file then
-            hunt.debug("Powershell Output:")
-            hunt.debug(file:read("*all"))
+            hunt.debug("Powershell Output (Success="..tostring(r).."):\n"..file:read("*all"))
         end
         file:close()
         os.remove(logfile)
@@ -108,8 +105,7 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
     log = pipe:read('*a')
     r = pipe:close()
     if debug then
-        hunt.debug("Powershell ("..tostring(r)..") Output:")
-        hunt.debug(log)
+        hunt.debug("Powershell (success="..tostring(r)..") Output:\n"..log)
     end
 
 else

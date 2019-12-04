@@ -98,29 +98,28 @@ function install_powerforensic()
     ]==]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
+        return nil
     end
 
     -- Make tempdir
     logfolder = os.getenv("temp").."\\ic"
-    lf = hunt.fs.ls(logfolder)
-    if #lf == 0 then os.execute("mkdir "..logfolder) end
+    os.execute("mkdir "..logfolder)
 
-    print("Initiatializing PowerForensics")
     -- Create powershell process and feed script+commands to its stdin
-    logfile = os.getenv("temp").."\\ic\\iclog.log"
-    local pipe = io.popen("powershell.exe -nologo -nop -command - >> "..logfile, "w")
+    print("Initiatializing PowerForensics")
+    logfile = logfolder.."\\pslog.log"
+    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - > "..logfile, "w")
     pipe:write(script) -- load up powershell functions and vars (Powerforensics)
     r = pipe:close()
     if debug then
-        hunt.debug("Powershell Returned: "..tostring(r))
         local file,msg = io.open(logfile, "r")
         if file then
-            hunt.debug("Powershell Output:")
-            hunt.debug(file:read("*all"))
+            hunt.debug("Powershell Output (Success="..tostring(r).."):\n"..file:read("*all"))
         end
         file:close()
         os.remove(logfile)
     end
+    return true
 end
 
 
@@ -233,20 +232,18 @@ if hunt.env.is_windows() then
     if MFT and hunt.env.has_powershell()  then
         temppath = os.getenv("TEMP").."\\ic\\icmft.csv"
         outpath = os.getenv("TEMP").."\\ic\\icmft.zip"
-        logfile = os.getenv("TEMP").."\\ic\\iclog.log"
+        logfile = os.getenv("TEMP").."\\ic\\pslog.log"
 
         cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
         hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
         hunt.debug("Executing Powershell command: "..cmd)
         local pipe = io.popen('powershell.exe -noexit -nologo -nop -command "'..cmd..'" >> '..logfile, 'r')
-        hunt.debug(pipe:read('*a'))
+        print(pipe:read('*a'))
         r = pipe:close()
         if debug then
-            hunt.debug("Powershell Returned: "..tostring(r))
             local file,msg = io.open(logfile, "r")
             if file then
-                hunt.debug("Powershell Output:")
-                hunt.debug(file:read("*all"))
+                hunt.debug("Powershell Output (success="..tostring(r).."):\n"..file:read("*all"))
             end
             file:close()
             os.remove(logfile)
