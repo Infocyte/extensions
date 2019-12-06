@@ -16,7 +16,7 @@ s3_user = nil
 s3_pass = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
-s3path_modifier = "evidence" -- /filename will be appended
+s3path_modifier = "evidence"
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
 

@@ -1,7 +1,7 @@
 --[[
 	Infocyte Extension
 	Name: Memory Extraction
-	Type: Collection
+	Type: Action
 	Description: Uses winpmem/linpmem to dump full physical memory and
      stream it to an S3 bucket, ftp server, or smb share. If output path not
      specified, will dump to local temp folder.

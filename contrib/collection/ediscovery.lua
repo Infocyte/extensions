@@ -12,15 +12,6 @@
 	Updated: 20190919 (Gerritz)
 ]]--
 
-date = os.date("%Y%m%d")
-instance = hunt.net.api()
-if instance == '' then
-    instancename = 'offline'
-elseif instance:match("infocyte") then
-    -- get instancename
-    instancename = instance:match("(.+).infocyte.com")
-end
-
 
 -- SECTION 1: Inputs (Variables)
 searchpath = [[C:\Users]]
@@ -50,7 +41,9 @@ s3_user = nil
 s3_pass = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
-s3path_preamble = instancename..'/'..date..'/'..(hunt.env.host_info()):hostname()..'/ediscovery' -- /filename will be appended
+s3path_modifier = 'ediscovery'
+--S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+
 
 --Proxy
 proxy = nil -- "myuser:password@10.11.12.88:8888"
@@ -348,6 +341,14 @@ end
 
 
 if upload_to_s3 then
+    instance = hunt.net.api()
+    if instance == '' then
+        instancename = 'offline'
+    elseif instance:match("infocyte") then
+        -- get instancename
+        instancename = instance:match("(.+).infocyte.com")
+    end
+    s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
     s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
     hunt.log("S3 Upload to "..s3_region.." bucket: "..s3_bucket)
 else
