@@ -274,19 +274,23 @@ These functions will return empty values when run on platforms other than Window
 ```lua
 -- list values in a specific HKLM runkey key
 key = '\\Registry\\Machine\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\iTunesHelper'
-for name,value in pairs(hunt.registry.list_values(key)) do
-    print(name .. ": " .. value)
+for propertyname,value in pairs(hunt.registry.list_values(key)) do
+    print(propertyname .. ": " .. value)
 end
 ```
 
 ```lua
 -- Iterate through each user profile's and list their run keys
--- (includes HKEY_CURRENT_USER and other user profiles)
+-- (includes HKEY_CURRENT_USER and all other HK_USER profiles)
 user_sids = hunt.registry.list_keys("\\Registry\\User")
 for _,user_sid in pairs(user_sids) do
-    key = '\\Registry\\User\\' .. user_sid .. '\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
-    for _,name in pairs(hunt.registry.list_keys(key)) do
-        print("subkey: " .. name)
+    key = '\\Registry\\User\\' ..user_sid..'\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
+    hunt.debug("Querying key: "..key)
+    values = hunt.registry.list_values(key)
+    if values then
+        for property_name,value in pairs(values) do
+            hunt.log("Property name: "..property_name..", Value: " .. value)
+        end
     end
 end
 ```
@@ -294,7 +298,7 @@ end
 | Function | Description |
 | --- | --- |
 | **hunt.registry.list_keys(path: string)** | Returns a list of registry keys located at `path`. This will be empty on failure. |
-| **hunt.registry.list_values(path: string)** | Returns a table of registry name/values pairs located at `path`. This will be empty on failure. All values are coerced into strings. |
+| **hunt.registry.list_values(path: string)** | Returns a list of registry property name/value pairs located at `path`. This will be empty on failure. All values are coerced into strings. |
 
 #### Hashing
 

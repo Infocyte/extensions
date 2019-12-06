@@ -106,10 +106,10 @@ hunt.log("Reverse Lookup: " .. table.tostring(hunt.net.nslookup("8.8.8.8")))
 
 
 -- Test Web Client
--- client = hunt.web.new("https://infocyte-support.s3.us-east-2.amazonaws.com/developer/infocytedevkit.exe")
--- client:disable_tls_verification()
--- client:download_file("C:/windows/temp/devkit2.exe")
--- data = client:download_data()
+client = hunt.web.new("https://infocyte-support.s3.us-east-2.amazonaws.com/developer/infocytedevkit.exe")
+client:disable_tls_verification()
+client:download_file("C:/windows/temp/devkit2.exe")
+data = client:download_data()
 
 
 -- Test Process functions
@@ -223,9 +223,6 @@ a = hunt.survey.artifact()
 a:exe('C:\\windows\\system32\\notepad.exe')
 a:params("--listen 1337")
 a:type("Log File Entry")
-a:md5('afaf2cdf9981342c494b28630608f74a')
-a:sha1('1a4e2c3bbc095cb7d9b85cabe2aea2c9a769b480')
-a:sha256('2190f181fe3c821e2d3fa8a09832fe56f36a25b8825af61c2eea7ae4fc2afa55')
 hunt.survey.add(a)
 
 -- Create a new artifact
@@ -237,5 +234,5 @@ a:executed("2019-05-01 11:23:00")
 a:modified("2018-01-01 01:00:00")
 --a:md5('')
 a:sha1('1a4e2c3bbc095cb7d9b85cabe2aea2c9a769b480')
---a:sha256('')
+--a:sha256('2190f181fe3c821e2d3fa8a09832fe56f36a25b8825af61c2eea7ae4fc2afa55')
 hunt.survey.add(a)

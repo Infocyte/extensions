@@ -6,20 +6,17 @@
      additional data from a host.
     Author: Infocyte
     Created: 20190919
-    Updated: 20190919 (Gerritz)
+    Updated: 20191204 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)
+
 
 
 ----------------------------------------------------
 -- SECTION 2: Functions
 
 
--- You can define shell scripts here if using any.
-script = [==[
-
-]==]
 
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
@@ -33,14 +30,17 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
-  -- Insert your Windows code
+    -- Insert your Windows code
 
-  -- Create powershell process and feed script/commands to its stdin
-  -- pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-  -- cmd = 'Get-Process | export-CSV C:\\processlist.csv'
-  -- scriptcmd = script .. '\n'..cmd
-  -- pipe:write(scriptcmd) -- load up powershell functions and vars
-  -- r = pipe:close()
+    --[[
+    -- You can define shell scripts here if using any.
+    script = [==[
+        Get-Process
+    ]==]
+    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script) -- load up powershell functions and vars
+    r = pipe:close()
+    ]]--
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
@@ -48,7 +48,7 @@ elseif hunt.env.is_macos() then
 
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
-    
+
     -- cmd = ''
     -- os.execute("python -u -c \"" .. cmd.. "\"" )
 
@@ -57,7 +57,7 @@ else
 end
 
 
--- example result string [DELETE ME]
+-- example result string [DELETE]
 result = "test"
 
 -- Set the returned threat status of the host based on the string in "result"
