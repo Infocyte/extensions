@@ -48,8 +48,8 @@ You will typically run extensions using the Infocyte Survey but for experimentin
 ## Running Your Extension
 Your extension will be tested and run with the Infocyte Survey (e.g. `s1.exe`). You can download the latest survey from your Infocyte instance's Admin:Downloads panel here: `https://<instance_name>.infocyte.com/admin/download`. Additionally, installing an Agent on your development host will make the latest s1.exe available here: `C:\Program Files\Infocyte\Agent\s1.exe`
 
-To run your extension, open a shell window in Administrator mode and run:
-> s1.exe --no-delete --no-compress --verbose --only-extensions --extensions <path_to_extension>
+To run your extension, open a shell window in Administrator mode and run:  
+> s1.exe --no-delete --only-extensions --extensions <path_to_extension>
 
 Standard output will go to the screen (including any print statements used for debugging). You can find the survey results payload with your log statements in the same folder as s1.exe named `HostSurvey.json`
 
@@ -57,5 +57,5 @@ Standard output will go to the screen (including any print statements used for d
 On Windows, you can install the [Infocyte HUNT Powershell Module](https://www.powershellgallery.com/packages/InfocyteHUNTAPI) and run `Invoke-ICExtension`
 Ensure the latest copy of `s1.exe` is in `C:\Program Files\Infocyte\dev\` in order for this to run.
 
-PS> `Install-Module -Name InfocyteHUNTAPI`
-PS> `Invoke-ICExtension -Path <pathtoextension>`
+> PS> `Install-Module -Name InfocyteHUNTAPI`  
+> PS> `Invoke-ICExtension -Path <pathtoextension>`
