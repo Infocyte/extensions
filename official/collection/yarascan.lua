@@ -18,8 +18,7 @@ scanappdata = false
 if hunt.env.is_windows() then
     additionalpaths = {
         'c:\\windows\\system32\\calc.exe',
-        'c:\\windows\\system32\\notepad.exe',
-        "c:\\windows\\"
+        'c:\\windows\\temp'
     }
 
 elseif hunt.env.is_macos() then
