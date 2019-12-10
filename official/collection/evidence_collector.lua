@@ -136,12 +136,13 @@ host_info = hunt.env.host_info()
 osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
--- Make tempdir
-os.execute("mkdir "..os.getenv("temp").."\\ic")
-
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows code
+
+    -- Make tempdir
+    os.execute("mkdir "..os.getenv("temp").."\\ic")
+
     if (use_powerforensics or MFT) and hunt.env.has_powershell() then
         install_powerforensic()
     end
@@ -276,6 +277,7 @@ if hunt.env.is_windows() then
 
 else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    return
 end
 
 -- Upload Evidence
@@ -313,7 +315,11 @@ for name,path in pairs(paths) do
         end
 
         -- hash file
-        hash = hunt.hash.sha1(outpath)
+        hash, err = hunt.hash.sha1(outpath)
+        if not hash then
+            hunt.debug("Error hashing file: "..outpath..", error: "..err)
+            goto continue
+        end
 
         -- Upload file to S3
         s3path = s3path_preamble.."/"..name.."_"..f[1]:name()
@@ -322,6 +328,7 @@ for name,path in pairs(paths) do
         hunt.log("Uploaded "..name.." - "..path.." (size= "..string.format("%.2f", (f[1]:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
 
         os.remove(outpath)
+        ::continue::
     else
         hunt.debug(name.." failed. "..path.." does not exist.")
     end
