@@ -11,65 +11,10 @@
 ]]--
 
 -- SECTION 1: Inputs (Variables)
+-- Include any IPs you wish whitelisted within the whitelisted_ips list
+whitelisted_ips = { }
 
--- Others to whitelist (for demo purposes, this is Zoom's IP list -- can delete them all in production)
--- max = 1000
-whitelisted_ips = {
-    "3.80.20.128/25",
-    "3.104.34.128/25",
-    "3.120.121.0/25",
-    "3.208.72.0/25",
-    "3.211.241.0/25",
-    "4.34.125.128/25",
-    "4.35.64.128/25",
-    "8.5.128.0/23",
-    "13.52.6.128/25",
-    "13.52.146.0/25",
-    "13.114.106.166/32",
-    "18.205.93.128/25",
-    "50.239.202.0/23",
-    "50.239.204.0/24",
-    "52.81.151.128/25",
-    "52.61.100.128/25",
-    "52.197.97.21/32",
-    "52.202.62.192/26",
-    "52.215.168.0/25",
-    "64.69.74.0/24",
-    "64.125.62.0/24",
-    "64.211.144.0/24",
-    "65.39.152.0/24",
-    "69.174.57.0/24",
-    "69.174.108.0/22",
-    "99.79.20.0/25",
-    "103.122.166.0/23",
-    "109.94.160.0/24",
-    "115.110.154.192/26",
-    "115.114.56.192/26",
-    "115.114.115.0/26",
-    "115.114.131.0/26",
-    "120.29.148.0/24",
-    "160.1.56.128/25",
-    "161.199.136.0/22",
-    "162.12.232.0/22",
-    "162.255.36.0/22",
-    "165.254.88.0/23",
-    "192.204.12.0/22",
-    "202.177.207.128/27",
-    "202.177.213.96/27",
-    "204.80.104.0/21",
-    "204.141.28.0/22",
-    "207.226.132.0/24",
-    "209.9.211.0/24",
-    "209.9.215.0/24",
-    "210.57.55.0/24",
-    "213.19.144.0/24",
-    "213.19.153.0/24",
-    "213.244.140.0/24",
-    "221.122.88.64/27",
-    "221.122.88.128/25",
-    "221.122.89.128/25"
-}
-
+-- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {"3.221.153.58",
   "3.227.41.20",
   "3.229.46.33",
@@ -196,10 +141,14 @@ elseif  hunt.env.has_sh() then
 	  os.execute("iptables -I INPUT -s " .. ip .. " -j ACCEPT")
 	end
 
-	hunt.log("Allowing Zoom IPs: " .. list_to_string(zoom_ips))
-	for _, zip in pairs(zoom_ips) do
-	  os.execute("iptables -I INPUT -s " .. zip .. " -j ACCEPT")
-	end
+  if next(whitelisted_ips) == nil then
+    hunt.log("User Defined IPs are empty")
+  else
+	 hunt.log("Allowing User Defined IPs: " .. list_to_string(whitelisted_ips))
+	  for _, zip in pairs(whitelisted_ips) do
+	     os.execute("iptables -I INPUT -s " .. zip .. " -j ACCEPT")
+    end
+  end
 
 	hunt.log("Setting iptables to drop all other traffic")
 	os.execute("iptables -P INPUT DROP")
