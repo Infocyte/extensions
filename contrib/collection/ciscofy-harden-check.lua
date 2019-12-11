@@ -11,8 +11,9 @@
   system is required.
 
   Note, the extension may take up to 2 minutes to complete
+  This only runs on Linux operating systems
 --]]
-
+if not hunt.env.is_linux() then return end
 hunt.log("Running Hardening Check")
 os.execute("git clone https://github.com/CISOfy/lynis")
 os.execute("cd lynis && ./lynis audit system")
