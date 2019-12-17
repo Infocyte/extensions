@@ -6,40 +6,41 @@
      additional data from a host.
     Author: Infocyte
     Created: 20190919
-    Updated: 20190919 (Gerritz)
+    Updated: 20191204 (Gerritz)
 ]]--
 
-----------------------------------------------------
 -- SECTION 1: Inputs (Variables)
-----------------------------------------------------
+
 
 
 ----------------------------------------------------
 -- SECTION 2: Functions
-----------------------------------------------------
 
 
--- You can define shell scripts here if using any.
-initscript = [==[
-
-]==]
 
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
-----------------------------------------------------
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-os = host_info:os()
+osversion = host_info:os()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
-  -- Insert your Windows code
+    -- Insert your Windows code
 
-  result = "Test" -- filler [DELETE ME]
+    --[[
+    -- You can define shell scripts here if using any.
+    script = [==[
+        Get-Process
+    ]==]
+    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script) -- load up powershell functions and vars
+    r = pipe:close()
+    ]]--
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
@@ -48,32 +49,27 @@ elseif hunt.env.is_macos() then
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
 
+    -- cmd = ''
+    -- os.execute("python -u -c \"" .. cmd.. "\"" )
+
 else
-    hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
-----------------------------------------------------
--- SECTION 4: Results
---  Threat status is a set of static results used to aggregate and stack
---  results:
---      Good, Low Risk, Unknown, Suspicious, or Bad
---    Include any host-side processing and analysis necessary to report the
---   appropriate status.
---
---  In addition, one or more log statements can be used to send data in text
---   format.
-----------------------------------------------------
 
+-- example result string [DELETE]
+result = "test"
 
--- Set the returned threat status of the host based on the extension results
+-- Set the returned threat status of the host based on the string in "result"
 if string.find(result, "test") then
-  hunt.status.good()
+    -- if result == "test", set extension status to good
+    hunt.status.good()
 elseif string.find(result, "bad") then
-  hunt.status.bad()
+    hunt.status.bad()
 else
-  hunt.status.unknown()
+    hunt.status.unknown()
 end
 
 -- one or more log statements can be used to send resulting data or messages in
 -- text format to your Infocyte instance
-hunt.log("Result: Extension successfully executed on " .. hostname)
+hunt.log("Result: Extension successfully executed on " ..  host_info:hostname())

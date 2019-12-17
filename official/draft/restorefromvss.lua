@@ -8,15 +8,12 @@
     Updated: 20191008 (Gerritz)
 ]]--
 
-----------------------------------------------------
 -- SECTION 1: Inputs (Variables)
-----------------------------------------------------
 OS = hunt.env.os() -- determine host OS
 
 
 ----------------------------------------------------
 -- SECTION 2: Functions
-----------------------------------------------------
 
 psscript = [==[
 $vssvolume = (Get-WmiObject Win32_ShadowCopy | Sort-Object InstallDate -Descending)[0].DeviceObject + "\"
@@ -26,9 +23,13 @@ cmd /c mklink /d C:\vssbackup "$vssvolume"
 
 ----------------------------------------------------
 -- SECTION 3: Actions
-----------------------------------------------------
 
-if string.find(OS, "windows") and hunt.env.has_powershell() then
+host_info = hunt.env.host_info()
+osversion = host_info:os()
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
+
+if hunt.env.is_windows() and hunt.env.has_powershell() then
   -- Insert your Windows Code
 
   -- Create powershell process and feed script/commands to its stdin
@@ -38,10 +39,5 @@ if string.find(OS, "windows") and hunt.env.has_powershell() then
   print("Powershell Returned: "..tostring(r))
   hunt.log(output) -- send to Infocyte
 end
-
-
-----------------------------------------------------
--- SECTION 4: Output
-----------------------------------------------------
 
 hunt.log([[ Volume Shadow Copy has been mounted to C:\vssbackup\ ]])

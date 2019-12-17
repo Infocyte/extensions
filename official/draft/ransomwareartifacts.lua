@@ -1,26 +1,69 @@
 --[[
 	Infocyte Extension
-	Name: E-Discovery
+	Name: Ransomware Artifacts
 	Type: Collection
 	Description: Searches the hard drive for office documents with specified
 		keywords. Returns a csv with a list of files.
+        https://docs.google.com/spreadsheets/u/1/d/1TWS238xacAto-fLKh1n5uTsdijWdCEsGIM0Y0Hvmc5g/pubhtml
 	Author: Infocyte
-	Created: 20190919
-	Updated: 20190919 (Gerritz)
+	Created: 20191024
+	Updated: 20191024 (Gerritz)
 ]]--
 
-----------------------------------------------------
 -- SECTION 1: Inputs (Variables)
-----------------------------------------------------
-strings = {'Gerritz', 'test'}
-searchpath = [[C:\Users]]
+
+-- Will recurse these paths
+paths = [==[
+C:\Users
+]==]
+
+--[[
+Check file magic number and entropy as second step verification
+.{5,} = Any 5 digit or longer extension
+
+]]--
+suspicious_file_extensions = [==[
+.{5,}|[^a-zA-Z\d\s:]
+]==]
+
+--[[
+[^a-zA-Z\d\s:] = non-alphanumeric characters
+]]--
+knownbad_file_extensions = [==[
+[^a-zA-Z\d\s:]|enc|R5A|R4A|clf|lock|scl|code|ctbl|ha3|cry|btc|kkk|fun|gws|oor|RDM|RRK|net|cry|enc|vvv|ecc|exx|ezz|abc|aaa|zzz|xyz|biz|xxx|ttt|enc|pzdc|good|0x0|CTBL|CTB2
+]==]
+
+filename_regex = [==[
+
+]==]
 
 
 
 ----------------------------------------------------
 -- SECTION 2: Functions
-----------------------------------------------------
 
+function lines_to_array(text)
+    local strarray = {}
+    for line in text:gmatch'([^\n]*)([\n]*)' do
+        if line ~= nil and line ~= '' then
+            table.insert(strarray, line)
+        end
+    end
+    return strarray
+end
+
+function make_psstringarray(list)
+    -- Converts a lua list (table) into a stringified powershell array
+    psarray = "@("
+    for _,value in ipairs(list) do
+        print("Adding search param: " .. tostring(value))
+        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
+    end
+    psarray = psarray:sub(1, -2) .. ")"
+    return psarray
+end
+
+-- #region initscript
 initscript = [==[
 #Requires -Version 3.0
 function Get-FileSignature {
@@ -119,82 +162,131 @@ function Get-FileSignature {
     }
 }
 
-Function Get-StringsMatch {
-	param (
-		[string]$path = $env:systemroot,
-		[string[]]$Strings,
-        [string]$Temppath,
-		[int]$charactersAround = 30
-	)
-    $results = @()
-	try {
-		$application = New-Object -comobject word.application
-	} catch {
-		throw "Error opening com object"
-	}
-    $application.visible = $False
-    $files = Get-Childitem $path -recurse -filter *.doc |
-            Get-FileSignature | where { $_.HexSignature -match "504B|D0CF" }
-    # Loop through all *.doc files in the $path directory
-    Foreach ($file In $files) {
-		try {
-			$document = $application.documents.open($file.FullName,$false,$true)
-		} catch {
-			Write-Warning "Could not open $($file.FullName)"
-            $properties = @{
-               File = $file.FullName
-               Filesize = $Null
-               Match = "ERROR: Could not open file"
-               TextAround = $Null
-            }
-            $results += New-Object -TypeName PsCustomObject -Property $properties
-			continue
-		}
-        $range = $document.content
-		$filesize = [math]::Round((Get-Item $file.FullName).length/1kb)
+function Get-Entropy {
+<#
+.SYNOPSIS
 
-		foreach ($String in $Strings) {
-			If($range.Text -match ".{0,$($charactersAround)}$($String).{0,$($charactersAround)}"){
-				 $properties = @{
-					File = $file.FullName
-					Filesize = $filesize
-					Match = $String
-					TextAround = $Matches[0]
-				 }
-				 $results += New-Object -TypeName PsCustomObject -Property $properties
-			}
-		}
-        $document.close()
+    Calculates the entropy of a file or byte array.
+
+    PowerSploit Function: Get-Entropy
+    Author: Matthew Graeber (@mattifestation)
+    License: BSD 3-Clause
+    Required Dependencies: None
+    Optional Dependencies: None
+
+.PARAMETER ByteArray
+
+    Specifies the byte array containing the data from which entropy will be calculated.
+
+.PARAMETER FilePath
+
+    Specifies the path to the input file from which entropy will be calculated.
+
+.EXAMPLE
+
+    C:\PS>Get-Entropy -FilePath C:\Windows\System32\kernel32.dll
+
+.EXAMPLE
+
+    C:\PS>ls C:\Windows\System32\*.dll | % { Get-Entropy -FilePath $_ }
+
+.EXAMPLE
+
+    C:\PS>$RandArray = New-Object Byte[](10000)
+    C:\PS>foreach ($Offset in 0..9999) { $RandArray[$Offset] = [Byte] (Get-Random -Min 0 -Max 256) }
+    C:\PS>$RandArray | Get-Entropy
+
+    Description
+    -----------
+    Calculates the entropy of a large array containing random bytes.
+
+.EXAMPLE
+
+    C:\PS> 0..255 | Get-Entropy
+
+    Description
+    -----------
+    Calculates the entropy of 0-255. This should equal exactly 8.
+
+.OUTPUTS
+
+    System.Double
+
+    Get-Entropy outputs a double representing the entropy of the byte array.
+
+.LINK
+
+    http://www.exploit-monday.com
+#>
+
+    [CmdletBinding()] Param (
+        [Parameter(Mandatory = $True, Position = 0, ValueFromPipeline = $True, ParameterSetName = 'Bytes')]
+        [ValidateNotNullOrEmpty()]
+        [Byte[]]
+        $ByteArray,
+
+        [Parameter(Mandatory = $True, Position = 0, ParameterSetName = 'File')]
+        [ValidateNotNullOrEmpty()]
+        [IO.FileInfo]
+        $FilePath
+    )
+
+    BEGIN
+    {
+        $FrequencyTable = @{}
+        $ByteArrayLength = 0
     }
 
-    $application.quit()
-	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($application)
-    If($results){
-        $results | Export-Csv $Temppath -NoTypeInformation -Encoding ASCII
-        # return $results
+    PROCESS
+    {
+        if ($PsCmdlet.ParameterSetName -eq 'File')
+        {
+            $ByteArray = [IO.File]::ReadAllBytes($FilePath.FullName)
+        }
+
+        foreach ($Byte in $ByteArray)
+        {
+            $FrequencyTable[$Byte]++
+            $ByteArrayLength++
+        }
+    }
+
+    END
+    {
+        $Entropy = 0.0
+
+        foreach ($Byte in 0..255)
+        {
+            $ByteProbability = ([Double] $FrequencyTable[[Byte]$Byte]) / $ByteArrayLength
+            if ($ByteProbability -gt 0)
+            {
+                $Entropy += -$ByteProbability * [Math]::Log($ByteProbability, 2)
+            }
+        }
+
+        Write-Output $Entropy
     }
 }
 
-]==]
+Function Get-RansomwareArtifacts {
+	param (
+		[string]$path = $env:systemroot,
+		[string[]]$Strings,
+        [string]$Temppath
+	)
+    $results = @()
 
-function make_psstringarray(list)
-    -- Converts a lua list (table) into a string powershell list
-    psarray = "@("
-    for _,value in ipairs(list) do
-        print("Adding search param: " .. tostring(value))
-        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
-    end
-    psarray = psarray:sub(1, -2) .. ")"
-    return psarray
-end
+}
+
+]==]
+-- #endregion
 
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
-----------------------------------------------------
 
 host_info = hunt.env.host_info()
-os = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+osversion = host_info:os()
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then
@@ -204,16 +296,16 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
 	-- Create powershell process and feed script/commands to its stdin
 	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
 	pipe:write(initscript) -- load up powershell functions and vars
-	pipe:write('Get-StringsMatch -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
+	pipe:write('Get-RansomwareArtifacts -Temppath ' .. tempfile .. ' -Path ' .. searchpath .. ' -Strings ' .. make_psstringarray(strings))
 	r = pipe:close()
-	-- hunt.verbose("Powershell Returned: "..tostring(r))
+	-- hunt.debug("Powershell Returned: "..tostring(r))
 
 	file = io.open(tempfile, "r") -- r read mode
 	if file then
         output = file:read("*all") -- *a or *all reads the whole file
         if output then
             hunt.log(output) -- send to Infocyte
-            -- os.remove(temp)
+            os.remove(temp)
         end
         file:close()
     end
@@ -229,14 +321,11 @@ else
 end
 
 
-----------------------------------------------------
--- SECTION 4: Results
---	Set threat status to aggregate and stack results in the Infocyte app:
---		Good, Low Risk, Unknown, Suspicious, or Bad
-----------------------------------------------------
-
 if output then
-    hunt.suspicious()
+    hunt.status.bad()
 else
-    hunt.good()
+    hunt.status.good()
 end
+
+
+----------------------------------------------------

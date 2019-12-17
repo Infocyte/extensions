@@ -8,15 +8,11 @@
     Updated: 20191008 (Gerritz)
 ]]--
 
-----------------------------------------------------
 -- SECTION 1: Inputs (Variables)
-----------------------------------------------------
-OS = hunt.env.os() -- determine host OS
 
 
 ----------------------------------------------------
 -- SECTION 2: Functions
-----------------------------------------------------
 
 psscript = [==[
 # https://serverfault.com/questions/259381/how-to-enable-volume-shadow-copy-using-powershell
@@ -99,22 +95,17 @@ $tskFolder.RegisterTaskDefinition("ShadowCopyVolume$volumeID", $tskDef, 6, "SYST
 
 ----------------------------------------------------
 -- SECTION 3: Actions
-----------------------------------------------------
 
-if string.find(OS, "windows") and hunt.env.has_powershell() then
-  -- Insert your Windows Code
 
-  -- Create powershell process and feed script/commands to its stdin
-  local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-  pipe:write(psscript) -- load up powershell functions and vars
-  pipe:write("Enable-ShadowCopies -Drive C")
-  r = pipe:close()
-  print("Powershell Returned: "..tostring(r))
-  hunt.log(output) -- send to Infocyte
+if hunt.env.is_windows() and hunt.env.has_powershell() then
+    -- Insert your Windows Code
 
+    -- Create powershell process and feed script/commands to its stdin
+    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(psscript) -- load up powershell functions and vars
+    pipe:write("Enable-ShadowCopies -Drive C")
+    r = pipe:close()
+    print("Powershell Returned: "..tostring(r))
 end
 
-
-----------------------------------------------------
--- SECTION 4: Output
-----------------------------------------------------
+hunt.log("VSS is now enforced for Drive C") -- send to Infocyte

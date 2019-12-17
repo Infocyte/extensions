@@ -5,83 +5,56 @@
 	Description: Installs Infocyte agents on Windows, Linux, or OSX
 	Author: Infocyte
 	Created: 9-19-2019
-	Updated: 9-19-2019 (Gerritz)
-
+	Updated: 11-19-2019 (Gerritz)
 ]]--
 
-----------------------------------------------------
 -- SECTION 1: Inputs (Variables)
-----------------------------------------------------
-agentDestination = os.getenv("TEMP").."/icagent.exe"
-regkey = nil
+regkey = nil -- Optional Registration Key for installation
+force = false -- Force Reinstall with new config
 
 ----------------------------------------------------
 -- SECTION 2: Functions
-----------------------------------------------------
 
+function is_agent_installed()
+	if hunt.env.is_windows() then
+		key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
+		if hunt.registry.list_values(key) then
+			return true
+		else
+			return false
+		end
+
+	elseif hunt.env.is_macos() then
+		installpath = [[/bin/infocyte/agent.exe]]
+		if hunt.fs.ls(installpath) then
+			return true
+		else
+			return false
+		end
+	elseif hunt.env.is_linux() or hunt.env.has_sh() then
+		installpath = [[/bin/infocyte/agent.exe]]
+		if hunt.fs.ls(installpath) then
+			return true
+		else
+			return false
+		end
+	else
+		return false
+	end
+end
 
 ----------------------------------------------------
 -- SECTION 3: Actions
-----------------------------------------------------
 
 host_info = hunt.env.host_info()
-os = host_info:os()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
-myinstanceurl = hunt.net.api() -- "alpo1.infocyte.com"
-hostname = host_info:hostname()
-
--- Check for Agent
-agentinstalled = false
-if hunt.env.is_windows() then
-    -- Insert your Windows Code
-    agenturl = "https://s3.us-east-2.amazonaws.com/infocyte-support/executables/agent.windows.exe"
-    installpath = [[C:\Program Files\Infocyte\Agent\agent.windows.exe]]
-
-elseif hunt.env.is_macos() then
-    -- Insert your MacOS Code
-    agenturl = "https://s3.us-east-2.amazonaws.com/infocyte-support/executables/agent.osx.exe"
-    installpath = [[/bin/infocyte/agent.exe]]
-
-elseif hunt.env.is_linux() or hunt.env.has_sh() then
-    -- Insert your POSIX-compatible (linux) Code
-    agenturl = "https://s3.us-east-2.amazonaws.com/infocyte-support/executables/agent.linux.exe"
-    installpath = [[/bin/infocyte/agent.exe]]
-
-else
-    hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
-    exit()
-end
-
-if agentinstalled then
+if is_agent_installed() then
     hunt.log("Infocyte Agent is already installed")
-    exit()
+    if force then
+		-- TODO overwrite existing config
+        hunt.install_agent(regkey)
+	end
+else
+	hunt.install_agent(regkey)
 end
-
-
--- Download agent
-client = hunt.web.new(agenturl)
--- client:add_header("authorization", "mytokenvalue")
-local ret, data = pcall( client:download_file(agentDestination) )
-if not ret then
-    hunt.error( "Error[Download]: " .. data)
-    exit()
-end
-
--- Install agent
-cmd = agentDestination .. " --install --quiet --url " .. myinstanceurl
-if regkey then
-    cmd = cmd .. " --key "..regkey
-end
-result = os.execute(cmd)
-if not result then
-    hunt.error("Error[Install]: Agent failed to install. [" .. result .. "]")
-    exit()
-end
-
-
-----------------------------------------------------
--- SECTION 4: Output
-----------------------------------------------------
-
-hunt.log("Infocyte Agent has been installed successfully")

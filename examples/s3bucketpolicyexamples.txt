@@ -1,0 +1,112 @@
+{
+    "Version": "2012-10-17",
+    "Id": "DFIR_S3_WriteOnlyPolicy",
+    "Statement": [
+        {
+            "Sid": "WriteOnlyS3Policy01",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+	           "arn:aws:s3:::<BUCKET_NAME>/*"
+            ]
+        }
+    ]
+}
+------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+    "Id": "DFIR_S3_AnalystUserPolicy",
+    "Statement": [
+        {
+            "Sid": "AnalystGroupPolicy01",
+            "Effect": "Allow",
+            "Action": [
+ 	   "s3:List*",
+                "s3:List*",
+                "s3:Get*",
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<BUCKET_NAME>",
+                "arn:aws:s3:::<BUCKET_NAME>/*"
+            ]
+        }
+    ]
+}
+
+------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+    "Id": "DFIR_S3_AdminUserPolicy",
+    "Statement": [
+        {
+            "Sid": “AdminGroupPolicy01",
+             "Effect": "Allow",
+             "Action": "s3:*",
+             "Resource": "arn:aws:s3:::*"
+        }
+    ]
+}
+
+------------------------------------------------------------
+# Don't use these in production unless you know what you are doing:
+{
+    "Version": "2012-10-17",
+    "Id": "ExtensionTestBucketPolicy01",
+    "Statement": [
+        {
+            "Sid": "Allow get requests originating from IP Range",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::infocyte-extensions/*",
+            "Condition": {
+                "IpAddress": {
+                    "aws:SourceIp": "136.49.31.127/32"
+                }
+            }
+        },
+        {
+            "Sid": "Allow anon downloads referred from amazon.com or infocyte.com",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::infocyte-extensions/*",
+            "Condition": {
+                "StringLike": {
+                    "aws:Referer": [
+                        "*.amazon.com/*",
+                        "*.infocyte.com/*"
+                    ]
+                }
+            }
+        }
+    ]
+}
+
+-----------------
+# Optional. Can use this in lue of uploader User Policy if you like...
+{
+    "Version": "2012-10-17",
+    "Id": "InfocyteExtensionsBucketPolicy01",
+    "Statement": [
+        {
+            "Sid": "UploaderPolicy01",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Principal": {
+                "AWS": "arn:aws:iam::485621232789:user/uploader"
+            },
+            "Resource": [
+                "arn:aws:s3:::infocyte-extensions/*"
+            ]
+        }
+    ]
+}
