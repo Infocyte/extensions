@@ -12,8 +12,8 @@
 -- SECTION 1: Inputs (Variables)
 
 -- S3 Bucket (mandatory)
-s3_user = 'AKIAQDGYNGWXXQYN33X3'
-s3_pass = 'o1wcI2YPSAmIE7l5sfjrtvjM1BbD5nSK1LAgtsPG'
+s3_user = nil
+s3_pass = nil
 s3_region = 'us-east-1' -- 'us-east-2'
 s3_bucket = 'hunt-saas-logs' -- 'test-extensions'
 s3path_modifier = "agentlogs" -- /filename will be appended
