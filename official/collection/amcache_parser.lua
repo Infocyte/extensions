@@ -6,7 +6,7 @@
         adds those entries to artifacts for analysis
     Author: Infocyte
     Created: 20191121
-    Updated: 20191209 (Gerritz)
+    Updated: 20200120 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)
@@ -14,7 +14,7 @@ differential = true -- Will save last scan locally and only add new items on sub
 
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
-amcacheparser_sha1 = 'B5EC4972F00F081B73366EFAB3A12BE5EC2ED24D' -- hash validation of amcashparser.exe at url
+amcacheparser_sha1 = '618A44532D107574E8C5613F225E711C13A874E1' -- hash validation of amcashparser.exe at url
 
 ----------------------------------------------------
 -- SECTION 2: Functions
@@ -170,7 +170,7 @@ $outpath = "$env:TEMP\ic\amcache.csv"
 gci "$env:TEMP\ic\temp" -filter *Amcache*.csv | % { $a += gc $_.fullname | convertfrom-csv | where { $_.isPeFile -AND $_.sha1 } | select-object sha1,fullpath,filekeylastwritetimestamp -unique }
 $a | % { $_.FileKeyLastWriteTimestamp = Get-Date ([DateTime]$_.FileKeyLastWriteTimestamp).ToUniversalTime() -format "o" }
 $a = $a | Sort-Object FileKeyLastWriteTimestamp -Descending
-Remove-item "$env:TEMP\ic\temp" -Force -Recurse
+#Remove-item "$env:TEMP\ic\temp" -Force -Recurse
 $a | Export-CSV $outpath -NoTypeInformation -Force
 ]==]
 print("Initiatializing Powershell")
