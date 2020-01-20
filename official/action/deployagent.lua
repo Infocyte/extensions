@@ -15,6 +15,19 @@ force = false -- Force Reinstall with new config
 ----------------------------------------------------
 -- SECTION 2: Functions
 
+function path_exists(path)
+    -- Check if a file or directory exists in this path
+    -- add '/' on end to test if it is a folder
+   local ok, err, code = os.rename(path, path)
+   if not ok then
+      if code == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
+end
+
 function is_agent_installed()
 	if hunt.env.is_windows() then
 		key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
@@ -26,14 +39,14 @@ function is_agent_installed()
 
 	elseif hunt.env.is_macos() then
 		installpath = [[/bin/infocyte/agent.exe]]
-		if hunt.fs.ls(installpath) then
+		if path_exists(installpath) then
 			return true
 		else
 			return false
 		end
 	elseif hunt.env.is_linux() or hunt.env.has_sh() then
 		installpath = [[/bin/infocyte/agent.exe]]
-		if hunt.fs.ls(installpath) then
+		if path_exists(installpath) then
 			return true
 		else
 			return false

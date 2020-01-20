@@ -17,8 +17,7 @@ scanappdata = false
 -- Provide additional paths below
 if hunt.env.is_windows() then
     additionalpaths = {
-        'c:\\windows\\system32\\calc.exe',
-        'c:\\windows\\temp'
+        'c:\\windows\\system32\\calc.exe'
     }
 
 elseif hunt.env.is_macos() then
@@ -1157,21 +1156,6 @@ rule Dropper_Strings
         any of them
 }
 
-rule create_service {
-    meta:
-        author = "x0r"
-        description = "Create a windows service"
-	version = "0.2"
-    strings:
-	$f1 = "Advapi32.dll" nocase
-        $c1 = "CreateService"
-        $c2 = "ControlService"
-        $c3 = "StartService"
-        $c4 = "QueryServiceStatus"
-    condition:
-        all of them
-}
-
 rule network_dyndns {
     meta:
         author = "x0r"
@@ -1229,17 +1213,68 @@ rule network_tor {
         any of them
 }
 
-rule network_dropper {
+rule certificate {
     meta:
         author = "x0r"
-        description = "File downloader/dropper"
+        description = "Inject certificate in store"
 	version = "0.1"
     strings:
-        $f1 = "urlmon.dll" nocase
-        $c1 = "URLDownloadToFile"
-        $c2 = "URLDownloadToCacheFile"
-        $c3 = "URLOpenStream"
-        $c4 = "URLOpenPullStream"
+        $f1 = "Crypt32.dll" nocase
+        $r1 = "software\\microsoft\\systemcertificates\\spc\\certificates" nocase
+        $c1 = "CertOpenSystemStore"
+    condition:
+	all of them
+}
+
+rule lookupip {
+    meta:
+        author = "x0r"
+        description = "Lookup external IP"
+	version = "0.1"
+    strings:
+        $n1 = "checkip.dyndns.org" nocase
+        $n2 = "whatismyip.org" nocase
+        $n3 = "whatsmyipaddress.com" nocase
+        $n4 = "getmyip.org" nocase
+        $n5 = "getmyip.co.uk" nocase
+    condition:
+        any of them
+}
+
+rule cred_local {
+    meta:
+        author = "x0r"
+        description = "Steal credential"
+	version = "0.1"
+    strings:
+        $c1 = "LsaEnumerateLogonSessions"
+        $c2 = "SamIConnect"
+        $c3 = "SamIGetPrivateData"
+        $c4 = "SamQueryInformationUse"
+        $c5 = "CredEnumerateA"
+        $c6 = "CredEnumerateW"
+        $r1 = "software\\microsoft\\internet account manager" nocase
+        $r2 = "software\\microsoft\\identitycrl\\creds" nocase
+        $r3 = "Security\\Policy\\Secrets"
+    condition:
+        any of them
+}
+]==]
+-- #endregion
+
+-- #region info_rules
+info_rules = [==[
+rule keylogger_strings {
+    meta:
+        author = "x0r"
+        description = "Strings common to keyloggers. High FP"
+	version = "0.1"
+    strings:
+	    $f1 = "User32.dll" nocase
+        $c1 = "GetAsyncKeyState"
+        $c2 = "GetKeyState"
+        $c3 = "MapVirtualKey"
+        $c4 = "GetKeyboardType"
     condition:
         $f1 and 1 of ($c*)
 }
@@ -1267,7 +1302,34 @@ rule network_ftp {
     condition:
         $f1 and (4 of ($c*))
 }
-
+rule network_dropper {
+    meta:
+        author = "x0r"
+        description = "File downloader/dropper"
+	version = "0.1"
+    strings:
+        $f1 = "urlmon.dll" nocase
+        $c1 = "URLDownloadToFile"
+        $c2 = "URLDownloadToCacheFile"
+        $c3 = "URLOpenStream"
+        $c4 = "URLOpenPullStream"
+    condition:
+        $f1 and 1 of ($c*)
+}
+rule create_service {
+    meta:
+        author = "x0r"
+        description = "Create a windows service"
+	version = "0.2"
+    strings:
+	$f1 = "Advapi32.dll" nocase
+        $c1 = "CreateService"
+        $c2 = "ControlService"
+        $c3 = "StartService"
+        $c4 = "QueryServiceStatus"
+    condition:
+        all of them
+}
 rule network_tcp_socket {
     meta:
         author = "x0r"
@@ -1308,79 +1370,6 @@ rule network_dns {
         1 of ($f*) and  1 of ($c*)
 }
 
-rule certificate {
-    meta:
-        author = "x0r"
-        description = "Inject certificate in store"
-	version = "0.1"
-    strings:
-        $f1 = "Crypt32.dll" nocase
-        $r1 = "software\\microsoft\\systemcertificates\\spc\\certificates" nocase
-        $c1 = "CertOpenSystemStore"
-    condition:
-	all of them
-}
-
-rule lookupip {
-    meta:
-        author = "x0r"
-        description = "Lookup external IP"
-	version = "0.1"
-    strings:
-        $n1 = "checkip.dyndns.org" nocase
-        $n2 = "whatismyip.org" nocase
-        $n3 = "whatsmyipaddress.com" nocase
-        $n4 = "getmyip.org" nocase
-        $n5 = "getmyip.co.uk" nocase
-    condition:
-        any of them
-}
-
-rule keylogger {
-    meta:
-        author = "x0r"
-        description = "Run a keylogger"
-	version = "0.1"
-    strings:
-	    $f1 = "User32.dll" nocase
-        $c1 = "GetAsyncKeyState"
-        $c2 = "GetKeyState"
-        $c3 = "MapVirtualKey"
-        $c4 = "GetKeyboardType"
-    condition:
-        $f1 and 1 of ($c*)
-}
-
-rule cred_local {
-    meta:
-        author = "x0r"
-        description = "Steal credential"
-	version = "0.1"
-    strings:
-        $c1 = "LsaEnumerateLogonSessions"
-        $c2 = "SamIConnect"
-        $c3 = "SamIGetPrivateData"
-        $c4 = "SamQueryInformationUse"
-        $c5 = "CredEnumerateA"
-        $c6 = "CredEnumerateW"
-        $r1 = "software\\microsoft\\internet account manager" nocase
-        $r2 = "software\\microsoft\\identitycrl\\creds" nocase
-        $r3 = "Security\\Policy\\Secrets"
-    condition:
-        any of them
-}
-]==]
--- #endregion
-
--- #region info_rules
-info_rules = [==[
-rule MZ_executable {
-	strings:
-		$mz = "MZ"
-
-	condition:
-		$mz at 0
-}
 rule embedded_url {
     meta:
         author = "Antonio S. <asanchez@plutec.net>"
