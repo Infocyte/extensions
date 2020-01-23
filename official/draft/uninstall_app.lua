@@ -82,6 +82,4 @@ else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
--- one or more log statements can be used to send resulting data or messages in
--- text format to your Infocyte instance
-hunt.debug("Result: Extension successfully executed on " .. host_info:hostname())
+hunt.log(appname..' has been removed/uninstalled')
