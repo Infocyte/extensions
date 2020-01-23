@@ -10,8 +10,6 @@ if file then
     end
 else
     hunt.debug('file is not true: '..err)
-end
-
 
 key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
 key2 = hunt.registry.list_values(key)
