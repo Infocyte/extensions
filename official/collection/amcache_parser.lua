@@ -210,6 +210,7 @@ for _, item in pairs(csv) do
         artifact:exe(item["FullPath"])
         artifact:type("Amcache")
         artifact:executed(item["FileKeyLastWriteTimestamp"])
+        artifact:modified(item["FileKeyLastWriteTimestamp"])
         artifact:sha1(item["SHA1"])
         hunt.survey.add(artifact)
     end
