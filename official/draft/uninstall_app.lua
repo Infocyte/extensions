@@ -10,33 +10,19 @@
 
 -- SECTION 1: Inputs (Variables)
 
-appname = ''
+appname = 'tightvnc'
 
 ----------------------------------------------------
 -- SECTION 2: Functions
 
 
 
-psfunctions = [==[
-function Uninstall-Application ($Appname) {
-    $Query = "SELECT * FROM win32_product where name='$Appname'"
-    $Product = Get-WmiObject -Query $Query 
-    $result = $Product.uninstall
-    if ($result.ReturnValue -eq 0) {
-        return $true
-    } else {
-        return $result.ReturnValue
-    }
-}
-
-]==]
-
 function execute_ps(command)
-    print("Initiatializing Powershell")
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    cmd = 'powershell.exe -nologo -nop -command { '..command..' }\n'
     pipe = io.popen(cmd, "r")
-    r = pipe:close()
-    return pipe
+    results = pipe:flush('*r')
+    pipe:close()
+    return results
 end
 
 ----------------------------------------------------
@@ -51,16 +37,29 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows Code
-
-    if execute_ps('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"') then
+    installed = execute_ps('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"')
+    print(installed)
+    if installed then
         -- Create powershell process and feed script/commands to its stdin
-        print("Initiatializing Powershell")
-        pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-        pipe:write(psfunctions) -- load up powershell functions and vars
+        --pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+        --pipe:write(psfunctions) -- load up powershell functions and vars
+        --pipe:write('Uninstall-Application '..appname..'\n')
+        --r = pipe:close()
     
-        pipe:write('Uninstall-Application '..appname..'\n')
-
-        r = pipe:close()
+        psfunctions = [==[
+            function Uninstall-Application ($Appname) {
+                $Query = "SELECT * FROM win32_product where name='+ $Appname +"'"
+                $Product = Get-WmiObject -Query $Query 
+                $result = $Product.Uninstall()
+                return $result.ReturnValue
+            }
+            
+        ]==]
+       
+        psfunctions = psfunctions..'Uninstall-Application '..appname
+        print("Running Command:\n"..psfunctions)
+        r = execute_ps(psfunctions)
+        
         hunt.log(appname.." has been uninstalled!")
     else
         hunt.warn(appname.." was NOT found!")
