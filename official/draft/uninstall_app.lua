@@ -4,6 +4,7 @@
     Type: Action
     Description: Uninstalls an application
     Author: Infocyte
+    id: 5746ff61-acb8-478d-acac-59a7feaf2a9b
     Created: 20200122
     Updated: 20200122 (Gerritz)
 ]]--

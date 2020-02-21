@@ -1,8 +1,11 @@
 --[[
+  Infocyte Extension
+  Name: Ciscofy Hardening Check
+  Type: Collection
+  Description: |
 	Leverage 3rd Party utility to assess hardening level
   of a linux system.
-  Source:  https://cisofy.com/
-  Activity:
+  Source =  https://cisofy.com/
   Extension will simply pull down cisofy, unpack it
   run the utility and will look throught he logs to
   capture the hardening results.  If the system shows
@@ -11,7 +14,11 @@
   system is required.
 
   Note, the extension may take up to 2 minutes to complete
-  This only runs on Linux operating systems
+  This only runs on Linux operating systems |
+  Author: John Norden
+  Id: 36e9e84e-efd3-481c-8c2b-9a9b0e419419
+  Created: 20191120
+  Updated: 20200221
 --]]
 if not hunt.env.is_linux() then return end
 hunt.log("Running Hardening Check")

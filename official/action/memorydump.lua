@@ -1,8 +1,8 @@
 --[[
-	Infocyte Extension
-	Name: Memory Extraction
-	Type: Action
-	Description: Uses winpmem/linpmem to dump full physical memory and
+    Infocyte Extension
+    Name: Memory Extraction
+    Type: Action
+    Description: | Uses winpmem/linpmem to dump full physical memory and
      stream it to an S3 bucket, ftp server, or smb share. If output path not
      specified, will dump to local temp folder.
      Source:
@@ -10,11 +10,11 @@
      http://releases.rekall-forensic.com/v1.5.1/linpmem-2.1.post4
      http://releases.rekall-forensic.com/v1.5.1/osxpmem-2.1.post4.zip
      Instructions:
-     https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/
-	Author: Infocyte
-	Created: 9-19-2019
-	Updated: 9-19-2019 (Gerritz)
-
+     https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/ |
+    Author: Infocyte
+    Id: 89abebc6-d0db-4eba-b771-6a2652033581
+    Created: 9-19-2019
+    Updated: 9-19-2019 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)
