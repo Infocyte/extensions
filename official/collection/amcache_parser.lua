@@ -2,9 +2,10 @@
     Infocyte Extension
     Name: Amcache Parser
     Type: Collection
-    Description: Uses Zimmerman's Amcache parser to parse Amcache and
-        adds those entries to artifacts for analysis
+    Description: | Uses Zimmerman's Amcache parser to parse Amcache and
+        adds those entries to artifacts for analysis |
     Author: Infocyte
+    Id: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
     Updated: 20200120 (Gerritz)
 ]]--

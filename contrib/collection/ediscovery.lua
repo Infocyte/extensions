@@ -2,12 +2,13 @@
 	Infocyte Extension
 	Name: E-Discovery
 	Type: Collection
-	Description: Proof of Concept. Searches the hard drive for office documents
+	Description: | Proof of Concept. Searches the hard drive for office documents
         (currently only .doc and .docx files) with specified keywords or alldocs.
         1. Find any office doc on a desktop/server
         2. Upload doc directly to S3 Bucket
-        3. Upload metadata csv with filehash as key
-	Author: Multiple (Maintained by Gerritz)
+        3. Upload metadata csv with filehash as key |
+    Author: Multiple (Maintained by Gerritz)
+    Id: 5a0e3b34-4692-4f3c-afff-c84102785756
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
 ]]--

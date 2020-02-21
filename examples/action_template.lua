@@ -2,9 +2,10 @@
     Infocyte Extension
     Name: Template
     Type: Action
-    Description: Example script show format, style, and options for commiting
-        an action or change against a host.
+    Description: | Example script show format, style, and options for commiting
+        an action or change against a host. |
     Author: Infocyte
+    Id: b5f18032-6749-4bef-80d3-8094dca66798
     Created: 20190919
     Updated: 20191204 (Gerritz)
 ]]--
