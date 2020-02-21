@@ -102,6 +102,7 @@ end
 ----------------------------------------------------
 -- SECTION 3: Collection / Inspection
 
+sep = '|'
 host_info = hunt.env.host_info()
 osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
@@ -148,7 +149,7 @@ end
 oldhashlist = {}
 if differential and path_exists(outpath) then
     -- Read existing csv into array. Find latest timestamp from last scan.
-    csvold = parse_csv(outpath)
+    csvold = parse_csv(outpath, sep)
     for _,v in pairs(csvold) do
         t = make_timestamp(v["FileKeyLastWriteTimestamp"])
         if not ts then
@@ -171,8 +172,8 @@ $outpath = "$env:TEMP\ic\amcache.csv"
 gci "$env:TEMP\ic\temp" -filter *Amcache*.csv | % { $a += gc $_.fullname | convertfrom-csv | where { $_.isPeFile -AND $_.sha1 } | select-object sha1,fullpath,filekeylastwritetimestamp -unique }
 $a | % { $_.FileKeyLastWriteTimestamp = Get-Date ([DateTime]$_.FileKeyLastWriteTimestamp).ToUniversalTime() -format "o" }
 $a = $a | Sort-Object FileKeyLastWriteTimestamp -Descending
-#Remove-item "$env:TEMP\ic\temp" -Force -Recurse
-$a | Export-CSV $outpath -NoTypeInformation -Force
+Remove-item "$env:TEMP\ic\temp" -Force -Recurse
+$a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 ]==]
 print("Initiatializing Powershell")
 pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
@@ -182,7 +183,7 @@ pipe:close()
 
 -- Read csv into array
 if path_exists(outpath) then
-    csv = parse_csv(outpath)
+    csv = parse_csv(outpath, sep)
 else
     hunt.error("AmcacheParser failed")
     return
