@@ -4,6 +4,7 @@
     Type: Collection
     Description: Example script showing how to use YARA
     Author: Infocyte
+    Id: f0565351-1dc3-4a94-90b3-34a5765b33bc
     Created: 20191018
     Updated: 20191127 (Gerritz)
 ]]--

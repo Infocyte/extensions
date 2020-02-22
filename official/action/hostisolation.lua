@@ -2,9 +2,10 @@
 	Infocyte Extension
 	Name: Host Isolation
 	Type: Action
-	Description: Performs a local network isolation of a Windows, Linux, or OSX
-	 system using windows firewall, iptables, ipfw, or pf
+	Description: | Performs a local network isolation of a Windows, Linux, or OSX
+	 system using windows firewall, iptables, ipfw, or pf |
 	Author: Infocyte
+	Id: 0c18bac7-5fbf-445d-ada5-0626295a9a81
 	Created: 9-16-2019
 	Updated: 11-19-2019 (Gerritz)
 

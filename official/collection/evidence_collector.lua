@@ -2,10 +2,11 @@
     Infocyte Extension
     Name: Evidence Collector
     Type: Collection
-    Description: Collects event logs, .dat files, etc. from system and forwards
+    Description: | Collects event logs, .dat files, etc. from system and forwards
         them to your Recovery point. Loads Powerforensics to bypass file locks
-        Currently only works on Windows
+        Currently only works on Windows |
     Author: Infocyte
+    Id: e07252a1-4aea-47e4-80e8-c7ea8c558aed
     Created: 20191018
     Updated: 20191125 (Gerritz)
 ]]--
