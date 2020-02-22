@@ -5,7 +5,7 @@
     Description: | Example script show format, style, and options for gathering
      additional data from a host. |
     Author: Infocyte
-    Id: f8e44229-4d8d-4909-b148-58130b660077
+    Guid: f8e44229-4d8d-4909-b148-58130b660077
     Created: 20190919
     Updated: 20191204 (Gerritz)
 ]]--

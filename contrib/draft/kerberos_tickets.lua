@@ -4,7 +4,7 @@
 	Type: Collection
 	Description: Collects Kerberos Tickets and TGTs on each host
 	Author: TBD
-	Id: 828fdcc6-081b-41da-ba2c-c5d9b2c6765a
+	Guid: 828fdcc6-081b-41da-ba2c-c5d9b2c6765a
 	Created: 20191105
 	Updated: 20191105 (Gerritz)
 ]]--

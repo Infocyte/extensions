@@ -4,7 +4,7 @@
     Type: Action
     Description: Restores a volume, folder, or file from Volume Shadow Copy (VSS) on Windows hosts to recover from certain ransomware attacks.
     Author: Infocyte
-    Id: ac4a7b2f-d506-4bae-95a1-628afecac929
+    Guid: ac4a7b2f-d506-4bae-95a1-628afecac929
     Created: 20191008
     Updated: 20191008 (Gerritz)
 ]]--

@@ -4,7 +4,7 @@
     Type: Action
     Description: Forces system reboot after delay
     Author: Infocyte
-    Id: 8bd31ce0-75c4-42d9-a2b3-d32fad3b61ec
+    Guid: 8bd31ce0-75c4-42d9-a2b3-d32fad3b61ec
     Created: 20200122
     Updated: 20200122 (Gerritz)
 ]]--

@@ -5,7 +5,7 @@
     Description: Analyzes any references in ld.so.preload (always suspicious
         cause programs launched can intercept system calls)
     Author: Infocyte
-    Id: 0153a459-c36b-4542-940e-e4c81ab1eb63
+    Guid: 0153a459-c36b-4542-940e-e4c81ab1eb63
     Created: 20191216
     Updated: 20191216 (Gerritz)
 ]]--
