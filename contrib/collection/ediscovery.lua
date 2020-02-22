@@ -8,7 +8,7 @@
         2. Upload doc directly to S3 Bucket
         3. Upload metadata csv with filehash as key |
     Author: Multiple (Maintained by Gerritz)
-    Id: 5a0e3b34-4692-4f3c-afff-c84102785756
+    Guid: 5a0e3b34-4692-4f3c-afff-c84102785756
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
 ]]--
