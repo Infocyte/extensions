@@ -2,9 +2,9 @@
     Infocyte Extension
     Name: Linux Hardening Check
     Type: Collection
-	Description: | Example of leveraging a 3rd party tool
-	along with extensions to conduct an audit
-    operation of a Linux Asset |
+    Description: | Example of leveraging a 3rd party tool
+      along with extensions to conduct an audit
+      operation of a Linux Asset |
     Author: Unknown
     Guid: 986de437-64fb-4003-86e7-3b8eba8c1580
     Created: 20191115

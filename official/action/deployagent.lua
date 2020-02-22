@@ -1,12 +1,12 @@
 --[[
-	Infocyte Extension
-	Name: Deploy Infocyte Agent
-	Type: Action
-	Description: Installs Infocyte agents on Windows, Linux, or OSX
-	Author: Infocyte
-	Guid: df00a84f-6490-4cfc-b55c-fa2c0e3ec5f3
-	Created: 9-19-2019
-	Updated: 11-19-2019 (Gerritz)
+    Infocyte Extension
+    Name: Deploy Infocyte Agent
+    Type: Action
+    Description: Installs Infocyte agents on Windows, Linux, or OSX
+    Author: Infocyte
+    Guid: df00a84f-6490-4cfc-b55c-fa2c0e3ec5f3
+    Created: 9-19-2019
+    Updated: 11-19-2019 (Gerritz)
 ]]--
 
 -- SECTION 1: Inputs (Variables)

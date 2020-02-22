@@ -3,14 +3,14 @@
     Name: Memory Extraction
     Type: Action
     Description: | Uses winpmem/linpmem to dump full physical memory and
-     stream it to an S3 bucket, ftp server, or smb share. If output path not
-     specified, will dump to local temp folder.
-     Source:
-     https://github.com/Velocidex/c-aff4/releases/tag/v3.3.rc3
-     http://releases.rekall-forensic.com/v1.5.1/linpmem-2.1.post4
-     http://releases.rekall-forensic.com/v1.5.1/osxpmem-2.1.post4.zip
-     Instructions:
-     https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/ |
+       stream it to an S3 bucket, ftp server, or smb share. If output path not
+       specified, will dump to local temp folder.
+       Source:
+       https://github.com/Velocidex/c-aff4/releases/tag/v3.3.rc3
+       http://releases.rekall-forensic.com/v1.5.1/linpmem-2.1.post4
+       http://releases.rekall-forensic.com/v1.5.1/osxpmem-2.1.post4.zip
+       Instructions:
+       https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/ |
     Author: Infocyte
     Guid: 89abebc6-d0db-4eba-b771-6a2652033581
     Created: 9-19-2019
