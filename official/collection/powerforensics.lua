@@ -5,7 +5,7 @@
 	Description: | Deploy PowerForensics and gathers forensic data to Recovery
         Location |
     Author: Infocyte
-    Id: 0989cd2f-a781-4cea-8f43-fcc3092144a1
+    Guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
 	Created: 20190919
 	Updated: 20191025 (Gerritz)
 ]]--

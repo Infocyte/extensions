@@ -4,7 +4,7 @@
   Description: | Reverses the local network isolation of a Windows, Linux, and OSX
    systems using windows firewall, iptables, ipfw, or pf respectively |
   Author: Infocyte
-  Id: 2896731a-ef52-4569-9669-e9a6d8769e76
+  Guid: 2896731a-ef52-4569-9669-e9a6d8769e76
   Created: 9-16-2019
   Updated: 9-16-2019 (Gerritz)
 

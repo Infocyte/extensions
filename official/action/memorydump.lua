@@ -12,7 +12,7 @@
      Instructions:
      https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/ |
     Author: Infocyte
-    Id: 89abebc6-d0db-4eba-b771-6a2652033581
+    Guid: 89abebc6-d0db-4eba-b771-6a2652033581
     Created: 9-19-2019
     Updated: 9-19-2019 (Gerritz)
 ]]--

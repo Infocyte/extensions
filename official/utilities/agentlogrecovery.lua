@@ -5,6 +5,7 @@
     Description: Example script show format, style, and options for commiting
         an action or change against a host.
     Author: Infocyte
+    Guid: 5eb5d2ef-7409-475c-a821-c7b29b17492f
     Created: 20190919
     Updated: 20191204 (Gerritz)
 ]]--

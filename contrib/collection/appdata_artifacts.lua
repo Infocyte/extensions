@@ -5,7 +5,7 @@
     Description: | Adds all executable binaries in appdata folder
         (with recursion depth of 1) to artifacts for analysis. |
     Author: Anonymous
-    Id: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
+    Guid: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
     Created: 20191121
     Updated: 20191121 (Gerritz)
 ]]--
