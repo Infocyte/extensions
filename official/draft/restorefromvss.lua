@@ -7,14 +7,13 @@
     Guid: ac4a7b2f-d506-4bae-95a1-628afecac929
     Created: 20191008
     Updated: 20191008 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 OS = hunt.env.os() -- determine host OS
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 psscript = [==[
 $vssvolume = (Get-WmiObject Win32_ShadowCopy | Sort-Object InstallDate -Descending)[0].DeviceObject + "\"
@@ -22,8 +21,7 @@ cmd /c mklink /d C:\vssbackup "$vssvolume"
 ]==]
 
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()

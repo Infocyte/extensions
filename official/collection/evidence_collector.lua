@@ -9,10 +9,10 @@
     Guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
     Created: 20191018
     Updated: 20191125 (Gerritz)
-]]--
+--]]
 
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (mandatory)
 s3_user = nil
@@ -41,8 +41,7 @@ USBHistory = true
 debug = false
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function reg_usersids()
     local output = {}
@@ -124,8 +123,7 @@ function install_powerforensic()
 end
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -339,7 +337,7 @@ end
 os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")
 
 hunt.status.good()
-----------------------------------------------------
+
 
 --[[
 Win2k3/XP: \%SystemRoot%\System32\Config\*.evt
@@ -353,4 +351,4 @@ Get-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\eventlog\System | selec
     7045 [System] - Service Creation
     4688 [Security] - A new process has been created (Win2012R2+ has CLI)
     4014 [Powershell] - Script Block Logging
-]]--
+--]]

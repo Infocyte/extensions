@@ -8,10 +8,10 @@
     Guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
     Created: 20190919
     Updated: 20191025 (Gerritz)
-]]--
+--]]
 
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 -- S3 Bucket (Mandatory)
 s3_user = nil
 s3_pass = nil
@@ -21,8 +21,7 @@ s3path_modifier = "evidence"
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function install_powerforensic()
     local debug = debug or true
@@ -78,8 +77,7 @@ function path_exists(path)
    return ok, err
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -154,4 +152,4 @@ os.remove(temppath)
 os.remove(outpath)
 os.remove(logfile)
 
-----------------------------------------------------
+

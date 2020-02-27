@@ -7,13 +7,12 @@
 	Guid: 828fdcc6-081b-41da-ba2c-c5d9b2c6765a
 	Created: 20191105
 	Updated: 20191105 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 
 -- You can define shell scripts here if using any.
@@ -251,8 +250,7 @@ foreach ($Session in $sessions) {
 ]==]
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
@@ -295,10 +293,6 @@ if file then
 end
 
 
-----------------------------------------------------
--- SECTION 4: Results
-
 hunt.status.unknown()
 hunt.log("Result: Extension successfully executed on " .. hostname)
 
-----------------------------------------------------

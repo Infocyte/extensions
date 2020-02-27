@@ -8,17 +8,16 @@
     Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
     Updated: 20200120 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 differential = true -- Will save last scan locally and only add new items on subsequent scans.
 
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = '618A44532D107574E8C5613F225E711C13A874E1' -- hash validation of amcashparser.exe at url
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function is_executable(path)
     magicnumbers = {
@@ -99,8 +98,7 @@ function make_timestamp(dateString)
     return convertedTimestamp
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 sep = '|'
 host_info = hunt.env.host_info()
@@ -221,4 +219,4 @@ end
 -- Set Status (not really necessary since bad items will be flagged in artifacts)
 hunt.status.good()
 
-----------------------------------------------------
+

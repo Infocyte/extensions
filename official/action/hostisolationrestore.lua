@@ -8,14 +8,13 @@
     Created: 9-16-2019
     Updated: 9-16-2019 (Gerritz)
 
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 backup_location = "C:\\fwbackup.wfw"
 iptables_bkup = "/opt/iptables-bkup"
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
@@ -30,8 +29,7 @@ function path_exists(path)
    return ok, err
 end
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()

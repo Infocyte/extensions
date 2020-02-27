@@ -7,9 +7,9 @@
     Guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
     Created: 20191018
     Updated: 20191127 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- This extension will yara scan files below
 scanactiveprocesses = true
@@ -35,8 +35,7 @@ elseif hunt.env.is_linux() then
 
 end
 
-----------------------------------------------------
--- SECTION 2: Functions & Rules
+--[[ SECTION 2: Functions --]] & Rules
 
 -- #region bad_rules
 bad_rules = [==[
@@ -1419,8 +1418,7 @@ function is_executable(path)
 end
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
@@ -1533,4 +1531,4 @@ end
 
 hunt.debug("Result: Extension successfully executed on " .. host_info:hostname())
 
-----------------------------------------------------
+

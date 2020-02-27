@@ -7,14 +7,13 @@
     Guid: df00a84f-6490-4cfc-b55c-fa2c0e3ec5f3
     Created: 9-19-2019
     Updated: 11-19-2019 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 regkey = nil -- Optional Registration Key for installation
 force = false -- Force Reinstall with new config
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
@@ -57,8 +56,7 @@ function is_agent_installed()
 	end
 end
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())

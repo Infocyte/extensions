@@ -8,13 +8,12 @@
     Guid: 131abdf2-7404-4079-8690-d01aab734e10
     Created: 20191028
     Updated: 20191031
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function reg_usersids()
     local output = {}
@@ -112,8 +111,7 @@ initscript = [==[
 
 ]==]
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
@@ -176,8 +174,7 @@ else
     hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
-----------------------------------------------------
--- SECTION 4: Results
+
 for k,v in pairs(results) do
     print(k)
     print(keyboard_codes["00000409"])
@@ -185,4 +182,4 @@ for k,v in pairs(results) do
 end
 -- hunt.out(results)
 
-----------------------------------------------------
+

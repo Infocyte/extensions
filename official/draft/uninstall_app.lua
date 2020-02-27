@@ -7,14 +7,13 @@
     Guid: 5746ff61-acb8-478d-acac-59a7feaf2a9b
     Created: 20200122
     Updated: 20200122 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 appname = 'tightvnc'
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 
 
@@ -26,8 +25,7 @@ function execute_ps(command)
     return results
 end
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()

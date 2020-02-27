@@ -7,17 +7,15 @@
     Guid: 5a2e94d9-fa88-4ffe-8aa9-ef53660b3a53
     Created: 20200123
     Updated: 20200123 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 processname = "calc.exe"
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
