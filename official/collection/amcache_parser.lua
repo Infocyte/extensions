@@ -7,15 +7,16 @@
     Author: Infocyte
     Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
-    Updated: 20200120 (Gerritz)
+    Updated: 20200327 (Gerritz)
 --]]
 
 --[[ SECTION 1: Inputs --]]
 differential = true -- Will save last scan locally and only add new items on subsequent scans.
+proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
-amcacheparser_sha1 = '618A44532D107574E8C5613F225E711C13A874E1' -- hash validation of amcashparser.exe at url
+amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
 --[[ SECTION 2: Functions --]]
 
@@ -48,9 +49,9 @@ end
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -114,16 +115,20 @@ end
 tmppath = os.getenv("TEMP").."\\ic"
 binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
-os.execute("mkdir "..tmppath)
+if not path_exists(tmppath) then 
+    os.print("Creating directory: "..tmppath)
+    os.execute("mkdir "..tmppath)
+end
 
 -- Check if we have amcacheparser.exe already
 download = true
 if path_exists(binpath) then
     -- validate hash
     sha1 = hunt.hash.sha1(binpath)
-    if sha1 == amcacheparser_sha1 then
+    if sha1 == amcacheparser_sha1:lower() then
         download = false
     else
+        hunt.warn('Amcache Parser on disk ['..sha1..'] did not match expected hash: '..amcacheparser_sha1:lower()..'. Downloading new.')
         os.remove(binpath)
     end
 end
@@ -153,16 +158,17 @@ if differential and path_exists(outpath) then
         if not ts then
             ts = t
         elseif ts < t then
-            print("New timestamp = "..os.date("%c", t))
+            hunt.debug("New AmCache timestamp = "..os.date("%c", t))
             ts = t
         end
         oldhashlist[v["SHA1"]] = true
     end
-    print("Last AmCache Entry Timestamp = "..os.date("%c", ts))
+    hunt.debug("Last AmCache Entry Timestamp = "..os.date("%c", ts))
 end
 
 -- Execute amcacheparser
-os.execute(binpath..' -f "C:\\Windows\\AppCompat\\Programs\\Amcache.hve" --mp --csv '..tmppath.."\\temp")
+hunt.debug("Executing Amcache Parser...")
+os.execute(binpath..' -f "C:\\Windows\\AppCompat\\Programs\\Amcache.hve" --mp --csv '..tmppath.."\\temp > "..tmppath.."\\icextensions.log")
 
 -- Parse output using powershell
 script = [==[
@@ -173,7 +179,7 @@ $a = $a | Sort-Object FileKeyLastWriteTimestamp -Descending
 Remove-item "$env:TEMP\ic\temp" -Force -Recurse
 $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 ]==]
-print("Initiatializing Powershell")
+hunt.debug("Initiatializing Powershell to parse output")
 pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
 pipe:write(script)
 pipe:close()
@@ -192,12 +198,12 @@ end
 if differential and ts then
     newitems = #csv - #csvold
     if newitems > 0 then
-        hunt.debug("Differential scan selected. Adding "..newitems.." new Amcache entries found since: "..os.date("%c", ts))
+        hunt.debug("Differential scan: Adding "..newitems.." new Amcache entries found since: "..os.date("%c", ts))
     else
-        hunt.debug("Differential scan selected but no new entries found after: "..os.date("%c", ts))
+        hunt.debug("Differential scan: No new entries found after: "..os.date("%c", ts))
     end
 elseif differential then
-    hunt.debug("Differential Scan Selected. No previous scan data found, analyzing all "..#csv.." items to establish baseline.")
+    hunt.debug("Differential Scan: No previous scan data found, analyzing all "..#csv.." items to establish baseline.")
 end
 paths = {}
 for _, item in pairs(csv) do
