@@ -35,7 +35,6 @@ if hunt.env.is_windows() then
     pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
     script = [==[
         Get-Process | Export-CSV C:\Windows\Temp\process.csv'
-
     ]==]
     pipe:write(script) 
     r = pipe:close()

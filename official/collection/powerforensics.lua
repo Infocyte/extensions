@@ -12,6 +12,8 @@
 
 
 --[[ SECTION 1: Inputs --]]
+debug = true
+
 -- S3 Bucket (Mandatory)
 s3_user = nil
 s3_pass = nil
@@ -67,9 +69,9 @@ end
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -89,13 +91,18 @@ host_info = hunt.env.host_info()
 osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
+tmp = os.getenv("TEMP").."\\ic"
+if not path_exists(tmp) then 
+    os.print("Creating directory: "..tmp)
+    os.execute("mkdir "..tmp)
+end
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then
 
     install_powerforensic()
-
-    temppath = os.getenv("TEMP").."\\ic\\icmft.csv"
-    outpath = os.getenv("TEMP").."\\ic\\icmft.zip"
+   
+    temppath = tmp.."\\icmft.csv"
+    outpath = tmp.."\\icmft.zip"
 
     cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
     hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)

@@ -35,8 +35,6 @@ elseif hunt.env.is_linux() then
 
 end
 
---[[ SECTION 2: Functions --]] & Rules
-
 -- #region bad_rules
 bad_rules = [==[
 rule Base64d_PE
@@ -1382,6 +1380,7 @@ rule embedded_url {
 -- #endregion
 
 
+--[[ SECTION 2: Functions --]]
 
 function GetFileName(path)
   return path:match("^.+/(.+)$")
@@ -1451,7 +1450,7 @@ if scanappdata then
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
         opts = {
             "files",
-            "size<1mb",
+            "size<5mb",
             "recurse=1" --depth of 1
         }
         for _, path in pairs(hunt.fs.ls(userfolder:path().."\\appdata\\roaming", opts)) do
@@ -1466,7 +1465,7 @@ end
 for i, path in pairs(additionalpaths) do
     opts = {
         "files",
-        "size<1mb"
+        "size<5mb"
     }
     files = hunt.fs.ls(path, opts)
     for _,path in pairs(files) do
