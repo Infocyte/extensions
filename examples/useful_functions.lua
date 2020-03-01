@@ -7,7 +7,6 @@
 
 ]]
 
-
 -- Infocyte Powershell Functions --
 posh = {}
 function posh.run_cmd(command)
@@ -27,6 +26,7 @@ function posh.run_cmd(command)
     ret = pipe:close() -- success bool
     return ret, output
 end
+
 function posh.run_script(psscript)
     --[[
         Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
@@ -61,7 +61,8 @@ function posh.run_script(psscript)
     end
     return ret, output
 end
-function posh.list_to_psarray(list)
+
+function posh.list_to_pslist(list)
     --[[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
@@ -74,6 +75,27 @@ function posh.list_to_psarray(list)
     end
     psarray = psarray:sub(1, -2) .. ")"
     return psarray
+end
+
+-- Python Functions --
+py = {}
+function py.run_cmd(command)
+    --[[
+        Execute a python command
+        Input:  [string] python command
+        Output: [bool] Success    
+                [string] Results
+    ]]
+    os.execute("python -u -c \"" .. cmd.. "\"" )
+end
+function py.run_script(pyscript)
+    --[[
+        Execute a python command
+        Input:  [string] python script
+        Output: [bool] Success
+                [string] Results
+    ]]
+    os.execute("python -u -c \"" .. command.. "\"" )
 end
 
 -- PowerForensics
@@ -110,7 +132,6 @@ end
 
 
 -- FileSystem Functions --
-
 function path_exists(path)
     --[[
         Check if a file or directory exists in this path. 
@@ -169,52 +190,6 @@ function get_fileextension(path)
     return match
 end
 
-
-function parse_csv(path, sep)
-    --[[
-        Parses a CSV on disk into a lua list.
-        Input:  [string]path -- Path to csv on disk
-                [string]sep -- CSV seperator to use. defaults to ','
-        Output: [list]
-    ]] 
-    tonum = true
-    sep = sep or ','
-    local csvFile = {}
-    local file,msg = io.open(path, "r")
-    if not file then
-        hunt.error("CSV Parser failed: ".. msg)
-        return nil
-    end
-    local header = {}
-    for line in file:lines() do
-        local n = 1
-        local fields = {}
-        if not line:match("^#TYPE") then 
-            for str in string.gmatch(line, "([^"..sep.."]+)") do
-                s = str:gsub('"(.+)"', "%1")
-                if not s then 
-                    hunt.debug(line)
-                    hunt.debug('column: '..v)
-                end
-                if #header == 0 then
-                    fields[n] = s
-                else
-                    v = header[n]
-                    fields[v] = tonumber(s) or s
-                end
-                n = n + 1
-            end
-            if #header == 0 then
-                header = fields
-            else
-                table.insert(csvFile, fields)
-            end
-        end
-    end
-    file:close()
-    return csvFile
-end
-
 function userfolders()
     --[[
         Returns a list of userfolders to iterate through
@@ -234,9 +209,10 @@ function userfolders()
     return paths
 end
 
+
 -- Registry functions --
 reg = {}
-function reg.get_usersids()
+function reg.usersids()
     --[[
         Returns all the userSIDs in the registry to aid in iterating through registry user profiles
         Output: [list] Usersid strings -- A list of usersids in format: (_, '\\registry\user\<usersid>')
@@ -249,6 +225,7 @@ function reg.get_usersids()
     end
     return output
 end
+
 function reg.search(path, indent)
     --[[
         Returns all the userSIDs in the registry to aid in iterating through registry user profiles
@@ -275,7 +252,6 @@ function reg.search(path, indent)
     end
     return output
 end
-
 
 
 -- Lua Debug Helpers --
@@ -393,6 +369,7 @@ function ftp.upload(path, address, username, password)
         return ret
     end
 end
+
 function ftp.download(path, address, username, password)
     --[[
         Download a file to FTP address
@@ -448,6 +425,52 @@ function ftp.download(path, address, username, password)
 end
 
 
+-- Misc Helpers
+
+function parse_csv(path, sep)
+    --[[
+        Parses a CSV on disk into a lua list.
+        Input:  [string]path -- Path to csv on disk
+                [string]sep -- CSV seperator to use. defaults to ','
+        Output: [list]
+    ]] 
+    tonum = true
+    sep = sep or ','
+    local csvFile = {}
+    local file,msg = io.open(path, "r")
+    if not file then
+        hunt.error("CSV Parser failed: ".. msg)
+        return nil
+    end
+    local header = {}
+    for line in file:lines() do
+        local n = 1
+        local fields = {}
+        if not line:match("^#TYPE") then 
+            for str in string.gmatch(line, "([^"..sep.."]+)") do
+                s = str:gsub('"(.+)"', "%1")
+                if not s then 
+                    hunt.debug(line)
+                    hunt.debug('column: '..v)
+                end
+                if #header == 0 then
+                    fields[n] = s
+                else
+                    v = header[n]
+                    fields[v] = tonumber(s) or s
+                end
+                n = n + 1
+            end
+            if #header == 0 then
+                header = fields
+            else
+                table.insert(csvFile, fields)
+            end
+        end
+    end
+    file:close()
+    return csvFile
+end
 
 
 
