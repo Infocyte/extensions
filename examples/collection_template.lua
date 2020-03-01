@@ -30,15 +30,6 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows code
-    --[[
-    -- Example: Create powershell process and feed script/commands to its stdin
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    script = [==[
-        Get-Process | Export-CSV C:\Windows\Temp\process.csv'
-    ]==]
-    pipe:write(script) 
-    r = pipe:close()
-    --]]
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
@@ -46,11 +37,6 @@ elseif hunt.env.is_macos() then
 
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
-    --[[
-    -- Example: Execute a python command
-    cmd = ''
-    os.execute("python -u -c \"" .. cmd.. "\"" )
-    --]]
 
 
 else

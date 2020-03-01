@@ -29,16 +29,6 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 if hunt.env.is_windows() then
     -- Insert your Windows Code
 
-    --[[
-    -- EXAMPLE: Create powershell process and feed script/commands to its stdin
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    script = [==[
-        Get-Process | Export-CSV C:\Windows\Temp\processes.csv
-    ]==]
-    pipe:write(script) 
-    r = pipe:close()
-    --]]
-
 
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
