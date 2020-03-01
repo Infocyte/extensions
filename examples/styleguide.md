@@ -19,7 +19,7 @@ In the future, we intend to introduce an extension filetype that includes metada
 	Author: Infocyte
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
-]]--
+--]]
 
 #### Extension Types
 Should your extension be labelled a collection or action extension? Occasionally an extension will blur the lines so use this as a guideline:

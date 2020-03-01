@@ -7,13 +7,12 @@
     Guid: 75efc19f-c309-407c-9186-1171e689134d
     Created: 20191008
     Updated: 20191008 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 psscript = [==[
 # https://serverfault.com/questions/259381/how-to-enable-volume-shadow-copy-using-powershell
@@ -94,8 +93,7 @@ $tskFolder.RegisterTaskDefinition("ShadowCopyVolume$volumeID", $tskDef, 6, "SYST
 ]==]
 
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 
 if hunt.env.is_windows() and hunt.env.has_powershell() then

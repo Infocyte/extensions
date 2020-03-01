@@ -1,22 +1,27 @@
--- Inputs
+
+--[[ SECTION 1: Inputs --]]
 aws_id = nil
 aws_secret = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 
+--[[ SECTION 2: Functions --]]
 
-----------------------------------------------------
--- SECTION: Functions
-
-fs = {}
-function fs.exists(path)
-    local f=io.open(path,"r")
-    if f~=nil then
-        io.close(f)
-        return true
-    else
-        return false
+function path_exists(path)
+  --[[
+      Check if a file or directory exists in this path. 
+      Input:  [string]path -- Add '/' on end of the path to test if it is a folder
+      Output: [bool] Exists
+              [string] Error message -- only if failed
+  ]] 
+ local ok, err = os.rename(path, path)
+ if not ok then
+    if err == 13 then
+       -- Permission denied, but it exists
+       return true
     end
+ end
+ return ok, err
 end
 
 function table.print (tbl, indent)
@@ -34,44 +39,41 @@ function table.print (tbl, indent)
     print(toprint)
 end
 
-
 function table.val_to_str ( v )
-  if  type( v ) == "string" then
-    v = string.gsub( v, "\n", "\\n" )
-    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-      return "'" .. v .. "'"
+    if  type( v ) == "string" then
+        v = string.gsub( v, "\n", "\\n" )
+        if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+            return "'" .. v .. "'"
+        end
+        return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+    else
+        return type( v ) == "table" and table.tostring( v ) or tostring( v )
     end
-    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-  else
-    return type( v ) == "table" and table.tostring( v ) or
-      tostring( v )
-  end
 end
 
 function table.key_to_str ( k )
-  if type( k ) == "string" and string.match( k, "^[_%a][_%a%d]*$" ) then
-    return k
-  else
-    return "[" .. table.val_to_str( k ) .. "]"
-  end
+    if type( k ) == "string" and string.match( k, "^[_%a][_%a%d]*$" ) then
+        return k
+    else
+        return "[" .. table.val_to_str( k ) .. "]"
+    end
 end
 
 function table.tostring( tbl )
-  local result, done = {}, {}
-  for k, v in ipairs( tbl ) do
-    table.insert( result, table.val_to_str( v ) )
-    done[ k ] = true
-  end
-  for k, v in pairs( tbl ) do
-    if not done[ k ] then
-      table.insert( result,
-        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+    local result, done = {}, {}
+    for k, v in ipairs( tbl ) do
+        table.insert( result, table.val_to_str( v ) )
+        done[ k ] = true
     end
-  end
-  return "{" .. table.concat( result, "," ) .. "}"
+    for k, v in pairs( tbl ) do
+        if not done[ k ] then
+            table.insert( result, table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+        end
+    end
+    return "{" .. table.concat( result, "," ) .. "}"
 end
 
-----------------------------------------------------
+
 -- Tests
 
 print("(os.print) Starting Tests at " .. os.date("%x"))
@@ -124,16 +126,25 @@ for _, proc in pairs(procs) do
     hunt.log("- Command Line: " .. proc:cmd_line())
     n = n+1
 end
-
+os.execute('C:\\windows\\system32\\calc.exe')
+os.execute('sleep 4')
 hunt.log("Killing calc.exe")
-hunt.process.kill_process('Calculator.exe')
+ret = hunt.process.kill_process('Calculator.exe')
+if ret then 
+    hunt.log("killed calculator")
+else 
+    hunt.error("Could not kill calculator")
+end
 
 
 -- Test Registry functions
 regkey = '\\Registry\\User'
 r,err = hunt.registry.list_keys(regkey)
-print("err: "..tostring(err))
-hunt.log("Registry: " .. table.tostring(r))
+if not r then 
+    hunt.error(tostring(err))
+else
+    hunt.log("Registry: " .. table.tostring(r))
+end
 
 for name,value in pairs(hunt.registry.list_values(regkey)) do
     print(name .. ": " .. value)
@@ -143,11 +154,11 @@ end
 -- Test Yara functions
 rule = [[
 rule YARAExample_MZ {
-	strings:
-		$mz = "MZ"
+    strings:
+        $mz = "MZ"
 
-	condition:
-		$mz at 0
+    condition:
+        $mz at 0
 }
 ]]
 yara = hunt.yara.new()
@@ -165,11 +176,11 @@ end
 hunt.log("SHA1 file ("..path.."): " .. tostring(hash))
 hash, err = hunt.hash.sha1("err.exe")
 if not hash then
-    hunt.log("SHA1 wrong file (error: "..err.."): " .. tostring(hash))
+    hunt.error("SHA1 wrong file. Error: "..err)
 end
 data = hunt.unbase64("dGVzdA==")
 t, err = hunt.hash.sha1_data(data)
-print("err: "..tostring(err))
+hunt.error(tostring(err))
 hunt.log("Sha1 data: " .. tostring(t))
 hunt.log('unbase64 ("test"): ' .. tostring(hunt.bytes_to_string(hunt.unbase64("dGVzdA=="))))
 
@@ -177,7 +188,7 @@ hunt.log('unbase64 ("test"): ' .. tostring(hunt.bytes_to_string(hunt.unbase64("d
 file = 'c:\\windows\\system32\\notepad.exe'
 temppath = os.getenv("TEMP") .. '\\test1234.zip'
 print(hunt.gzip(file, temppath))
-if fs.exists(temppath) then hunt.log("Zip Succeeded") else hunt.log('Zip Failed') end
+if path_exists(temppath) then hunt.log("Zip Succeeded") else hunt.log('Zip Failed') end
 
 s3 = hunt.recovery.s3(aws_id, aws_secret, s3_region, s3_bucket)
 hunt.log('Uploading ' .. temppath .. ' to S3 Bucket [' ..s3_region .. ':' .. s3_bucket .. ']' )
@@ -199,9 +210,9 @@ end
 
 -- Test status Functions
 hunt.status.good()
--- hunt.status.lowrisk()
 hunt.status.bad()
 hunt.status.suspicious()
+hunt.status.lowrisk()
 
 
 
@@ -236,3 +247,5 @@ a:modified("2018-01-01 01:00:00")
 a:sha1('1a4e2c3bbc095cb7d9b85cabe2aea2c9a769b480')
 --a:sha256('2190f181fe3c821e2d3fa8a09832fe56f36a25b8825af61c2eea7ae4fc2afa55')
 hunt.survey.add(a)
+
+

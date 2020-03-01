@@ -7,10 +7,10 @@
     Guid: 55f3d0f0-476a-44fe-a583-21e110c74541
     Created: 20191123
     Updated: 20191123 (Gerritz)
-]]--
+--]]
 
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (mandatory)
 s3_user = nil
@@ -45,15 +45,14 @@ else
 end
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -102,8 +101,7 @@ function install_powerforensic()
     return true
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then

@@ -8,19 +8,17 @@
     Guid: f8e44229-4d8d-4909-b148-58130b660077
     Created: 20190919
     Updated: 20191204 (Gerritz)
-]]--
-
--- SECTION 1: Inputs (Variables)
+--]]
 
 
-
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 1: Inputs --]]
 
 
+--[[ SECTION 2: Functions --]]
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+
+--[[ SECTION 3: Collection --]]
+
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
@@ -33,16 +31,6 @@ hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Doma
 if hunt.env.is_windows() then
     -- Insert your Windows code
 
-    --[[
-    -- You can define shell scripts here if using any.
-    script = [==[
-        Get-Process
-    ]==]
-    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script) -- load up powershell functions and vars
-    r = pipe:close()
-    ]]--
-
 elseif hunt.env.is_macos() then
     -- Insert your MacOS Code
 
@@ -50,19 +38,17 @@ elseif hunt.env.is_macos() then
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
     -- Insert your POSIX (linux) Code
 
-    -- cmd = ''
-    -- os.execute("python -u -c \"" .. cmd.. "\"" )
 
 else
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
 
--- example result string [DELETE]
-result = "test"
+-- EXAMPLE RESULTS
+result = "good"
 
 -- Set the returned threat status of the host based on the string in "result"
-if string.find(result, "test") then
+if string.find(result, "good") then
     -- if result == "test", set extension status to good
     hunt.status.good()
 elseif string.find(result, "bad") then
@@ -71,6 +57,4 @@ else
     hunt.status.unknown()
 end
 
--- one or more log statements can be used to send resulting data or messages in
--- text format to your Infocyte instance
 hunt.log("Result: Extension successfully executed on " ..  host_info:hostname())

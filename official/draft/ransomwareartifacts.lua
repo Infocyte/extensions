@@ -9,9 +9,9 @@
     Guid: 100ab1b2-1ae6-4429-94b9-e32be6a61eb0
     Created: 20191024
     Updated: 20191024 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- Will recurse these paths
 paths = [==[
@@ -22,14 +22,14 @@ C:\Users
 Check file magic number and entropy as second step verification
 .{5,} = Any 5 digit or longer extension
 
-]]--
+--]]
 suspicious_file_extensions = [==[
 .{5,}|[^a-zA-Z\d\s:]
 ]==]
 
 --[[
 [^a-zA-Z\d\s:] = non-alphanumeric characters
-]]--
+--]]
 knownbad_file_extensions = [==[
 [^a-zA-Z\d\s:]|enc|R5A|R4A|clf|lock|scl|code|ctbl|ha3|cry|btc|kkk|fun|gws|oor|RDM|RRK|net|cry|enc|vvv|ecc|exx|ezz|abc|aaa|zzz|xyz|biz|xxx|ttt|enc|pzdc|good|0x0|CTBL|CTB2
 ]==]
@@ -40,8 +40,7 @@ filename_regex = [==[
 
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function lines_to_array(text)
     local strarray = {}
@@ -282,8 +281,7 @@ Function Get-RansomwareArtifacts {
 ]==]
 -- #endregion
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
@@ -329,4 +327,4 @@ else
 end
 
 
-----------------------------------------------------
+

@@ -15,9 +15,9 @@
     Guid: 89abebc6-d0db-4eba-b771-6a2652033581
     Created: 9-19-2019
     Updated: 9-19-2019 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (Destination)
 s3_user = nil
@@ -32,8 +32,7 @@ proxy = nil -- "myuser:password@10.11.12.88:8888"
 hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function tempfolder()
     -- Returns OS-specific temp folder
@@ -51,8 +50,7 @@ function tempfolder()
     end
 end
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then

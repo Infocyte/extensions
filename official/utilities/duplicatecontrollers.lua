@@ -8,18 +8,16 @@
     Guid: fcc078a5-06a8-4f53-b077-94c97d4162d8
     Created: 20190919
     Updated: 20191204 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
-
-
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 1: Inputs --]]
 
 
+--[[ SECTION 2: Functions --]]
 
-----------------------------------------------------
--- SECTION 3: Actions
+
+
+--[[ SECTION 3: Actions --]]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()

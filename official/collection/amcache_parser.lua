@@ -7,18 +7,19 @@
     Author: Infocyte
     Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
-    Updated: 20200120 (Gerritz)
-]]--
+    Updated: 20200327 (Gerritz)
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
+debug = true
 differential = true -- Will save last scan locally and only add new items on subsequent scans.
+proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
-amcacheparser_sha1 = '618A44532D107574E8C5613F225E711C13A874E1' -- hash validation of amcashparser.exe at url
+amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function is_executable(path)
     magicnumbers = {
@@ -49,9 +50,9 @@ end
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -99,12 +100,58 @@ function make_timestamp(dateString)
     return convertedTimestamp
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+-- Powershell Functions
+posh = {}
 
-sep = '|'
+function posh.execute_cmd(command)
+    --[[
+    Input: [String] Small Powershell Command
+    Output: [Bool] Success
+            [String] Output
+    ]]
+    print("Initiatializing Powershell to run Command: "..command)
+    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    pipe = io.popen(cmd, "r")
+    output = pipe:read("*a") -- string output
+    ret = pipe:close() -- success bool
+    return ret, output
+end
+
+function posh.execute_script(psscript)
+        --[[
+    Input: [String] Small Powershell Command
+    Output: [Bool] Success
+            [String] Output
+    ]]
+    print("Initiatializing Powershell to run Script")
+    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+
+    -- Pipeline is write-only so we'll use transcript to get output
+    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
+    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
+    script = script..psscript
+    script = script..'\nStop-Transcript\n'
+
+    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script)
+    ret = pipe:close() -- success bool
+
+    -- Get output
+    file, output = io.open(tempfile, "r")
+    if file then
+        output = file:read("*all") -- String Output
+        file:close()
+        os.remove(tempfile)
+    else 
+        print("Powershell script failed to run: "..output)
+    end
+    return ret, output
+end
+
+
+--[[ SECTION 3: Collection --]]
+
 host_info = hunt.env.host_info()
-osversion = host_info:os()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
@@ -113,19 +160,24 @@ if not hunt.env.is_windows() then
 end
 
 -- define temp paths
-tmppath = os.getenv("TEMP").."\\ic"
+tmppath = os.getenv("systemroot").."\\temp\\ic"
+--tmppath = os.getenv("TEMP").."\\ic"
 binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
-os.execute("mkdir "..tmppath)
+if not path_exists(tmppath) then 
+    print("Creating directory: "..tmppath)
+    os.execute("mkdir "..tmppath)
+end
 
--- Check if we have amcacheparser.exe already
+-- Check if we have amcacheparser.exe already and validate hash
 download = true
 if path_exists(binpath) then
     -- validate hash
     sha1 = hunt.hash.sha1(binpath)
-    if sha1 == amcacheparser_sha1 then
+    if sha1 == amcacheparser_sha1:lower() then
         download = false
     else
+        hunt.warn('Amcache Parser on disk ['..sha1..'] did not match expected hash: '..amcacheparser_sha1:lower()..'. Downloading new.')
         os.remove(binpath)
     end
 end
@@ -144,48 +196,78 @@ if download then
     end
 end
 
-
-
+-- Differential: Read existing csv from last scan into array if found. Find latest timestamp from last scan.
+sep = '|'
 oldhashlist = {}
 if differential and path_exists(outpath) then
-    -- Read existing csv into array. Find latest timestamp from last scan.
     csvold = parse_csv(outpath, sep)
     for _,v in pairs(csvold) do
         t = make_timestamp(v["FileKeyLastWriteTimestamp"])
         if not ts then
             ts = t
         elseif ts < t then
-            print("New timestamp = "..os.date("%c", t))
+            print("Newest AmCache timestamp: "..os.date("%c", t))
             ts = t
         end
         oldhashlist[v["SHA1"]] = true
     end
-    print("Last AmCache Entry Timestamp = "..os.date("%c", ts))
+    hunt.debug("Last AmCache Entry Timestamp from previous scan: "..os.date("%c", ts))
 end
 
 -- Execute amcacheparser
-os.execute(binpath..' -f "C:\\Windows\\AppCompat\\Programs\\Amcache.hve" --mp --csv '..tmppath.."\\temp")
+hunt.debug("Executing Amcache Parser...")
+os.execute(binpath..' -f "C:\\Windows\\AppCompat\\Programs\\Amcache.hve" --csv '..tmppath.."\\temp > "..tmppath.."\\icextensions.log")
+file, msg = io.open(tmppath.."\\icextensions.log", "r")
+if file then
+    if debug then
+        hunt.debug(file:read("*all"))
+    else 
+       print(file:read("*all")) 
+    end
+    file:close()
+    -- os.remove(tmppath.."\\icextensions.log")
+else 
+    hunt.error("AmcacheParser failed to run: "..msg)
+    return
+end
 
 -- Parse output using powershell
-script = [==[
-$outpath = "$env:TEMP\ic\amcache.csv"
-gci "$env:TEMP\ic\temp" -filter *Amcache*.csv | % { $a += gc $_.fullname | convertfrom-csv | where { $_.isPeFile -AND $_.sha1 } | select-object sha1,fullpath,filekeylastwritetimestamp -unique }
-$a | % { $_.FileKeyLastWriteTimestamp = Get-Date ([DateTime]$_.FileKeyLastWriteTimestamp).ToUniversalTime() -format "o" }
-$a = $a | Sort-Object FileKeyLastWriteTimestamp -Descending
-Remove-item "$env:TEMP\ic\temp" -Force -Recurse
+script = '$temp = "'..tmppath..'"\n'
+script = script..[==[
+$outpath = "$temp\amcache.csv"
+Get-ChildItem "$temp\temp" -filter *Amcache*.csv | Foreach-Object { 
+    $a += gc $_.fullname | convertfrom-csv | where { 
+        $_.isPeFile -AND $_.sha1 } | select-object sha1,fullpath,filekeylastwritetimestamp -unique 
+}
+$a | Foreach-Object { 
+    if ($_.FileKeyLastWriteTimestamp) {
+        $_.FileKeyLastWriteTimestamp = Get-Date ([DateTime]$_.FileKeyLastWriteTimestamp).ToUniversalTime() -format "o"
+    }
+}
+$a = $a | Sort-object FileKeyLastWriteTimestamp,sha1,fullpath -unique -Descending
 $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
+Remove-item "$temp\temp" -Force -Recurse
 ]==]
-print("Initiatializing Powershell")
-pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-pipe:write(script)
-pipe:close()
+hunt.debug("Initiatializing Powershell to parse output")
+ret, output = posh.execute_script(script)
+if ret then
+    if debug then
+        hunt.debug(output)
+    else 
+       print(output) 
+    end
+else
+    hunt.error("Failed: Could not parse AmCache output with Powershell")
+    return
+end
 
 
 -- Read csv into array
 if path_exists(outpath) then
+    hunt.debug("Parsing Powershell Output...")
     csv = parse_csv(outpath, sep)
 else
-    hunt.error("AmcacheParser failed")
+    hunt.error("Failed: Could not find powershell output csv at "..outpath)
     return
 end
 
@@ -194,12 +276,12 @@ end
 if differential and ts then
     newitems = #csv - #csvold
     if newitems > 0 then
-        hunt.debug("Differential scan selected. Adding "..newitems.." new Amcache entries found since: "..os.date("%c", ts))
+        hunt.debug("Differential scan: Adding "..newitems.." new Amcache entries found since: "..os.date("%c", ts))
     else
-        hunt.debug("Differential scan selected but no new entries found after: "..os.date("%c", ts))
+        hunt.debug("Differential scan: No new entries found after: "..os.date("%c", ts))
     end
 elseif differential then
-    hunt.debug("Differential Scan Selected. No previous scan data found, analyzing all "..#csv.." items to establish baseline.")
+    hunt.debug("Differential Scan: No previous scan data found, analyzing all "..#csv.." items to establish baseline.")
 end
 paths = {}
 for _, item in pairs(csv) do
@@ -221,4 +303,4 @@ end
 -- Set Status (not really necessary since bad items will be flagged in artifacts)
 hunt.status.good()
 
-----------------------------------------------------
+

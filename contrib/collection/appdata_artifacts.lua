@@ -8,13 +8,12 @@
     Guid: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
     Created: 20191121
     Updated: 20191121 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function is_executable(path)
     magicnumbers = {
@@ -42,8 +41,7 @@ function is_executable(path)
     end
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 
 host_info = hunt.env.host_info()

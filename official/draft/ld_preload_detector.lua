@@ -8,17 +8,15 @@
     Guid: 0153a459-c36b-4542-940e-e4c81ab1eb63
     Created: 20191216
     Updated: 20191216 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
-
-
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 1: Inputs --]]
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 2: Functions --]]
+
+
+--[[ SECTION 3: Collection --]]
 
 if hunt.env.is_linux() or hunt.env.has_sh() or hunt.env.is_macos() then
 

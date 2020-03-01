@@ -9,10 +9,10 @@
     Guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
     Created: 20191018
     Updated: 20191125 (Gerritz)
-]]--
+--]]
 
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (mandatory)
 s3_user = nil
@@ -41,8 +41,7 @@ USBHistory = true
 debug = false
 
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function reg_usersids()
     local output = {}
@@ -72,9 +71,9 @@ end
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -82,8 +81,67 @@ function path_exists(path)
    return ok, err
 end
 
+-- Infocyte Powershell Functions
+posh = {}
+
+function posh.execute_cmd(command)
+    --[[
+    Input: [String] Small Powershell Command
+    Output: [Bool] Success
+            [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        return nil
+    end
+    print("Initiatializing Powershell to run Command: "..command)
+    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    pipe = io.popen(cmd, "r")
+    output = pipe:read("*a") -- string output
+    ret = pipe:close() -- success bool
+    return ret, output
+end
+
+function posh.execute_script(psscript)
+        --[[
+    Input: [String] Small Powershell Command
+    Output: [Bool] Success
+            [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        return nil
+    end
+    print("Initiatializing Powershell to run Script")
+    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+
+    -- Pipeline is write-only so we'll use transcript to get output
+    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
+    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
+    script = script..psscript
+    script = script..'\nStop-Transcript\n'
+
+    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script)
+    ret = pipe:close() -- success bool
+
+    -- Get output
+    file, output = io.open(tempfile, "r")
+    if file then
+        output = file:read("*all") -- String Output
+        file:close()
+        os.remove(tempfile)
+    else 
+        print("Powershell script failed to run: "..output)
+    end
+    return ret, output
+end
+
 function install_powerforensic()
-    local debug = debug or true
+    if not posh then 
+        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
+        throw "Error"
+    end
     script = [==[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
@@ -97,35 +155,17 @@ function install_powerforensic()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        return nil
+    ret, output = posh.execute_script(psscript)
+    if ret then 
+        hunt.debug("Powershell Succeeded:\n"..output)
+    else 
+        hunt.error("Powershell Failed:\n"..output)
     end
-
-    -- Make tempdir
-    logfolder = os.getenv("temp").."\\ic"
-    os.execute("mkdir "..logfolder)
-
-    -- Create powershell process and feed script+commands to its stdin
-    print("Initiatializing PowerForensics")
-    logfile = logfolder.."\\pslog.log"
-    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - > "..logfile, "w")
-    pipe:write(script) -- load up powershell functions and vars (Powerforensics)
-    r = pipe:close()
-    if debug then
-        local file,msg = io.open(logfile, "r")
-        if file then
-            hunt.debug("Powershell Output (Success="..tostring(r).."):\n"..file:read("*all"))
-        end
-        file:close()
-        os.remove(logfile)
-    end
-    return true
+    return ret
 end
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -339,7 +379,7 @@ end
 os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")
 
 hunt.status.good()
-----------------------------------------------------
+
 
 --[[
 Win2k3/XP: \%SystemRoot%\System32\Config\*.evt
@@ -353,4 +393,4 @@ Get-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\eventlog\System | selec
     7045 [System] - Service Creation
     4688 [Security] - A new process has been created (Win2012R2+ has CLI)
     4014 [Powershell] - Script Block Logging
-]]--
+--]]

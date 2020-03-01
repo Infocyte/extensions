@@ -11,10 +11,10 @@
     Guid: 5a0e3b34-4692-4f3c-afff-c84102785756
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
-]]--
+--]]
 
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 searchpath = [[C:\Users]]
 strings = {
     'test'
@@ -51,8 +51,7 @@ proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 debug = true
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 -- #region initscript
 script = [==[
@@ -324,8 +323,7 @@ function file_exists(name)
     if f~=nil then io.close(f) return true else return false end
 end
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
 hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
@@ -473,4 +471,4 @@ else
     hunt.status.good()
 end
 
-----------------------------------------------------
+

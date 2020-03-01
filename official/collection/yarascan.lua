@@ -7,9 +7,9 @@
     Guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
     Created: 20191018
     Updated: 20191127 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 
 -- This extension will yara scan files below
 scanactiveprocesses = true
@@ -34,9 +34,6 @@ elseif hunt.env.is_linux() then
     }
 
 end
-
-----------------------------------------------------
--- SECTION 2: Functions & Rules
 
 -- #region bad_rules
 bad_rules = [==[
@@ -1383,6 +1380,7 @@ rule embedded_url {
 -- #endregion
 
 
+--[[ SECTION 2: Functions --]]
 
 function GetFileName(path)
   return path:match("^.+/(.+)$")
@@ -1419,8 +1417,7 @@ function is_executable(path)
 end
 
 
-----------------------------------------------------
--- SECTION 3: Collection / Inspection
+--[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
 osversion = host_info:os()
@@ -1453,7 +1450,7 @@ if scanappdata then
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
         opts = {
             "files",
-            "size<1mb",
+            "size<5mb",
             "recurse=1" --depth of 1
         }
         for _, path in pairs(hunt.fs.ls(userfolder:path().."\\appdata\\roaming", opts)) do
@@ -1468,7 +1465,7 @@ end
 for i, path in pairs(additionalpaths) do
     opts = {
         "files",
-        "size<1mb"
+        "size<5mb"
     }
     files = hunt.fs.ls(path, opts)
     for _,path in pairs(files) do
@@ -1533,4 +1530,4 @@ end
 
 hunt.debug("Result: Extension successfully executed on " .. host_info:hostname())
 
-----------------------------------------------------
+

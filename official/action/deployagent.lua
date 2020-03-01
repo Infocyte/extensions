@@ -7,21 +7,20 @@
     Guid: df00a84f-6490-4cfc-b55c-fa2c0e3ec5f3
     Created: 9-19-2019
     Updated: 11-19-2019 (Gerritz)
-]]--
+--]]
 
--- SECTION 1: Inputs (Variables)
+--[[ SECTION 1: Inputs --]]
 regkey = nil -- Optional Registration Key for installation
 force = false -- Force Reinstall with new config
 
-----------------------------------------------------
--- SECTION 2: Functions
+--[[ SECTION 2: Functions --]]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
     -- add '/' on end to test if it is a folder
-   local ok, err, code = os.rename(path, path)
+   local ok, err = os.rename(path, path)
    if not ok then
-      if code == 13 then
+      if err == 13 then
          -- Permission denied, but it exists
          return true
       end
@@ -57,8 +56,7 @@ function is_agent_installed()
 	end
 end
 
-----------------------------------------------------
--- SECTION 3: Actions
+--[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
@@ -67,8 +65,10 @@ if is_agent_installed() then
     hunt.log("Infocyte Agent is already installed")
     if force then
 		-- TODO overwrite existing config
-        hunt.install_agent(regkey)
+		hunt.install_agent(regkey)
+		hunt.log("Infocyte Agent has been installed")
 	end
 else
 	hunt.install_agent(regkey)
+	hunt.log("Infocyte Agent has been installed")
 end
