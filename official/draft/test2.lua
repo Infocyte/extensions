@@ -1,45 +1,5 @@
 print("Starting Extension!!!")
 
-
-function parse_csv(path, sep)
-    tonum = true
-    sep = sep or ','
-    local csvFile = {}
-    local file,msg = io.open(path, "r")
-    if not file then
-        hunt.error("AmcacheParser failed: ".. msg)
-        return nil
-    end
-    header = {}
-    for line in file:lines() do
-        n = 1
-        local fields = {}
-        for str in string.gmatch(line, "([^"..sep.."]+)") do
-            s = str:gsub('"(.+)"', "%1")
-            if #header == 0 then
-                fields[n] = s
-            else
-                print(line)
-                v = header[n]
-                print('column: '..v)
-                fields[v] = tonumber(s) or s
-            end
-            n = n + 1
-        end
-        if #header == 0 then
-            header = fields
-        else
-            table.insert(csvFile, fields)
-        end
-    end
-    file:close()
-    return csvFile
-end
-
-
-parse_csv([[C:\Users\cgerr\Downloads\amcache.csv]])
-
-
 -- RDP Lateral Movement
 -- https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
 -- 4624 logon event
@@ -47,7 +7,7 @@ parse_csv([[C:\Users\cgerr\Downloads\amcache.csv]])
 
 script = [==[
 $startdate = (Get-date -hour 0 -minute 0 -second 0)
-$RDP_Logons = Get-WinEvent -FilterHashtable @{logname='security';id=4624,4778,4648; StartTime=$startdate} | where { $_.Message -match 'logon type:\s+(10)\s'} | % {
+$RDP_Logons = Get-WinEvent -FilterHashtable @{logname='security';id=4624,4778,4648; StartTime=$startdate} -ea 0 | where { $_.Message -match 'logon type:\s+(10)\s'} | % {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -58,7 +18,7 @@ $RDP_Logons = Get-WinEvent -FilterHashtable @{logname='security';id=4624,4778,46
         SecurityId = $_.Message -replace '(?smi).*Security ID:\s+([^\s]+)\s+.*','$1'
         LogonId = $_.Message -replace '(?smi).*Logon ID:\s+([^\s]+)\s+.*','$1'
     })
-    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" }| sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SecurityId, LogonId `
+    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SecurityId, LogonId `
         , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}} `
         , @{N='LogType';E={
         switch ($_.LogonType) {
@@ -76,7 +36,7 @@ $RDP_Logons = Get-WinEvent -FilterHashtable @{logname='security';id=4624,4778,46
     }
 }
 
-$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } | % {
+$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } -ea 0 | % {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -89,7 +49,7 @@ $RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microso
 }
 
 
-$RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=24,25; StartTime=$startdate } | % {
+$RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=24,25; StartTime=$startdate } -ea 0 | % {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -100,14 +60,11 @@ $RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-W
     } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, Username, Action
 
 
-
-            
 $RDP_Logons | ft -auto
 $RDP_RemoteConnectionManager | ft -auto
 $RDP_LocalSessionManager | ft -auto
-
-
-$Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate} | ? { $_.Message -match "S-1-5-21" } | % {
+            
+$Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | ? { $_.Message -match "S-1-5-21" } | % {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -125,10 +82,8 @@ $Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTi
         , @{N='ProcessId';E={[convert]::toint32($($_.ProcessId).Substring(2),16)}} `
         , @{N='ParentProcessId';E={ [convert]::toint32($($_.ParentProcessId).Substring(2),16) }}
 
-$Processes | ft -auto
-
-$Processes2 = $Processes
-$Processes2 | % { 
+$RDP_Processes = $Processes
+$RDP_Processes | % { 
 	$LogonId = $_.LogonId; 
 	$Session = $RDP_Logons | ? { $_.LogonId -eq $LogonId }; 
 	$_ | Add-Member -MemberType NoteProperty -Name "LogonType" -Value $Session.LogType; 
@@ -137,3 +92,12 @@ $Processes2 | % {
 	$PProc = (Get-Process -Id ($_.ParentProcessId)).Name
 	$_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value $PProc
 }
+
+$RDP_Processes | ft -auto
+
+$RDP_Logons | export-csv $temp\RDP_Logons.csv
+$RDP_RemoteConnectionManager | export-csv $temp\RDP_RemoteConnectionManager.csv
+$RDP_LocalSessionManager | export-csv $temp\RDP_LocalSessionManager.csv
+$RDP_Processes | export-csv $temp\RDP_Processes.csv
+]==]
+

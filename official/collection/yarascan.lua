@@ -21,18 +21,17 @@ if hunt.env.is_windows() then
         'c:\\windows\\system32\\calc.exe'
     }
 
-elseif hunt.env.is_macos() then
-    additionalpaths = {
-        '/bin/sh',
-        '/bin/ls'
-    }
-
 elseif hunt.env.is_linux() then
     additionalpaths = {
         '/bin/cat',
         '/bin/tar'
     }
 
+elseif hunt.env.is_macos() then
+    additionalpaths = {
+        '/bin/sh',
+        '/bin/ls'
+    }
 end
 
 -- #region bad_rules
@@ -309,6 +308,7 @@ strings:
 condition:
 	all of them
 }
+
 rule kraken_cryptor_ransomware_loader {
 
    meta:
@@ -1382,15 +1382,13 @@ rule embedded_url {
 
 --[[ SECTION 2: Functions --]]
 
-function GetFileName(path)
-  return path:match("^.+/(.+)$")
-end
-
-function GetFileExtension(path)
-  return path:match("^.+(%..+)$")
-end
 
 function is_executable(path)
+    --[[
+        Check if a file is an executable (PE or ELF) by magic number. 
+        Input:  [string]path
+        Output: [bool] Is Executable
+    ]] 
     magicnumbers = {
         "MZ",
         ".ELF"

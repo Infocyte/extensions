@@ -86,7 +86,7 @@ function py.run_cmd(command)
         Output: [bool] Success    
                 [string] Results
     ]]
-    os.execute("python -u -c \"" .. cmd.. "\"" )
+    os.execute("python -q -u -c \"" .. cmd.. "\"" )
 end
 function py.run_script(pyscript)
     --[[
@@ -95,7 +95,23 @@ function py.run_script(pyscript)
         Output: [bool] Success
                 [string] Results
     ]]
-    os.execute("python -u -c \"" .. command.. "\"" )
+    
+    tempfile = os.getenv("tmp").."/icpython_"..os.tmpname()..".log"
+
+    io.popen("python -q -c - > "..tempfile, "w")
+    pipe:write(pyscript)
+    ret = pipe:close() -- success bool
+
+    -- Get output
+    file, output = io.open(tempfile, "r")
+    if file then
+        output = file:read("*all") -- String Output
+        file:close()
+        os.remove(tempfile)
+    else 
+        print("Python script failed to run: "..output)
+    end
+    return ret, output
 end
 
 -- PowerForensics
