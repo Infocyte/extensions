@@ -17,8 +17,14 @@ function posh.run_cmd(command)
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not command or (type(command) ~= "string") then 
+        hunt.error("Required input [String]command not provided.")
+        throw "Required input [String]command not provided."
+    end
+
     print("Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
@@ -35,8 +41,14 @@ function posh.run_script(psscript)
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        hunt.error("Required input [String]script not provided.")
+        throw "Required input [String]script not provided."
+    end
+
     print("Initiatializing Powershell to run Script")
     tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
 
@@ -51,15 +63,47 @@ function posh.run_script(psscript)
     ret = pipe:close() -- success bool
 
     -- Get output
-    file, output = io.open(tempfile, "r")
+    file, err = io.open(tempfile, "r")
     if file then
         output = file:read("*all") -- String Output
         file:close()
         os.remove(tempfile)
     else 
-        print("Powershell script failed to run: "..output)
+        hunt.error("Powershell script failed to run: "..err)
     end
     return ret, output
+end
+
+-- PowerForensics (optional)
+function posh.install_powerforensics()
+    --[[
+        Checks for NuGet and installs Powerforensics
+        Output: [bool] Success
+    ]]
+    if not posh then 
+        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
+        throw "Error"
+    end
+    script = [==[
+        # Download/Install PowerForensics
+        $n = Get-PackageProvider -name NuGet
+        if ($n.version.major -lt 2) {
+            if ($n.version.minor -lt 8) {
+                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
+            }
+        }
+        if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
+            Write-Host "Installing PowerForensics"
+            Install-Module -name PowerForensics -Scope CurrentUser -Force
+        }
+    ]==]
+    ret, output = posh.run_script(script)
+    if ret then 
+        hunt.debug("Powershell Succeeded:\n"..output)
+    else 
+        hunt.error("Powershell Failed:\n"..output)
+    end
+    return ret
 end
 
 function posh.list_to_pslist(list)
@@ -114,38 +158,6 @@ function py.run_script(pyscript)
     return ret, output
 end
 
--- PowerForensics
-function install_powerforensic()
-    --[[
-        Checks for NuGet and installs Powerforensics
-        Output: [bool] Success
-    ]]
-    if not posh then 
-        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
-        throw "Error"
-    end
-    script = [==[
-        # Download/Install PowerForensics
-        $n = Get-PackageProvider -name NuGet
-        if ($n.version.major -lt 2) {
-            if ($n.version.minor -lt 8) {
-                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
-            }
-        }
-        if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
-            Write-Host "Installing PowerForensics"
-            Install-Module -name PowerForensics -Scope CurrentUser -Force
-        }
-    ]==]
-    ret, output = posh.execute_script(psscript)
-    if ret then 
-        hunt.debug("Powershell Succeeded:\n"..output)
-    else 
-        hunt.error("Powershell Failed:\n"..output)
-    end
-    return ret
-end
-
 
 -- FileSystem Functions --
 function path_exists(path)
@@ -177,7 +189,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        hunt.error(msg)
         return nil
     end
     local bytes = f:read(4)

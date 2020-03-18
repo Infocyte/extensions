@@ -17,7 +17,7 @@ s3_user = nil
 s3_pass = nil
 s3_region = 'us-east-2' -- 'us-east-2'
 s3_bucket = 'test-extensions' -- 'test-extensions'
-s3path_modifier = "evidence" -- /filename will be appended
+s3path_modifier = "evidence" -- /filename will be appended 
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
 -- Proxy (optional)
@@ -60,8 +60,83 @@ function path_exists(path)
    return ok, err
 end
 
-function install_powerforensic()
-    local debug = debug or true
+-- Infocyte Powershell Functions --
+posh = {}
+function posh.run_cmd(command)
+    --[[
+        Input:  [String] Small Powershell Command
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        throw "Powershell not found."
+    end
+
+    if not command or (type(command) ~= "string") then 
+        hunt.error("Required input [String]command not provided.")
+        throw "Required input [String]command not provided."
+    end
+
+    print("Initiatializing Powershell to run Command: "..command)
+    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    pipe = io.popen(cmd, "r")
+    output = pipe:read("*a") -- string output
+    ret = pipe:close() -- success bool
+    return ret, output
+end
+
+function posh.run_script(psscript)
+    --[[
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        throw "Powershell not found."
+    end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        hunt.error("Required input [String]script not provided.")
+        throw "Required input [String]script not provided."
+    end
+
+    print("Initiatializing Powershell to run Script")
+    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+
+    -- Pipeline is write-only so we'll use transcript to get output
+    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
+    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
+    script = script..psscript
+    script = script..'\nStop-Transcript\n'
+
+    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script)
+    ret = pipe:close() -- success bool
+
+    -- Get output
+    file, err = io.open(tempfile, "r")
+    if file then
+        output = file:read("*all") -- String Output
+        file:close()
+        os.remove(tempfile)
+    else 
+        hunt.error("Powershell script failed to run: "..err)
+    end
+    return ret, output
+end
+
+-- PowerForensics (optional)
+function posh.install_powerforensics()
+    --[[
+        Checks for NuGet and installs Powerforensics
+        Output: [bool] Success
+    ]]
+    if not posh then 
+        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
+        throw "Error"
+    end
     script = [==[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
@@ -75,30 +150,13 @@ function install_powerforensic()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        return nil
+    ret, output = posh.run_script(script)
+    if ret then 
+        hunt.debug("Powershell Succeeded:\n"..output)
+    else 
+        hunt.error("Powershell Failed:\n"..output)
     end
-
-    -- Make tempdir
-    logfolder = os.getenv("temp").."\\ic"
-    os.execute("mkdir "..logfolder)
-
-    -- Create powershell process and feed script+commands to its stdin
-    print("Initiatializing PowerForensics")
-    logfile = logfolder.."\\pslog.log"
-    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - > "..logfile, "w")
-    pipe:write(script) -- load up powershell functions and vars (Powerforensics)
-    r = pipe:close()
-    if debug then
-        local file,msg = io.open(logfile, "r")
-        if file then
-            hunt.debug("Powershell Output (Success="..tostring(r).."):\n"..file:read("*all"))
-        end
-        file:close()
-        os.remove(logfile)
-    end
-    return true
+    return ret
 end
 
 --[[ SECTION 3: Collection --]]
@@ -119,7 +177,7 @@ lf = hunt.fs.ls(logfolder)
 if #lf == 0 then os.execute("mkdir "..logfolder) end
 
 if use_powerforensics and hunt.env.has_powershell() then
-    install_powerforensic()
+    posh.install_powerforensics()
 end
 
 
@@ -138,16 +196,16 @@ for _, p in pairs(paths) do
     for _, path in pairs(hunt.fs.ls(p)) do
         -- If file is being used or locked, this copy will get passed it (usually)
         outpath = os.getenv("temp").."\\ic\\"..path:name()
-        infile = io.open(path:path(), "rb")
+        infile, err = io.open(path:path(), "rb")
         if not infile and use_powerforensics and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path:path()..' -Destination '..outpath
             hunt.debug("File Locked. Executing: "..cmd)
-            local pipe = io.popen('powershell.exe -nologo -nop -command "'..cmd..'"', 'r')
-            hunt.debug(pipe:read('*a')) -- load up powershell functions and vars
-            pipe:close()
+            ret, out = posh.run_cmd(cmd)
+            hunt.debug("Powerforensics output: "..out)
         elseif not infile then
-            hunt.error("Could not open "..path:path()..". Try enabling powerforensics to bypass file lock.")
+            hunt.error("Could not open "..path:path().." ["..err.."].\nTry enabling powerforensics to bypass file lock.")
+            goto continue
         else
             data = infile:read("*all")
             infile:close()
@@ -176,6 +234,7 @@ for _, p in pairs(paths) do
         else
             hunt.error("File read/copy failed on "..path:path())
         end
+        ::continue::
     end
 end
 os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")

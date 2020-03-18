@@ -8,7 +8,7 @@
     Author: Infocyte
     Guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
     Created: 20191018
-    Updated: 20191125 (Gerritz)
+    Updated: 20200318 (Gerritz)
 --]]
 
 
@@ -83,17 +83,22 @@ end
 
 -- Infocyte Powershell Functions
 posh = {}
-
-function posh.execute_cmd(command)
+function posh.run_cmd(command)
     --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
+        Input:  [String] Small Powershell Command
+        Output: [Bool] Success
+                [String] Output
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not command or (type(command) ~= "string") then 
+        hunt.error("Required input [String]command not provided.")
+        throw "Required input [String]command not provided."
+    end
+
     print("Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
@@ -102,16 +107,22 @@ function posh.execute_cmd(command)
     return ret, output
 end
 
-function posh.execute_script(psscript)
-        --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
+function posh.run_script(psscript)
+    --[[
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        hunt.error("Required input [String]script not provided.")
+        throw "Required input [String]script not provided."
+    end
+
     print("Initiatializing Powershell to run Script")
     tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
 
@@ -126,18 +137,22 @@ function posh.execute_script(psscript)
     ret = pipe:close() -- success bool
 
     -- Get output
-    file, output = io.open(tempfile, "r")
+    file, err = io.open(tempfile, "r")
     if file then
         output = file:read("*all") -- String Output
         file:close()
         os.remove(tempfile)
     else 
-        print("Powershell script failed to run: "..output)
+        print("Powershell script failed to run: "..err)
     end
     return ret, output
 end
 
-function install_powerforensic()
+function posh.install_powerforensics()
+    --[[
+        Checks for NuGet and installs Powerforensics
+        Output: [bool] Success
+    ]]
     if not posh then 
         hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
         throw "Error"
@@ -155,7 +170,7 @@ function install_powerforensic()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    ret, output = posh.execute_script(psscript)
+    ret, output = posh.run_script(script)
     if ret then 
         hunt.debug("Powershell Succeeded:\n"..output)
     else 
@@ -185,7 +200,7 @@ if hunt.env.is_windows() then
     os.execute("mkdir "..os.getenv("temp").."\\ic")
 
     if (use_powerforensics or MFT) and hunt.env.has_powershell() then
-        install_powerforensic()
+        posh.install_powerforensics()
     end
 
     -- Record LocalTimeZone
@@ -337,14 +352,13 @@ for name,path in pairs(paths) do
     if #f > 0 then
         -- If file is being used or locked, this copy will get passed it (usually)
         outpath = os.getenv("temp").."\\ic\\"..f[1]:name()
-        infile = io.open(path, "rb")
+        infile, err = io.open(path, "rb")
         if not infile and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
-            hunt.debug("File Locked. Executing: "..cmd)
-            local pipe = io.popen('powershell.exe -nologo -nop -command "'..cmd..'"', 'r')
-            hunt.debug(pipe:read('*a'))
-            pipe:close()
+            hunt.debug("File Locked ["..err.."]. Executing: "..cmd)
+            ret, out = posh.run_cmd(cmd)
+            hunt.debug("Powerforensics output: "..out)
         else
            -- Copy file to temp path
            data = infile:read("*all")

@@ -3,25 +3,22 @@
     Name: PowerForensics MFT
     Type: Collection
     Description: | Deploy PowerForensics and gathers forensic data to Recovery
-        Location. 
-        This extension requires definition of a Recovery Location (S3, SMB Share, or FTP) |
+        Location. This extension requires definition of a Recovery Location 
+        (S3, SMB Share, or FTP) |
     Author: Infocyte
     Guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
     Created: 20190919
-    Updated: 20191025 (Gerritz)
+    Updated: 20200318 (Gerritz)
 --]]
 
 
 --[[ SECTION 1: Inputs --]]
-debug = true
 
 -- Upload Options. S3 Bucket (Mandatory)
 s3_user = nil -- Optional for authenticated uploads
 s3_pass = nil -- Optional for authenticated uploads
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
-
-
 
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 s3path_modifier = "evidence"
@@ -31,17 +28,22 @@ s3path_modifier = "evidence"
 
 -- Infocyte Powershell Functions
 posh = {}
-
 function posh.run_cmd(command)
     --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
+        Input:  [String] Small Powershell Command
+        Output: [Bool] Success
+                [String] Output
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not command or (type(command) ~= "string") then 
+        hunt.error("Required input [String]command not provided.")
+        throw "Required input [String]command not provided."
+    end
+
     print("Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
@@ -51,15 +53,21 @@ function posh.run_cmd(command)
 end
 
 function posh.run_script(psscript)
-        --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
+    --[[
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
     ]]
     if not hunt.env.has_powershell() then
         hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        hunt.error("Required input [String]script not provided.")
+        throw "Required input [String]script not provided."
+    end
+
     print("Initiatializing Powershell to run Script")
     tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
 
@@ -74,18 +82,23 @@ function posh.run_script(psscript)
     ret = pipe:close() -- success bool
 
     -- Get output
-    file, output = io.open(tempfile, "r")
+    file, err = io.open(tempfile, "r")
     if file then
         output = file:read("*all") -- String Output
         file:close()
-        os.remove(tempfile)
+        -- os.remove(tempfile)
     else 
-        print("Powershell script failed to run: "..output)
+        print("Powershell script failed to run: "..err)
     end
     return ret, output
 end
 
-function install_powerforensic()
+-- PowerForensics (optional)
+function posh.install_powerforensics()
+    --[[
+        Checks for NuGet and installs Powerforensics
+        Output: [bool] Success
+    ]]
     if not posh then 
         hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
         throw "Error"
@@ -103,7 +116,7 @@ function install_powerforensic()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    ret, output = posh.execute_script(psscript)
+    ret, output = posh.run_script(script)
     if ret then 
         hunt.debug("Powershell Succeeded:\n"..output)
     else 
@@ -150,15 +163,16 @@ temppath = tmp.."\\icmft.csv"
 outpath = tmp.."\\icmft.zip"
 
 -- Install PowerForensics
-install_powerforensic()
+posh.install_powerforensic()
 
 -- Get MFT w/ Powerforensics
 cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
 hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
 hunt.debug("Executing Powershell command: "..cmd)
-ret, output = posh.run_cmd(cmd)
+ret, err = posh.run_cmd(cmd)
 if not ret then 
-    hunt.error("Failed to run Get-ForensicFileRecord: "..output)
+    hunt.error("Failed to run Get-ForensicFileRecord: "..err)
+    return
 end
 
 -- Compress results
@@ -192,11 +206,14 @@ recovery = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
 s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 s3path = s3path_preamble .. '/mft.zip'
 hunt.debug("Uploading gzipped MFT (size= "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
-recovery:upload_file(outpath, s3path)
-hunt.log("MFT successfully uploaded to S3.")
-hunt.status.good()
+r, err = recovery:upload_file(outpath, s3path)
+if r then 
+    hunt.log("MFT successfully uploaded to S3.")
+    hunt.status.good()
+else 
+    hunt.error("MFT could not be uploaded to S3: "..err)
+end
 
 -- Cleanup
 os.remove(temppath)
 os.remove(outpath)
-os.remove(logfile)

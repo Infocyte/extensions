@@ -49,7 +49,6 @@ s3path_modifier = 'ediscovery'
 --Proxy
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
-debug = true
 
 --[[ SECTION 2: Functions --]]
 
@@ -266,23 +265,51 @@ Function Get-StringsMatch {
 ]==]
 -- #endregion
 
-function GetFileName(path)
-  return path:match("^.+/(.+)$")
+-- FileSystem Functions --
+function path_exists(path)
+    --[[
+        Check if a file or directory exists in this path. 
+        Input:  [string]path -- Add '/' on end of the path to test if it is a folder
+        Output: [bool] Exists
+                [string] Error message -- only if failed
+    ]] 
+   local ok, err = os.rename(path, path)
+   if not ok then
+      if err == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
-function GetFileExtension(path)
-  return path:match("^.+(%..+)$")
+function get_filename(path)
+    match = path:match("^.+[\\/](.+)$")
+    return match
+end
+  
+function get_fileextension(path)
+    match = path:match("^.+(%..+)$")
+    return match
 end
 
-function make_psstringarray(list)
-    -- Converts a lua list (table) into a string powershell list
-    psarray = "@("
-    for _,value in ipairs(list) do
-        -- print("Param: " .. tostring(value))
-        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
+function userfolders()
+    --[[
+        Returns a list of userfolders to iterate through
+        Output: [list]ret -- List of userfolders (_, path)
+    ]]
+    local paths = {}
+    local u = {}
+    for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
+        if (userfolder:full()):match("Users") then
+            if not u[userfolder:full()] then
+                -- filter out links like "Default User" and "All Users"
+                u[userfolder:full()] = true
+                table.insert(paths, userfolder:path())
+            end
+        end
     end
-    psarray = psarray:sub(1, -2) .. ")"
-    return psarray
+    return paths
 end
 
 function parse_csv(path, sep)
@@ -318,10 +345,88 @@ function parse_csv(path, sep)
     return csvFile
 end
 
-function file_exists(name)
-    local f=io.open(name,"r")
-    if f~=nil then io.close(f) return true else return false end
+-- Infocyte Powershell Functions --
+posh = {}
+function posh.run_cmd(command)
+    --[[
+        Input:  [String] Small Powershell Command
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        throw "Powershell not found."
+    end
+
+    if not command or (type(command) ~= "string") then 
+        hunt.error("Required input [String]command not provided.")
+        throw "Required input [String]command not provided."
+    end
+
+    print("Initiatializing Powershell to run Command: "..command)
+    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    pipe = io.popen(cmd, "r")
+    output = pipe:read("*a") -- string output
+    ret = pipe:close() -- success bool
+    return ret, output
 end
+
+function posh.run_script(psscript)
+    --[[
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        hunt.error("Powershell not found.")
+        throw "Powershell not found."
+    end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        hunt.error("Required input [String]script not provided.")
+        throw "Required input [String]script not provided."
+    end
+
+    print("Initiatializing Powershell to run Script")
+    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+
+    -- Pipeline is write-only so we'll use transcript to get output
+    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
+    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
+    script = script..psscript
+    script = script..'\nStop-Transcript\n'
+
+    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    pipe:write(script)
+    ret = pipe:close() -- success bool
+
+    -- Get output
+    file, err = io.open(tempfile, "r")
+    if file then
+        output = file:read("*all") -- String Output
+        file:close()
+        os.remove(tempfile)
+    else 
+        hunt.error("Powershell script failed to run: "..err)
+    end
+    return ret, output
+end
+
+function posh.list_to_pslist(list)
+    --[[
+        Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
+        Input:  [list]list -- Any list with (_, val) format
+        Output: [string] -- Example = '@("Value1","Value2","Value3")'
+    ]] 
+    psarray = "@("
+    for _,value in ipairs(list) do
+        -- print("Param: " .. tostring(value))
+        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
+    end
+    psarray = psarray:sub(1, -2) .. ")"
+    return psarray
+end
+
 
 --[[ SECTION 3: Collection --]]
 
@@ -360,7 +465,7 @@ if all_office_docs then
     for _,path in pairs(hunt.fs.ls(searchpath, opts)) do
         ext = GetFileExtension(path:name())
         for _,e in ipairs(extensions) do
-            if ext and ext:match(e.."$") and file_exists(path:path()) then
+            if ext and ext:match(e.."$") and path_exists(path:path()) then
                 hash = hunt.hash.sha1(path:full())
                 if (string.len(hash)) ~= 40 then
                     hunt.error("Problem with file "..path:path()..": "..hash)
@@ -407,22 +512,12 @@ else
         tempfile = [[c:\windows\temp\icext.csv]]
         logfile = [[C:\windows\temp\iclog.log]]
 
-    	-- Create powershell process and feed script+commands to its stdin
-    	local pipe = io.popen("powershell.exe -noexit -nologo -nop -command - 1> "..logfile, "w")
-        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. make_psstringarray(strings).. ' -filetypes '..make_psstringarray(extensions)
+    	-- Run powershell
+        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. posh.list_to_pslist(strings) .. ' -filetypes '.. posh.list_to_pslist(extensions)
         hunt.verbose("Executing Powershell Command: "..cmd)
         script = script..'\n'..cmd
-    	pipe:write(script) -- load up powershell functions and vars
-        r = pipe:close()
-        hunt.debug("Powershell Returned: "..tostring(r))
-        if debug then
-            local file,msg = io.open(logfile, "r")
-            if file then
-                hunt.debug("Powershell Output:")
-                hunt.debug(file:read("*all"))
-            end
-            file:close()
-        end
+        ret, output = posh.run_script(script)
+        hunt.debug("Powershell Returned: "..output)
 
         -- Parse CSV output from Powershell
         csv = parse_csv(tempfile, '|')
