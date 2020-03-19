@@ -73,11 +73,13 @@ function posh.run_script(psscript)
 
     -- Pipeline is write-only so we'll use transcript to get output
     script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
+    script = script..'{\n'
     script = script..psscript
-    script = script..'\nStop-Transcript\n'
+    script = script..'\n} 2>&1 > '..tempfile..'\n'
 
     pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
+    print("\n"..script.."\n")
+
     pipe:write(script)
     ret = pipe:close() -- success bool
 
@@ -163,7 +165,7 @@ temppath = tmp.."\\icmft.csv"
 outpath = tmp.."\\icmft.zip"
 
 -- Install PowerForensics
-posh.install_powerforensic()
+posh.install_powerforensics()
 
 -- Get MFT w/ Powerforensics
 cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
