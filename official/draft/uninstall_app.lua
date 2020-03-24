@@ -6,7 +6,7 @@
     Author: Infocyte
     Guid: 5746ff61-acb8-478d-acac-59a7feaf2a9b
     Created: 20200122
-    Updated: 20200318 (Gerritz)
+    Updated: 20200324 (Gerritz)
 --]]
 
 --[[ SECTION 1: Inputs --]]
@@ -17,20 +17,18 @@ appname = 'tightvnc'
 
 
 -- Infocyte Powershell Functions --
-posh = {}
-function posh.run_cmd(command)
+powershell = {}
+function powershell.run_command(command)
     --[[
         Input:  [String] Small Powershell Command
         Output: [Bool] Success
                 [String] Output
     ]]
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
         throw "Powershell not found."
     end
 
     if not command or (type(command) ~= "string") then 
-        hunt.error("Required input [String]command not provided.")
         throw "Required input [String]command not provided."
     end
 
@@ -42,46 +40,47 @@ function posh.run_cmd(command)
     return ret, output
 end
 
-function posh.run_script(psscript)
+function powershell.run_script(psscript)
     --[[
         Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
         Output: [Bool] Success
                 [String] Output
     ]]
+    debug = debug or true
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
         throw "Powershell not found."
     end
 
     if not psscript or (type(psscript) ~= "string") then 
-        hunt.error("Required input [String]script not provided.")
         throw "Required input [String]script not provided."
     end
 
     print("Initiatializing Powershell to run Script")
-    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
+    local f = io.open(tempfile, 'w')
+    script = "# Ran via Infocyte Powershell Extension\n"..psscript
+    f:write(script) -- Write script to file
+    f:close()
 
-    -- Pipeline is write-only so we'll use transcript to get output
-    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
-    script = script..psscript
-    script = script..'\nStop-Transcript\n'
-
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script)
-    ret = pipe:close() -- success bool
-
-    -- Get output
-    file, err = io.open(tempfile, "r")
-    if file then
-        output = file:read("*all") -- String Output
-        file:close()
-        os.remove(tempfile)
-    else 
-        hunt.error("Powershell script failed to run: "..err)
+    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
+    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
+    print("Executing: "..cmd)
+    local pipe = io.popen(cmd, "r")
+    local output = pipe:read("*a") -- string output
+    if debug then 
+        for line in string.gmatch(output,'[^\n]+') do
+            if line ~= '' then print("[PS]: "..line) end
+        end
+    end
+    local ret = pipe:close() -- success bool
+    os.remove(tempfile)
+    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
+        ret = false
     end
     return ret, output
 end
+
 --[[ SECTION 3: Actions --]]
 
 -- All Lua and hunt.* functions are cross-platform.
@@ -93,7 +92,7 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows Code
-    ret, output = posh.run_cmd('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"')
+    ret, output = powershell.run_cmd('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"')
     print(output)
     if output then
     
@@ -109,11 +108,11 @@ if hunt.env.is_windows() then
        
         psfunctions = psfunctions..'Uninstall-Application '..appname
         print("Running Command:\n"..psfunctions)
-        ret, output = posh.run_cmd(psfunctions)
+        ret, output = powershell.run_cmd(psfunctions)
 
-        hunt.log(appname.." has been uninstalled!")
+        hunt.log(appname.." has been uninstalled! "..output)
     else
-        hunt.warn(appname.." was NOT found!")
+        hunt.warn(appname.." was NOT found! "..output)
     end
     
 elseif hunt.env.is_linux() or hunt.env.has_sh() then

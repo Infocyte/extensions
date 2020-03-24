@@ -61,8 +61,8 @@ function path_exists(path)
 end
 
 -- Infocyte Powershell Functions --
-posh = {}
-function posh.run_cmd(command)
+powershell = {}
+function powershell.run_cmd(command)
     --[[
         Input:  [String] Small Powershell Command
         Output: [Bool] Success
@@ -86,7 +86,7 @@ function posh.run_cmd(command)
     return ret, output
 end
 
-function posh.run_script(psscript)
+function powershell.run_script(psscript)
     --[[
         Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
         Output: [Bool] Success
@@ -128,13 +128,13 @@ function posh.run_script(psscript)
 end
 
 -- PowerForensics (optional)
-function posh.install_powerforensics()
+function powershell.install_powerforensics()
     --[[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
     ]]
-    if not posh then 
-        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
+    if not powershell then 
+        hunt.error("Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions.")
         throw "Error"
     end
     script = [==[
@@ -150,7 +150,7 @@ function posh.install_powerforensics()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    ret, output = posh.run_script(script)
+    ret, output = powershell.run_script(script)
     if ret then 
         hunt.debug("Powershell Succeeded:\n"..output)
     else 
@@ -177,7 +177,7 @@ lf = hunt.fs.ls(logfolder)
 if #lf == 0 then os.execute("mkdir "..logfolder) end
 
 if use_powerforensics and hunt.env.has_powershell() then
-    posh.install_powerforensics()
+    powershell.install_powerforensics()
 end
 
 
@@ -201,7 +201,7 @@ for _, p in pairs(paths) do
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path:path()..' -Destination '..outpath
             hunt.debug("File Locked. Executing: "..cmd)
-            ret, out = posh.run_cmd(cmd)
+            ret, out = powershell.run_cmd(cmd)
             hunt.debug("Powerforensics output: "..out)
         elseif not infile then
             hunt.error("Could not open "..path:path().." ["..err.."].\nTry enabling powerforensics to bypass file lock.")

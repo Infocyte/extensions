@@ -8,9 +8,9 @@
         events 24,25, and 1149 with processes started (4688) by those sessions |
     Author: Infocyte
     Guid: f606ff51-4e99-4687-90a7-43aaabae8634
-    Created: 2020301
-    Updated: 2020301
---]]
+    Created: 20200301
+    Updated: 20200324
+]]
 
 
 --[[ SECTION 1: Inputs --]]
@@ -18,17 +18,21 @@ trailing_days = 60
 
 --[[ SECTION 2: Functions --]]
 
-posh = {}
-function posh.run_cmd(command)
+powershell = {}
+function powershell.run_command(command)
     --[[
         Input:  [String] Small Powershell Command
         Output: [Bool] Success
                 [String] Output
     ]]
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not command or (type(command) ~= "string") then 
+        throw "Required input [String]command not provided."
+    end
+
     print("Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
@@ -37,40 +41,47 @@ function posh.run_cmd(command)
     return ret, output
 end
 
-function posh.run_script(psscript)
+function powershell.run_script(psscript)
     --[[
         Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
         Output: [Bool] Success
                 [String] Output
     ]]
+    debug = debug or true
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        return nil
+        throw "Powershell not found."
     end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        throw "Required input [String]script not provided."
+    end
+
     print("Initiatializing Powershell to run Script")
-    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
+    local f = io.open(tempfile, 'w')
+    script = "# Ran via Infocyte Powershell Extension\n"..psscript
+    f:write(script) -- Write script to file
+    f:close()
 
-    -- Pipeline is write-only so we'll use transcript to get output
-    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
-    script = script..psscript
-    script = script..'\nStop-Transcript\n'
-
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script)
-    ret = pipe:close() -- success bool
-
-    -- Get output
-    file, output = io.open(tempfile, "r")
-    if file then
-        output = file:read("*all") -- String Output
-        file:close()
-        os.remove(tempfile)
-    else 
-        print("Powershell script failed to run: "..output)
+    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
+    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
+    print("Executing: "..cmd)
+    local pipe = io.popen(cmd, "r")
+    local output = pipe:read("*a") -- string output
+    if debug then 
+        for line in string.gmatch(output,'[^\n]+') do
+            if line ~= '' then print("[PS]: "..line) end
+        end
+    end
+    local ret = pipe:close() -- success bool
+    os.remove(tempfile)
+    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
+        ret = false
     end
     return ret, output
 end
+
 
 function path_exists(path)
     --[[
@@ -175,42 +186,42 @@ if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
 
+temp = 
+
+
 script = "$trailing = -"..trailing_days
 script = script..[==[
-$startdate = (Get-date).AddDays($trailing)
-$RDP_Logons = Get-WinEvent -FilterHashtable @{logname='security';id=4624,4778,4648; StartTime=$startdate} -ea 0 | 
-    where { $_.Message -match 'logon type:\s+(10)\s'} | % {
-        (new-object -Type PSObject -Property @{
-            EventId = $_.Id
-            TimeCreated = $_.TimeCreated
-            IP = $_.Message -replace '(?smi).*Source Network Address:\s+([^\s]+)\s+.*','$1'
-            UserName = $_.Message -replace '(?smi).*Account Name:\s+([^\s]+)\s+.*','$1'
-            UserDomain = $_.Message -replace '(?smi).*Account Domain:\s+([^\s]+)\s+.*','$1'
-            LogonType = $_.Message -replace '(?smi).*Logon Type:\s+([^\s]+)\s+.*','$1'
-            SecurityId = $_.Message -replace '(?smi).*Security ID:\s+([^\s]+)\s+.*','$1'
-            LogonId = $_.Message -replace '(?smi).*Logon ID:\s+([^\s]+)\s+.*','$1'
-        })
-        } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | 
-            sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SecurityId, LogonId `
-            , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}} `
-            , @{N='LogType';E={
-            switch ($_.LogonType) {
-                2 {'Interactive (local) Logon [Type 2]'}
-                3 {'Network Connection (i.e. shared folder) [Type 3]'}
-                4 {'Batch [Type 4]'}
-                5 {'Service [Type 5]'}
-                7 {'Unlock (after screensaver) [Type 7]'}
-                8 {'NetworkCleartext [Type 8]'}
-                9 {'NewCredentials (local impersonation process under existing connection) [Type 9]'}
-                10 {'RDP [Type 10]'}
-                11 {'CachedInteractive [Type 11]'}
-                default {"LogType Not Recognised: $($_.LogonType)"}
-            }
+$startdate = (Get-date -hour 0 -minute 0 -second 0)
+$RDP_Logons = Get-WinEvent -FilterHashtable @{logname="security";id=4624,4778,4648; StartTime=$startdate} -ea 0 | where { $_.Message -match 'logon type:\s+(10)\s'} | foreach-object {
+    (new-object -Type PSObject -Property @{
+        EventId = $_.Id
+        TimeCreated = $_.TimeCreated
+        IP = $_.Message -replace '(?smi).*Source Network Address:\s+([^\s]+)\s+.*','$1'
+        UserName = $_.Message -replace '(?smi).*Account Name:\s+([^\s]+)\s+.*','$1'
+        UserDomain = $_.Message -replace '(?smi).*Account Domain:\s+([^\s]+)\s+.*','$1'
+        LogonType = $_.Message -replace '(?smi).*Logon Type:\s+([^\s]+)\s+.*','$1'
+        SecurityId = $_.Message -replace '(?smi).*Security ID:\s+([^\s]+)\s+.*','$1'
+        LogonId = $_.Message -replace '(?smi).*Logon ID:\s+([^\s]+)\s+.*','$1'
+    })
+    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SecurityId, LogonId `
+        , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}} `
+        , @{N='LogType';E={
+        switch ($_.LogonType) {
+            2 {'Interactive (local) Logon [Type 2]'}
+            3 {'Network Connection (i.e. shared folder) [Type 3]'}
+            4 {'Batch [Type 4]'}
+            5 {'Service [Type 5]'}
+            7 {'Unlock (after screensaver) [Type 7]'}
+            8 {'NetworkCleartext [Type 8]'}
+            9 {'NewCredentials (local impersonation process under existing connection) [Type 9]'}
+            10 {'RDP [Type 10]'}
+            11 {'CachedInteractive [Type 11]'}
+            default {"LogType Not Recognised: $($_.LogonType)"}
         }
+    }
 }
 
-$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ `
-    logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } -ea 0 | % {
+$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } -ea 0 | foreach-object {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -223,8 +234,7 @@ $RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ `
 }
 
 
-$RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ `
-    logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=24,25; StartTime=$startdate } -ea 0 | % {
+$RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=24,25; StartTime=$startdate } -ea 0 | foreach-object {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -239,7 +249,7 @@ $RDP_Logons | ft -auto
 $RDP_RemoteConnectionManager | ft -auto
 $RDP_LocalSessionManager | ft -auto
             
-$Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | ? { $_.Message -match "S-1-5-21" } | % {
+$Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | where { $_.Message -match "S-1-5-21" } | foreach-object {
     (new-object -Type PSObject -Property @{
         EventId = $_.Id
         TimeCreated = $_.TimeCreated
@@ -258,9 +268,9 @@ $Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTi
         , @{N='ParentProcessId';E={ [convert]::toint32($($_.ParentProcessId).Substring(2),16) }}
 
 $RDP_Processes = $Processes
-$RDP_Processes | % { 
+$RDP_Processes | foreach-object { 
 	$LogonId = $_.LogonId; 
-	$Session = $RDP_Logons | ? { $_.LogonId -eq $LogonId }; 
+	$Session = $RDP_Logons | where-object { $_.LogonId -eq $LogonId }; 
 	$_ | Add-Member -MemberType NoteProperty -Name "LogonType" -Value $Session.LogType; 
 	$_ | Add-Member -MemberType NoteProperty -Name "IP" -Value $Session.IP; 
 	$_ | Add-Member -MemberType NoteProperty -Name "SessionLogonTime" -Value $Session.TimeCreated 
@@ -276,6 +286,14 @@ $RDP_LocalSessionManager | export-csv $temp\RDP_LocalSessionManager.csv
 $RDP_Processes | export-csv $temp\RDP_Processes.csv
 ]==]
 
+
+ret, out = powershell.run_script(script)
+if ret then 
+    hunt.log(out)
+else
+    hunt.error(out)
+    return
+end
 
 rdp_processes = parse_csv(temp.."\\RDP_Processes.csv")
 rdp_localSessionManager = parse_csv(temp.."\\RDP_LocalSessionManager.csv")

@@ -1,31 +1,29 @@
 --[[
     Useful functions you may want to include in your scripts:
 
-    1. Powershell Library [posh.*] -- Powershell functions to make it easier to execute PS commands and scripts.
+    1. Powershell Library [powershell.*] -- Powershell functions to make it easier to execute PS commands and scripts.
     2. Filesystem -- functions to simplify common filesystem tasks
     3. Registry -- functions to simplify common windows registry lookups and tasks
 
 ]]
 
 -- Infocyte Powershell Functions --
-posh = {}
-function posh.run_cmd(command)
+powershell = {}
+function powershell.run_command(command)
     --[[
         Input:  [String] Small Powershell Command
         Output: [Bool] Success
                 [String] Output
     ]]
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
         throw "Powershell not found."
     end
 
     if not command or (type(command) ~= "string") then 
-        hunt.error("Required input [String]command not provided.")
         throw "Required input [String]command not provided."
     end
 
-    print("Initiatializing Powershell to run Command: "..command)
+    print("[PS] Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
     output = pipe:read("*a") -- string output
@@ -33,55 +31,55 @@ function posh.run_cmd(command)
     return ret, output
 end
 
-function posh.run_script(psscript)
+function powershell.run_script(psscript)
     --[[
         Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
         Output: [Bool] Success
                 [String] Output
     ]]
+    debug = debug or true
     if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
         throw "Powershell not found."
     end
 
     if not psscript or (type(psscript) ~= "string") then 
-        hunt.error("Required input [String]script not provided.")
         throw "Required input [String]script not provided."
     end
 
-    print("Initiatializing Powershell to run Script")
-    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+    print("[PS] Initiatializing Powershell to run Script")
+    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
+    local f = io.open(tempfile, 'w')
+    script = "# Ran via Infocyte Powershell Extension\n"..psscript
+    f:write(script) -- Write script to file
+    f:close()
 
-    -- Pipeline is write-only so we'll use transcript to get output
-    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
-    script = script..psscript
-    script = script..'\nStop-Transcript\n'
-
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script)
-    ret = pipe:close() -- success bool
-
-    -- Get output
-    file, err = io.open(tempfile, "r")
-    if file then
-        output = file:read("*all") -- String Output
-        file:close()
-        os.remove(tempfile)
-    else 
-        hunt.error("Powershell script failed to run: "..err)
+    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
+    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
+    print("[PS] Executing: "..cmd)
+    local pipe = io.popen(cmd, "r")
+    local output = pipe:read("*a") -- string output
+    if debug then 
+        for line in string.gmatch(output,'[^\n]+') do
+            if line ~= '' then print("[PS] "..line) end
+        end
+    end
+    local ret = pipe:close() -- success bool
+    os.remove(tempfile)
+    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
+        ret = false
     end
     return ret, output
 end
 
 -- PowerForensics (optional)
-function posh.install_powerforensics()
+function powershell.install_powerforensics()
     --[[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
     ]]
-    if not posh then 
-        hunt.error("Infocyte's posh lua functions are not available. Add Infocyte's posh.* functions.")
+    if not powershell then 
+        hunt.error("Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions.")
         throw "Error"
     end
     script = [==[
@@ -95,18 +93,20 @@ function posh.install_powerforensics()
         if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
             Write-Host "Installing PowerForensics"
             Install-Module -name PowerForensics -Scope CurrentUser -Force
+        } else {
+            Write-Host "Powerforensics Already Installed. Continuing."
         }
     ]==]
-    ret, output = posh.run_script(script)
+    ret, output = powershell.run_script(script)
     if ret then 
-        hunt.debug("Powershell Succeeded:\n"..output)
+        hunt.debug("[install_powerforensics] Succeeded:\n"..output)
     else 
-        hunt.error("Powershell Failed:\n"..output)
+        hunt.error("[install_powerforensics] Failed:\n"..output)
     end
     return ret
 end
 
-function posh.list_to_pslist(list)
+function powershell.list_to_pslist(list)
     --[[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
@@ -123,7 +123,7 @@ end
 
 -- Python Functions --
 py = {}
-function py.run_cmd(command)
+function py.run_command(command)
     --[[
         Execute a python command
         Input:  [string] python command
@@ -390,7 +390,7 @@ function ftp.upload(path, address, username, password)
                 $Run.Dispose()
             }
         ]==]
-        ret, output = posh.run_script(script)
+        ret, output = powershell.run_script(script)
         if not ret then 
             print("Failure: "..output)
         end
@@ -444,7 +444,7 @@ function ftp.download(path, address, username, password)
             while ($ReadLength -ne 0)
             return true              
         ]==]
-        ret, output = posh.run_script(script)
+        ret, output = powershell.run_script(script)
         if not ret then 
             print("Failure: "..output)
         end
@@ -501,10 +501,6 @@ function parse_csv(path, sep)
 end
 
 
-
-
-
-
 --[[ TESTS ]]
 -- Test lua functions
 if not path_exists("C:\\windows\\temp\\test.csv") then
@@ -512,12 +508,12 @@ if not path_exists("C:\\windows\\temp\\test.csv") then
 end
 
 print("======= Testing useful lua functions ==========")
-print(posh.run_cmd('Get-Process'))
+print(powershell.run_command('Get-Process'))
 script = [==[
 $a = Get-Process | where { $_.name -eq 'svchost' }
 $a | export-csv "C:\windows\temp\test.csv"
 ]==]
-print(posh.run_script(script))
+print(powershell.run_script(script))
 
 print('filename: '..get_filename("C:\\windows\\temp\\test.csv"))
 print('file extension: '..get_fileextension("C:\\windows\\temp\\test.csv"))
