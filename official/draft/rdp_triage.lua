@@ -1,4 +1,23 @@
--- Infocyte Powershell Functions --
+﻿--[[
+    Infocyte Extension
+    Name: RDP Triage
+    Type: Collection
+    Description: | RDP Lateral Movement
+        https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
+        Gathers and combines 4624,4778,4648 logon events, rdp session 
+        events 24,25, and 1149 with processes started (4688) by those sessions |
+    Author: Infocyte
+    Guid: f606ff51-4e99-4687-90a7-43aaabae8634
+    Created: 20200301
+    Updated: 20200324
+]]
+
+
+--[[ SECTION 1: Inputs --]]
+trailing_days = 60
+
+--[[ SECTION 2: Functions --]]
+
 powershell = {}
 function powershell.run_command(command)
     --[[
@@ -14,7 +33,7 @@ function powershell.run_command(command)
         throw "Required input [String]command not provided."
     end
 
-    print("[PS] Initiatializing Powershell to run Command:\n "..command)
+    print("Initiatializing Powershell to run Command: "..command)
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
     output = pipe:read("*a") -- string output
@@ -37,7 +56,7 @@ function powershell.run_script(psscript)
         throw "Required input [String]script not provided."
     end
 
-    print("[PS] Initiatializing Powershell to run Script")
+    print("Initiatializing Powershell to run Script")
     local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
     local f = io.open(tempfile, 'w')
     script = "# Ran via Infocyte Powershell Extension\n"..psscript
@@ -47,7 +66,7 @@ function powershell.run_script(psscript)
     -- Feed script (filter out empty lines) to Invoke-Expression to execute
     -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
     local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
-    print("[PS] Executing: "..cmd)
+    print("Executing: "..cmd)
     local pipe = io.popen(cmd, "r")
     local output = pipe:read("*a") -- string output
     if debug then 
@@ -63,49 +82,115 @@ function powershell.run_script(psscript)
     return ret, output
 end
 
-function powershell.install_powerforensics()
-    --[[
-        Checks for NuGet and installs Powerforensics
-        Output: [bool] Success
-    ]]
-    if not powershell then 
-        throw "Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions."
-    end
 
-    script = [==[
-        # Download/Install PowerForensics
-        $n = Get-PackageProvider -name NuGet
-        if ($n.version.major -lt 2) {
-            if ($n.version.minor -lt 8) {
-                Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope CurrentUser -Force
-            }
-        }
-        if (-NOT (Get-Module -ListAvailable -Name PowerForensics)) {
-            Write-Host "Installing PowerForensics"
-            Install-Module -name PowerForensics -Scope CurrentUser -Force
-        } else {
-            Write-Host "Powerforensics Already Installed. Continuing."
-        };
-    ]==]
-    ret, output = powershell.run_script(script)
-    if ret then 
-        print("[install_powerforensics]:"..output)
-    else 
-        print("[install_powerforensics]:"..output)
-    end
-    return ret, output
+function path_exists(path)
+    --[[
+        Check if a file or directory exists in this path. 
+        Input:  [string]path -- Add '/' on end of the path to test if it is a folder
+        Output: [bool] Exists
+                [string] Error message -- only if failed
+    ]] 
+   local ok, err = os.rename(path, path)
+   if not ok then
+      if err == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
 end
 
 
-print("Starting Extension!!!")
+function print_table(tbl, indent)
+    --[[
+        Prints a table -- used for debugging table contents
+        Input:  [list] table/list
+                [int] (do not use manually) indent spaces for recursive printing of sub lists
+        Output: [string]  -- stringified version of the table
+    ]] 
+    if not indent then indent = 0 end
+    local toprint = ""
+    if not tbl then return toprint end
+    if type(tbl) ~= "table" then 
+        print("print_table error: Not a table. "..tostring(tbl))
+        return toprint
+    end
+    for k, v in pairs(tbl) do
+        toprint = toprint .. string.rep(" ", indent)
+        toprint = toprint .. tostring(k) .. ": "
+        if (type(v) == "table") then
+            toprint = toprint .. print_table(v, indent + 2) .. "\r\n"
+        else
+            toprint = toprint .. tostring(v) .. "\r\n"
+        end
+    end
+    print(toprint)
+    return toprint
+end
 
--- RDP Lateral Movement
--- https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
--- 4624 logon event
--- 4648 explicit credential logon
+function parse_csv(path, sep)
+    --[[
+        Parses a CSV on disk into a lua list.
+        Input:  [string]path -- Path to csv on disk
+                [string]sep -- CSV seperator to use. defaults to ','
+        Output: [list]
+    ]] 
+    tonum = true
+    sep = sep or ','
+    local csvFile = {}
+    local file,msg = io.open(path, "r")
+    if not file then
+        hunt.error("CSV Parser failed to open file: ".. msg)
+        return nil
+    end
+    local header = {}
+    for line in file:lines() do
+        local n = 1
+        local fields = {}
+        if not line:match("^#TYPE") then 
+            for str in string.gmatch(line, "([^"..sep.."]+)") do
+                s = str:gsub('"(.+)"', "%1")
+                if not s then 
+                    hunt.debug(line)
+                    hunt.debug('column: '..v)
+                end
+                if #header == 0 then
+                    fields[n] = s
+                else
+                    v = header[n]
+                    fields[v] = tonumber(s) or s
+                end
+                n = n + 1
+            end
+            if #header == 0 then
+                header = fields
+            else
+                table.insert(csvFile, fields)
+            end
+        end
+    end
+    file:close()
+    return csvFile
+end
 
-script = [==[
-$Temp = "$([System.Environment]::GetEnvironmentVariable("TEMP","Machine"))\ic"
+
+--[[ SECTION 3: Collection --]]
+
+
+-- All Lua and hunt.* functions are cross-platform.
+host_info = hunt.env.host_info()
+osversion = host_info:os()
+hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
+if not hunt.env.is_windows() then
+    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+end
+
+temp = 
+
+
+script = "$trailing = -"..trailing_days
+script = script..[==[
 $startdate = (Get-date -hour 0 -minute 0 -second 0)
 $RDP_Logons = Get-WinEvent -FilterHashtable @{logname="security";id=4624,4778,4648; StartTime=$startdate} -ea 0 | where { $_.Message -match 'logon type:\s+(10)\s'} | foreach-object {
     (new-object -Type PSObject -Property @{
@@ -202,39 +287,39 @@ $RDP_Processes | export-csv $temp\RDP_Processes.csv
 ]==]
 
 
---[[
 ret, out = powershell.run_script(script)
 if ret then 
     hunt.log(out)
 else
     hunt.error(out)
+    return
 end
-    
-]]
 
+rdp_processes = parse_csv(temp.."\\RDP_Processes.csv")
+rdp_localSessionManager = parse_csv(temp.."\\RDP_LocalSessionManager.csv")
+rdp_remoteConnectionManager = parse_csv(temp.."\\RDP_RemoteConnectionManager.csv")
+rdp_logons = parse_csv(temp.."\\RDP_Logons.csv")
 
---powershell.run_script test
+for i,v in pairs(rdp_processes) do 
+    table.print(v)
+end
+for i,v in pairs(rdp_localSessionManager) do 
+    table.print(v)
+end
+for i,v in pairs(rdp_remoteConnectionManager) do 
+    table.print(v)
+end
+for i,v in pairs(rdp_logons) do 
+    table.print(v)
+end
 
-print("Deleting C:\\windows\\temp\\ic\\asdf2.log")
-os.remove("C:\\windows\\temp\\ic\\asdf2.log")
-script = [[
-"$((get-date).tostring()): Command Complete" | Out-File -Encoding ASCII -Filepath C:\\windows\\temp\\ic\\asdf2.log -Force
-Write-Warning "Script Warning";
-Write-Host "Script Host";
-#Write-Error "Script Error";
-Start-Sleep 1;
-return "Script Return";
-]]
--- ret, out = powershell.run_script(script)
-ret, out = powershell.run_script(script)
-if ret then 
-    hunt.log(out)
+if string.find(result, "good") then
+    hunt.status.good()
+elseif string.find(result, "bad") then
+    hunt.status.bad()
 else
-    hunt.error(out)
+    hunt.status.unknown()
 end
 
-f = io.open("C:\\windows\\temp\\ic\\asdf2.log", "r")
-if not f then return "wtf" end
-print("asdf2.log: "..f:read('*a'))
+hunt.log("Result: Extension successfully executed on " ..  host_info:hostname())
 
-print(powershell.install_powerforensics())

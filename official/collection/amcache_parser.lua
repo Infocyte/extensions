@@ -7,7 +7,7 @@
     Author: Infocyte
     Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
-    Updated: 20200327 (Gerritz)
+    Updated: 20200318 (Gerritz)
 --]]
 
 --[[ SECTION 1: Inputs --]]
@@ -28,7 +28,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        hunt.error(msg)
         return nil
     end
     local bytes = f:read(4)
@@ -100,54 +100,49 @@ function make_timestamp(dateString)
     return convertedTimestamp
 end
 
--- Powershell Functions
-posh = {}
+-- Infocyte Powershell Functions --
+powershell = {}
 
-function posh.execute_cmd(command)
+function powershell.run_script(psscript)
     --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
     ]]
-    print("Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
+    debug = debug or true
+    if not hunt.env.has_powershell() then
+        throw "Powershell not found."
+    end
 
-function posh.execute_script(psscript)
-        --[[
-    Input: [String] Small Powershell Command
-    Output: [Bool] Success
-            [String] Output
-    ]]
+    if not psscript or (type(psscript) ~= "string") then 
+        throw "Required input [String]script not provided."
+    end
+
     print("Initiatializing Powershell to run Script")
-    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
+    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
+    local f = io.open(tempfile, 'w')
+    script = "# Ran via Infocyte Powershell Extension\n"..psscript
+    f:write(script) -- Write script to file
+    f:close()
 
-    -- Pipeline is write-only so we'll use transcript to get output
-    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
-    script = script..psscript
-    script = script..'\nStop-Transcript\n'
-
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script)
-    ret = pipe:close() -- success bool
-
-    -- Get output
-    file, output = io.open(tempfile, "r")
-    if file then
-        output = file:read("*all") -- String Output
-        file:close()
-        os.remove(tempfile)
-    else 
-        print("Powershell script failed to run: "..output)
+    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
+    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
+    print("Executing: "..cmd)
+    local pipe = io.popen(cmd, "r")
+    local output = pipe:read("*a") -- string output
+    if debug then 
+        for line in string.gmatch(output,'[^\n]+') do
+            if line ~= '' then print("[PS]: "..line) end
+        end
+    end
+    local ret = pipe:close() -- success bool
+    os.remove(tempfile)
+    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
+        ret = false
     end
     return ret, output
 end
-
 
 --[[ SECTION 3: Collection --]]
 
@@ -222,10 +217,10 @@ if file then
     if debug then
         hunt.debug(file:read("*all"))
     else 
-       print(file:read("*all")) 
+       --print(file:read("*all")) 
     end
     file:close()
-    -- os.remove(tmppath.."\\icextensions.log")
+    os.remove(tmppath.."\\icextensions.log")
 else 
     hunt.error("AmcacheParser failed to run: "..msg)
     return
@@ -249,15 +244,13 @@ $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 Remove-item "$temp\temp" -Force -Recurse
 ]==]
 hunt.debug("Initiatializing Powershell to parse output")
-ret, output = posh.execute_script(script)
+ret, output = powershell.run_script(script)
 if ret then
     if debug then
         hunt.debug(output)
-    else 
-       print(output) 
     end
 else
-    hunt.error("Failed: Could not parse AmCache output with Powershell")
+    hunt.error("Failed: Could not parse AmCache output with Powershell.\n"..output)
     return
 end
 
@@ -287,7 +280,7 @@ paths = {}
 for _, item in pairs(csv) do
     -- dedup
     if not oldhashlist[item["SHA1"]] and not paths[item["SHA1"]] and is_executable(item["FullPath"]) then
-        hunt.log(item["FullPath"].." ["..item["SHA1"].."] executed on "..item["FileKeyLastWriteTimestamp"])
+        hunt.log("Adding Artifact: "..item["FullPath"].." ["..item["SHA1"].."] executed on "..item["FileKeyLastWriteTimestamp"])
         paths[item["SHA1"]] = true
         -- Create a new artifact
         artifact = hunt.survey.artifact()

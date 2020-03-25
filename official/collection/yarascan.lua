@@ -6,25 +6,25 @@
     Author: Infocyte
     Guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
     Created: 20191018
-    Updated: 20191127 (Gerritz)
+    Updated: 20200318 (Gerritz)
 --]]
 
 --[[ SECTION 1: Inputs --]]
 
 -- This extension will yara scan files below
 scanactiveprocesses = true
-scanappdata = false
+scanappdata = false -- Scans APPDATA folders for every user
+appdata_opts = {
+    "files",
+    "size<5mb", -- any file below this size
+    "recurse=1" -- depth of 1
+}
+
 
 -- Provide additional paths below
 if hunt.env.is_windows() then
     additionalpaths = {
         'c:\\windows\\system32\\calc.exe'
-    }
-
-elseif hunt.env.is_macos() then
-    additionalpaths = {
-        '/bin/sh',
-        '/bin/ls'
     }
 
 elseif hunt.env.is_linux() then
@@ -33,7 +33,16 @@ elseif hunt.env.is_linux() then
         '/bin/tar'
     }
 
+elseif hunt.env.is_macos() then
+    additionalpaths = {
+        '/bin/sh',
+        '/bin/ls'
+    }
 end
+add_opts = {
+    "files",
+    "size<5mb" -- any file below this size
+}
 
 -- #region bad_rules
 bad_rules = [==[
@@ -309,6 +318,7 @@ strings:
 condition:
 	all of them
 }
+
 rule kraken_cryptor_ransomware_loader {
 
    meta:
@@ -1382,15 +1392,13 @@ rule embedded_url {
 
 --[[ SECTION 2: Functions --]]
 
-function GetFileName(path)
-  return path:match("^.+/(.+)$")
-end
-
-function GetFileExtension(path)
-  return path:match("^.+(%..+)$")
-end
 
 function is_executable(path)
+    --[[
+        Check if a file is an executable (PE or ELF) by magic number. 
+        Input:  [string]path
+        Output: [bool] Is Executable
+    ]] 
     magicnumbers = {
         "MZ",
         ".ELF"
@@ -1441,19 +1449,14 @@ if scanactiveprocesses then
     procs = hunt.process.list()
     for i, proc in pairs(procs) do
         --hunt.debug("Adding processpath["..i.."]: " .. proc:path())
-        paths[proc:path()] = true -- add to keys of list to easily unique paths
+        paths[proc:path()] = true -- add to keys of list to unique paths
     end
 end
 
 -- Add appdata paths
 if scanappdata then
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
-        opts = {
-            "files",
-            "size<5mb",
-            "recurse=1" --depth of 1
-        }
-        for _, path in pairs(hunt.fs.ls(userfolder:path().."\\appdata\\roaming", opts)) do
+        for _, path in pairs(hunt.fs.ls(userfolder:path().."\\appdata\\roaming", appdata_opts)) do
             if is_executable(path:path()) then
                 paths[path:path()] = true
             end
@@ -1463,11 +1466,7 @@ end
 
 -- Add additional paths
 for i, path in pairs(additionalpaths) do
-    opts = {
-        "files",
-        "size<5mb"
-    }
-    files = hunt.fs.ls(path, opts)
+    files = hunt.fs.ls(path, add_opts)
     for _,path in pairs(files) do
         if is_executable(path:path()) then
             paths[path:path()] = true
@@ -1509,12 +1508,14 @@ for path, i in pairs(paths) do
 end
 
 -- Add bad and suspicious files to Artifacts list for analysis
+n = 0
 for path,i in pairs(matchedpaths) do
 	-- Create a new artifact
 	artifact = hunt.survey.artifact()
 	artifact:exe(path)
 	artifact:type("Yara Match")
-	hunt.survey.add(artifact)
+    hunt.survey.add(artifact)
+    n = n + 1
 end
 
 -- Set threat status
@@ -1528,6 +1529,6 @@ else
     hunt.status.good()
 end
 
-hunt.debug("Result: Extension successfully executed on " .. host_info:hostname())
+hunt.log("Yara scan completed. Added "..n.." paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")
 
 
