@@ -18,6 +18,9 @@
 
 --[[ SECTION 3: Collection --]]
 
+host_info = hunt.env.host_info()
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
 if hunt.env.is_linux() or hunt.env.has_sh() or hunt.env.is_macos() then
 
     path = '/etc/ld.so.preload'

@@ -52,6 +52,199 @@ proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 --[[ SECTION 2: Functions --]]
 
+-- FileSystem Functions --
+function path_exists(path)
+    --[[
+        Check if a file or directory exists in this path. 
+        Input:  [string]path -- Add '/' on end of the path to test if it is a folder
+        Output: [bool] Exists
+                [string] Error message -- only if failed
+    ]] 
+   local ok, err = os.rename(path, path)
+   if not ok then
+      if err == 13 then
+         -- Permission denied, but it exists
+         return true
+      end
+   end
+   return ok, err
+end
+
+function get_filename(path)
+    match = path:match("^.+[\\/](.+)$")
+    return match
+end
+  
+function get_fileextension(path)
+    match = path:match("^.+(%..+)$")
+    return match
+end
+
+function userfolders()
+    --[[
+        Returns a list of userfolders to iterate through
+        Output: [list]ret -- List of userfolders (_, path)
+    ]]
+    local paths = {}
+    local u = {}
+    for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
+        if (userfolder:full()):match("Users") then
+            if not u[userfolder:full()] then
+                -- filter out links like "Default User" and "All Users"
+                u[userfolder:full()] = true
+                table.insert(paths, userfolder:path())
+            end
+        end
+    end
+    return paths
+end
+
+function parse_csv(path, sep)
+    tonum = true
+    sep = sep or ','
+    local csvFile = {}
+    local file,msg = io.open(path, "r")
+    if not file then
+        hunt.error("CSV Parser failed: ".. msg)
+        return nil
+    end
+    local header = {}
+    for line in file:lines() do
+        local n = 1
+        local fields = {}
+        for str in string.gmatch(line, "([^"..sep.."]+)") do
+            s = str:gsub('^"(.+)"$', "%1")
+            if #header == 0 then
+                fields[n] = s
+            else
+                v = header[n]
+                fields[v] = tonumber(s) or s
+            end
+            n = n + 1
+        end
+        if #header == 0 then
+            header = fields
+        else
+            table.insert(csvFile, fields)
+        end
+    end
+    file:close()
+    return csvFile
+end
+
+-- Infocyte Powershell Functions --
+powershell = {}
+function powershell.run_command(command)
+    --[[
+        Input:  [String] Small Powershell Command
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    if not hunt.env.has_powershell() then
+        throw "Powershell not found."
+    end
+
+    if not command or (type(command) ~= "string") then 
+        throw "Required input [String]command not provided."
+    end
+
+    print("[PS] Initiatializing Powershell to run Command: "..command)
+    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
+    pipe = io.popen(cmd, "r")
+    output = pipe:read("*a") -- string output
+    ret = pipe:close() -- success bool
+    return ret, output
+end
+
+function powershell.run_script(psscript)
+    --[[
+        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
+        Output: [Bool] Success
+                [String] Output
+    ]]
+    debug = debug or true
+    if not hunt.env.has_powershell() then
+        throw "Powershell not found."
+    end
+
+    if not psscript or (type(psscript) ~= "string") then 
+        throw "Required input [String]script not provided."
+    end
+
+    print("[PS] Initiatializing Powershell to run Script")
+    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
+    local f = io.open(tempfile, 'w')
+    script = "# Ran via Infocyte Powershell Extension\n"..psscript
+    f:write(script) -- Write script to file
+    f:close()
+
+    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
+    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
+    print("[PS] Executing: "..cmd)
+    local pipe = io.popen(cmd, "r")
+    local output = pipe:read("*a") -- string output
+    if debug then 
+        for line in string.gmatch(output,'[^\n]+') do
+            if line ~= '' then print("[PS] "..line) end
+        end
+    end
+    local ret = pipe:close() -- success bool
+    os.remove(tempfile)
+    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
+        ret = false
+    end
+    return ret, output
+end
+
+function powershell.list_to_pslist(list)
+    --[[
+        Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
+        Input:  [list]list -- Any list with (_, val) format
+        Output: [string] -- Example = '@("Value1","Value2","Value3")'
+    ]] 
+    psarray = "@("
+    for _,value in ipairs(list) do
+        -- print("Param: " .. tostring(value))
+        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
+    end
+    psarray = psarray:sub(1, -2) .. ")"
+    return psarray
+end
+
+
+
+--[[ SECTION 3: Collection --]]
+
+host_info = hunt.env.host_info()
+hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
+-- Check required inputs
+if upload_to_s3 and (not s3_region or not s3_bucket) then
+    hunt.error("s3_region and s3_bucket not set")
+    return
+end
+if not hunt.env.is_windows() then
+    hunt.error("Not a compatible operating system.")
+    return
+end
+
+
+if upload_to_s3 then
+    instance = hunt.net.api()
+    if instance == '' then
+        instancename = 'offline'
+    elseif instance:match("infocyte") then
+        -- get instancename
+        instancename = instance:match("(.+).infocyte.com")
+    end
+    s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
+    s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+    hunt.log("S3 Upload to "..s3_region.." bucket: "..s3_bucket)
+else
+    hunt.log("No S3 file upload selected. Reporting only.")
+end
+
 -- #region initscript
 script = [==[
 function Get-FileSignature {
@@ -265,200 +458,6 @@ Function Get-StringsMatch {
 ]==]
 -- #endregion
 
--- FileSystem Functions --
-function path_exists(path)
-    --[[
-        Check if a file or directory exists in this path. 
-        Input:  [string]path -- Add '/' on end of the path to test if it is a folder
-        Output: [bool] Exists
-                [string] Error message -- only if failed
-    ]] 
-   local ok, err = os.rename(path, path)
-   if not ok then
-      if err == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
-end
-
-function get_filename(path)
-    match = path:match("^.+[\\/](.+)$")
-    return match
-end
-  
-function get_fileextension(path)
-    match = path:match("^.+(%..+)$")
-    return match
-end
-
-function userfolders()
-    --[[
-        Returns a list of userfolders to iterate through
-        Output: [list]ret -- List of userfolders (_, path)
-    ]]
-    local paths = {}
-    local u = {}
-    for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
-        if (userfolder:full()):match("Users") then
-            if not u[userfolder:full()] then
-                -- filter out links like "Default User" and "All Users"
-                u[userfolder:full()] = true
-                table.insert(paths, userfolder:path())
-            end
-        end
-    end
-    return paths
-end
-
-function parse_csv(path, sep)
-    tonum = true
-    sep = sep or ','
-    local csvFile = {}
-    local file,msg = io.open(path, "r")
-    if not file then
-        hunt.error("CSV Parser failed: ".. msg)
-        return nil
-    end
-    local header = {}
-    for line in file:lines() do
-        local n = 1
-        local fields = {}
-        for str in string.gmatch(line, "([^"..sep.."]+)") do
-            s = str:gsub('^"(.+)"$', "%1")
-            if #header == 0 then
-                fields[n] = s
-            else
-                v = header[n]
-                fields[v] = tonumber(s) or s
-            end
-            n = n + 1
-        end
-        if #header == 0 then
-            header = fields
-        else
-            table.insert(csvFile, fields)
-        end
-    end
-    file:close()
-    return csvFile
-end
-
--- Infocyte Powershell Functions --
-posh = {}
-function posh.run_cmd(command)
-    --[[
-        Input:  [String] Small Powershell Command
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        throw "Powershell not found."
-    end
-
-    if not command or (type(command) ~= "string") then 
-        hunt.error("Required input [String]command not provided.")
-        throw "Required input [String]command not provided."
-    end
-
-    print("Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
-
-function posh.run_script(psscript)
-    --[[
-        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        hunt.error("Powershell not found.")
-        throw "Powershell not found."
-    end
-
-    if not psscript or (type(psscript) ~= "string") then 
-        hunt.error("Required input [String]script not provided.")
-        throw "Required input [String]script not provided."
-    end
-
-    print("Initiatializing Powershell to run Script")
-    tempfile = os.getenv("systemroot").."\\temp\\icpowershell.log"
-
-    -- Pipeline is write-only so we'll use transcript to get output
-    script = '$Temp = [System.Environment]::GetEnvironmentVariable("TEMP","Machine")\n'
-    script = script..'Start-Transcript -Path "'..tempfile..'" | Out-Null\n'
-    script = script..psscript
-    script = script..'\nStop-Transcript\n'
-
-    pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(script)
-    ret = pipe:close() -- success bool
-
-    -- Get output
-    file, err = io.open(tempfile, "r")
-    if file then
-        output = file:read("*all") -- String Output
-        file:close()
-        os.remove(tempfile)
-    else 
-        hunt.error("Powershell script failed to run: "..err)
-    end
-    return ret, output
-end
-
-function posh.list_to_pslist(list)
-    --[[
-        Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
-        Input:  [list]list -- Any list with (_, val) format
-        Output: [string] -- Example = '@("Value1","Value2","Value3")'
-    ]] 
-    psarray = "@("
-    for _,value in ipairs(list) do
-        -- print("Param: " .. tostring(value))
-        psarray = psarray .. "\"".. tostring(value) .. "\"" .. ","
-    end
-    psarray = psarray:sub(1, -2) .. ")"
-    return psarray
-end
-
-
---[[ SECTION 3: Collection --]]
-
-host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
--- Check required inputs
-if upload_to_s3 and (not s3_region or not s3_bucket) then
-    hunt.error("s3_region and s3_bucket not set")
-    return
-end
-if not hunt.env.is_windows() then
-    hunt.error("Not a compatible operating system.")
-    return
-end
-
-
-if upload_to_s3 then
-    instance = hunt.net.api()
-    if instance == '' then
-        instancename = 'offline'
-    elseif instance:match("infocyte") then
-        -- get instancename
-        instancename = instance:match("(.+).infocyte.com")
-    end
-    s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
-    s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
-    hunt.log("S3 Upload to "..s3_region.." bucket: "..s3_bucket)
-else
-    hunt.log("No S3 file upload selected. Reporting only.")
-end
-
 if all_office_docs then
     officedocs = {}
 
@@ -508,15 +507,13 @@ if all_office_docs then
 else
     if hunt.env.has_powershell() then
     	-- Insert your Windows Code
-    	hunt.debug("Operating on Windows")
         tempfile = [[c:\windows\temp\icext.csv]]
-        logfile = [[C:\windows\temp\iclog.log]]
 
     	-- Run powershell
-        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. posh.list_to_pslist(strings) .. ' -filetypes '.. posh.list_to_pslist(extensions)
+        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. powershell.list_to_pslist(strings) .. ' -filetypes '.. powershell.list_to_pslist(extensions)
         hunt.verbose("Executing Powershell Command: "..cmd)
         script = script..'\n'..cmd
-        ret, output = posh.run_script(script)
+        ret, output = powershell.run_script(script)
         hunt.debug("Powershell Returned: "..output)
 
         -- Parse CSV output from Powershell
@@ -553,7 +550,6 @@ else
         end
 
         --Cleanup
-        os.remove(logfile)
         os.remove(tempfile)
     end
 end

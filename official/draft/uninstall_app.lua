@@ -92,7 +92,7 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows Code
-    ret, output = powershell.run_cmd('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"')
+    ret, output = powershell.run_command('Get-WmiObject -Query "SELECT * FROM win32_product where name=\''..appname..'\'"')
     print(output)
     if output then
     
@@ -108,7 +108,7 @@ if hunt.env.is_windows() then
        
         psfunctions = psfunctions..'Uninstall-Application '..appname
         print("Running Command:\n"..psfunctions)
-        ret, output = powershell.run_cmd(psfunctions)
+        ret, output = powershell.run_command(psfunctions)
 
         hunt.log(appname.." has been uninstalled! "..output)
     else

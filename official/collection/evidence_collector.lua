@@ -358,7 +358,7 @@ for name,path in pairs(paths) do
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
             hunt.debug("File Locked ["..err.."]. Executing: "..cmd)
-            ret, out = powershell.run_cmd(cmd)
+            ret, out = powershell.run_command(cmd)
             hunt.debug("Powerforensics output: "..out)
         else
            -- Copy file to temp path

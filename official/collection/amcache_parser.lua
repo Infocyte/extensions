@@ -102,27 +102,6 @@ end
 
 -- Infocyte Powershell Functions --
 powershell = {}
-function powershell.run_command(command)
-    --[[
-        Input:  [String] Small Powershell Command
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not command or (type(command) ~= "string") then 
-        throw "Required input [String]command not provided."
-    end
-
-    print("Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
 
 function powershell.run_script(psscript)
     --[[
@@ -265,7 +244,7 @@ $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 Remove-item "$temp\temp" -Force -Recurse
 ]==]
 hunt.debug("Initiatializing Powershell to parse output")
-ret, output = powershell.run_command(script)
+ret, output = powershell.run_script(script)
 if ret then
     if debug then
         hunt.debug(output)

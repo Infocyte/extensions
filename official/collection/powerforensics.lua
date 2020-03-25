@@ -169,7 +169,7 @@ powershell.install_powerforensics()
 cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
 hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
 hunt.debug("Executing Powershell command: "..cmd)
-ret, err = powershell.run_cmd(cmd)
+ret, err = powershell.run_command(cmd)
 if not ret then 
     hunt.error("Failed to run Get-ForensicFileRecord: "..err)
     return
