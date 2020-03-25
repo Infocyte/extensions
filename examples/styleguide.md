@@ -8,18 +8,21 @@ Extension filenames should be `<Name>.lua`
 
 #### Preamble
 All extensions should have a comment block on top using the below format.
-In the future, we intend to introduce an extension filetype that includes metadata like this.
+In the future, we intend to introduce an extension filetype that includes metadata like this. You can generate from template with a new guid using the Infocyte Powershell module's New-ICExtension function.
 
 >>
 --[[
 	Infocyte Extension
 	Name: Template
 	Type: Action
-	Description: Example script show format, style, and options for committing an action against a host.
+    Description: | Example script show format, style, and options for commiting
+        an action or change against a host. |
 	Author: Infocyte
+	Guid: b5f18032-6749-4bef-80d3-8094dca66798
 	Created: 20190919
 	Updated: 20190919 (Gerritz)
 --]]
+
 
 #### Extension Types
 Should your extension be labelled a collection or action extension? Occasionally an extension will blur the lines so use this as a guideline:
@@ -50,6 +53,8 @@ The built-in statuses are below:
 
 #### Logs/messages
 `hunt.log()` is the function to send data to Infocyte as part of the survey results. Use this for any textual data. It can be viewed in raw form in the app or extracted via the API.
+Use `hunt.debug()` for procedural messages about what the script is performing at each step.
+Errors and Warnings can use `hunt.warn()` or `hunt.error()`
 
 **Max Number of Log Messages:** 1000
 
