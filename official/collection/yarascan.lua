@@ -1524,7 +1524,7 @@ if bad then
 elseif suspicious then
     hunt.status.suspicious()
 elseif lowrisk then
-    hunt.status.lowrisk()
+    hunt.status.low_risk()
 else
     hunt.status.good()
 end
