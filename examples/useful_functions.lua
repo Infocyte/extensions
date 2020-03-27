@@ -46,22 +46,24 @@ function powershell.run_script(psscript)
         throw "Required input [String]script not provided."
     end
 
-    print("[PS] Initiatializing Powershell to run Script")
+    os.execute("mkdir "..os.getenv("systemroot").."\\temp\\ic")
+    print("Initiatializing Powershell to run Script")
+
     local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
     local f = io.open(tempfile, 'w')
     script = "# Ran via Infocyte Powershell Extension\n"..psscript
     f:write(script) -- Write script to file
     f:close()
 
-    -- Feed script (filter out empty lines) to Invoke-Expression to execute
+    -- Feed script to Invoke-Expression to execute
     -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
     local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
-    print("[PS] Executing: "..cmd)
+    print("Executing: "..cmd)
     local pipe = io.popen(cmd, "r")
     local output = pipe:read("*a") -- string output
     if debug then 
         for line in string.gmatch(output,'[^\n]+') do
-            if line ~= '' then print("[PS] "..line) end
+            if line ~= '' then print("[PS]: "..line) end
         end
     end
     local ret = pipe:close() -- success bool
