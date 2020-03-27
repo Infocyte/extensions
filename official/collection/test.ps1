@@ -122,33 +122,35 @@ $RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-W
           
 $RDP_Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | where { $_.Message -match "Creator Subject:\s+Security ID:\s+S-1-5-21" } | 
     ConvertFrom-WinEvent | where { $RDP_Logons.LogonId -contains $_."Logon ID" } | foreach-object {
-        $LogonId = $_.LogonId;
+        $LogonId = $_."Logon ID";
         $Session = $RDP_Logons | where-object { $_.LogonId -eq $LogonId };
         if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "SecurityIds do not match! ProcessSecurityId=$($_."Security ID"), SessionSecurityId=$($Session.SecurityId)" }
         if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "Usernames do not match! ProcessUsername=$($_."Account Name"), SessionUsername=$($Session.Username)" }
 
-        new-object -Type PSObject -Property @{
+        $proc = new-object -Type PSObject -Property @{
             EventId = $_.EventId
             TimeCreated = $_.TimeCreated
-            SecurityId = $_."Security ID"
-            LogonId = $_."Logon ID"
-            Username = $_."Account Name"
-            Domain = $_."Account Domain"
-            ProcessId = $_."New Process ID"
-            ParentProcessId = $_."Creator Process ID"
-            ProcessPath = $_."New Process Name"
-            Commandline = $_."Process Command Line"
+            SecurityId = $_."Creator Subject"."Security ID"
+            LogonId = $_."Creator Subject"."Logon ID"
+            Username = $_."Creator Subject"."Account Name"
+            Domain = $_."Creator Subject"."Account Domain"
+            ProcessId = $_."Process Information"."New Process ID"
+            ParentProcessId = $_."Process Information"."Creator Process ID"
+            ParentProcessPath = $_."Process Information"."Creator Process Name"
+            ProcessPath = $_."Process Information"."New Process Name"
+            Commandline = $_."Process Information"."Process Command Line"
             LogonType = $Session.LogonType
             IP = $Session.IP
             SessionTimeCreated = $Session.TimeCreated
         }
-        $PProc = Get-Process -Id ($_.ParentProcessId) -ea 0
-        if ($PProc -AND ($_.TimeCreated -gt $PProc.StartTime)) {
-            $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value $PPoc.Name
-        } else {
-            $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value "N/A"
+        if (-NOT $proc.ParentProcessName -AND $proc.ParentProcessId) {
+            $PProc = Get-Process -Id ($proc.ParentProcessId) -ea 0
+            if ($PProc -AND ($_.TimeCreated -gt $PProc.StartTime)) {
+                $proc.ParentProcessName = $PPoc.Path
+            } 
         }
-    } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SessionTimeCreated, LogonType, LogonId, ProcessId, ProcessPath, Commandline, SecurityId, LogonId, Username, Domain, ParentProcessId, ParentProcessName
+        $proc
+    } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SessionTimeCreated, LogonType, LogonId, ProcessId, ProcessPath, Commandline, SecurityId, LogonId, Username, Domain, ParentProcessId, ParentProcessPath
 
 $RDP_Logons | export-csv $temp\RDP_Logons.csv -NoTypeInformation -Force
 #$RDP_RemoteConnectionManager | export-csv $temp\RDP_RemoteConnectionManager.csv -NoTypeInformation -Force
