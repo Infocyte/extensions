@@ -5,11 +5,11 @@
     Description: | RDP Lateral Movement
         https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
         Gathers and combines 4624,4778,4648 logon events, rdp session 
-        events 24,25, and 1149 with processes started (4688) by those sessions |
+        events 21,24,25, and 1149 with processes started (4688) by those sessions |
     Author: Infocyte
     Guid: f606ff51-4e99-4687-90a7-43aaabae8634
     Created: 20200301
-    Updated: 20200324
+    Updated: 20200326
 --]]
 
 
@@ -197,148 +197,157 @@ tmppath = os.getenv("systemroot").."\\temp\\ic"
 script = '$trailing = -'..trailing_days..'\n'
 script = script..'$temp = "'..tmppath..'"\n'
 script = script..[==[
+$trailing = -65
+$temp = "C:\windows\temp\ic"
 $startdate = (Get-date -hour 0 -minute 0 -second 0).AddDays($trailing)
-function Parse-EventLogTerm ($Event, $Term, $matchnumber=0) {
-    #Write-Verbose "Parsing:`n$($Event.Message)"
-    try {
-        $m = ($Event.Message.split("`n") | select-string "$($Term):")[$matchnumber]
-        Write-Verbose "Parsing Line: $m"
-        if ($m) {
-          $result = $m -replace "\s*$($Term):\s+(\w?[^\n]*?):?\s?$",'$1'
-        } else {
-            Write-Error "Term ($Term) not found in event."
-            $result = $null
+function ConvertFrom-WinEvent {
+    [cmdletbinding()]
+    param(
+        [parameter(
+            Mandatory=$true,
+            ValueFromPipeline=$true)]
+        [Object]$Event
+    )
+
+    PROCESS {
+        $fields = $Event.Message.split("`n") #| Select-String "\w:"
+        $event = new-object -Type PSObject -Property @{
+            EventId = $Event.Id
+            TimeCreated = $Event.TimeCreated
+            Message = $Event.Message
         }
-    } catch {
-        return $null
-    }
-    Write-Verbose "Result: $result"
-    return $result
-}
-function Parse-EventLog ($Event) {
-    $fields = $Event.Message.split("`n") | Select-String "\w:"
-    $event = new-object -Type PSObject -Property @{
-        EventId = $Event.Id
-        TimeCreated = $Event.TimeCreated
-        Message = $Event.Message
-    }
-    $fields | % { 
-        $line = $_.ToString()
-        if ($line -match "^\w[\w\s]*?:") {
-            $m = $line -split ":"
-            Write-Verbose "Found Match at Root. $($m[0]): $($m[1])"
-            if ($m[1] -AND $m[1] -notmatch "^\s+$") {
-                $base = $false
-                $m[1] = $m[1].trim()
-                $event | Add-Member -MemberType NoteProperty -Name $m[0] -Value $m[1]; 
-            } else {
-                $base = $true
-                $event | Add-Member -MemberType NoteProperty -Name $m[0] -Value (New-Object -Type PSObject); 
+        $fields | % { 
+            $line = $_.ToString()
+            if ($line -match "^\w.*?:") {
+                $addtoarray = $false
+                $m = $line -split ":"
+                Write-Verbose "Found Match at Root. $($m[0]): $($m[1])"
+                if ($m[1] -AND $m[1] -notmatch "^\s+$") {
+                    $base = $false
+                    $m[1] = $m[1].trim()
+                    if ($m[1] -match "^0x[0-9a-fA-F]+" ) { $m[1] = [int]$m[1]}
+                    if ($m[1] -match "^\d+$" ) { $m[1] = [int]$m[1]}
+                    $event | Add-Member -MemberType NoteProperty -Name $m[0] -Value $m[1]; 
+                } else {
+                    $base = $true
+                    $event | Add-Member -MemberType NoteProperty -Name $m[0] -Value (New-Object -Type PSObject); 
+                }
+            } 
+            elseif ($Base -AND $m[0] -AND ($line -match '^\t{1}\w.*?:')) {
+                Write-Verbose "sub: $line"
+                $m2 = $line.trim() -split ":",2
+                $m2[1] = $m2[1].trim().trim("{}")
+                if ($m2[1] -match "^0x[0-9a-fA-F]+" ) { $m2[1] = [int]$m2[1]}
+                if ($m2[1] -match "^\d+$" ) { $m2[1] = [int]$m2[1]}
+                Write-Verbose "Found submatch off $($m[0]). $($m2[0]) : $($m2[1])"
+                $event."$($m[0])" | Add-Member -MemberType NoteProperty -Name $m2[0] -Value $m2[1]; 
+            } 
+            elseif ($m -AND $m[0] -AND ($line -match '^\t{3}\w.*')) {
+                Write-Verbose "sub: $line"
+                $m2 = $line.trim()
+                if ($m2 -match "^0x[0-9a-fA-F]+" ) { $m2 = [int]$m2}
+                if ($m2 -match "^\d+$" ) { $m2 = [int]$m2}
+                Write-Verbose "Found submatch off $($m[0]). $($m2) : $($m2)"
+                if (-NOT $addtoarray) {
+                    $event."$($m[0])" = @($event."$($m[0])") 
+                    $event."$($m[0])" += $m2;
+                    $addtoarray = $true
+                } else {
+                    $event."$($m[0])" += $m2;
+                }
             }
-        } elseif ($Base -AND $m[0] -AND ($_ -match '^\s+\w[\w\s]*?:')) {
-            Write-Verbose "sub: $line"
-            $m2 = $line.trim() -split ":",2
-            $m2[1] = $m2[1].trim().trim("{}")
-            if ($m2[1] -match "^0x[0-9a-fA-F]+" ) { $m2[1] = [int]$m2[1]}
-            if ($m2[1] -match "^\d+$" ) { $m2[1] = [int]$m2[1]}
-            Write-Verbose "Found submatch off $($m[0]). $($m2[0]) : $($m2[1])"
-            $event."$($m[0])" | Add-Member -MemberType NoteProperty -Name $m2[0] -Value $m2[1]; 
-        } else {
-            Write-Warning "Not this one: $_"
+            elseif ($line -AND $line -notmatch "^\s+$") {
+                $base = $false
+                $addtoarray = $false
+                if ($line -notmatch "(^\w.*?\.\s?$|^\s-\s\w.*)") { Write-Warning "Unexpected line: $_" }
+            }
         }
+        return $event
     }
-    return $event
 }
-Parse-EventLog $event
-$RDP_Logons = Get-WinEvent -FilterHashtable @{logname="security";id=4624; StartTime=$startdate} -ea 0 | where { $_.Message -match 'logon type:\s+(10|7)'} | foreach-object {
-    (new-object -Type PSObject -Property @{
-        EventId = $_.Id
+
+$RDP_Logons = Get-WinEvent -FilterHashtable @{logname="security";id=4624; StartTime=$startdate} -ea 0 | where { 
+    $_.Message -match 'logon type:\s+(10|7)' -AND $_.Message -notmatch "Source Network Address:\s+LOCAL" } | ConvertFrom-WinEvent | foreach-object {
+    new-object -Type PSObject -Property @{
+        EventId = $_.EventId
         TimeCreated = $_.TimeCreated
-        IP = Parse-EventLogTerm $_ "Source Network Address"
-        UserName = Parse-EventLogTerm $_ "Account Name" 1
-        UserDomain = Parse-EventLogTerm $_ "Account Domain" 1
-        LogonType = Parse-EventLogTerm $_ "Logon Type"
-        SecurityId = Parse-EventLogTerm $_ "Security ID" 1
-        LogonId = Parse-EventLogTerm $_ "Logon ID" 1
-    })
-    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SecurityId, LogonId `
-        , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}} `
-        , @{N='LogonType';E={
+        IP = $_."Source Network Address"
+        Username = $_.Subject."Account Name"
+        Domain = $_.Subject."Account Domain"
+        LogonType = $_."Logon Type"
+        SecurityId = $_.Subject."Security ID"
+        LogonId = $_.Subject."Logon ID"
+    }
+} | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort-object TimeCreated -Descending | 
+    Select-object TimeCreated, EventId, IP, SecurityId, LogonId, Username, Domain, @{N='LogonType';E={
         switch ([int]$_.LogonType) {
-            2 {'Interactive (local) Logon [Type 2]'}
-            3 {'Network Connection (i.e. shared folder) [Type 3]'}
-            4 {'Batch [Type 4]'}
-            5 {'Service [Type 5]'}
-            7 {'Unlock/RDP Reconnect [Type 7]'}
-            8 {'NetworkCleartext [Type 8]'}
-            9 {'NewCredentials (local impersonation process under existing connection) [Type 9]'}
-            10 {'RDP [Type 10]'}
-            11 {'CachedInteractive [Type 11]'}
+            2 {'Interactive (local) Logon [2]'}
+            3 {'Network Connection (i.e. shared folder) [3]'}
+            4 {'Batch [4]'}
+            5 {'Service [5]'}
+            7 {'Unlock/RDP Reconnect [7]'}
+            8 {'NetworkCleartext [8]'}
+            9 {'NewCredentials (local impersonation) [9]'}
+            10 {'RDP [10]'}
+            11 {'CachedInteractive [11]'}
             default {"LogonType Not Recognised: $($_.LogonType)"}
         }
     }
 }
-<# This is just a connection attempt event, very noisy and not as useful
-$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } -ea 0 | foreach-object {
-    (new-object -Type PSObject -Property @{
-        EventId = $_.Id
-        TimeCreated = $_.TimeCreated
-        IP = Parse-EventLogTerm $_ "Source Network Address"
-        UserName = Parse-EventLogTerm $_ "User"
-        UserDomain = Parse-EventLogTerm $_ "Domain"
-    })
-    } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" }| sort TimeCreated -Descending | Select TimeCreated, EventId, IP `
-    , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}
-}
-#>
+    
+#This is just a connection attempt event, very noisy and not as useful
+$RDP_RemoteConnectionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational'; ID=1149; StartTime=$startdate } -ea 0 |
+    where { $_.Message -notmatch "Source Network Address:\s+LOCAL" } | ConvertFrom-WinEvent | foreach-object {
+        new-object -Type PSObject -Property @{
+            EventId = $_.EventId
+            TimeCreated = $_.TimeCreated
+            IP = $_."Source Network Address"
+            Username = $_."User"
+            Domain = $_."Domain"
+        }
+    } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, Username, Domain
 
 $RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=21,24,25; StartTime=$startdate } -ea 0 | 
-    where { $_.Message -notmatch "Source Network Address:\s+LOCAL"} | foreach-object {
-    (new-object -Type PSObject -Property @{
-        EventId = $_.Id
-        TimeCreated = $_.TimeCreated
-        IP = Parse-EventLogTerm $_ "Source Network Address"
-        UserName = Parse-EventLogTerm $_ "User"
-        Action = Parse-EventLogTerm $_ "Remote Desktop Services"
-    })
+    where { $_.Message -notmatch "Source Network Address:\s+LOCAL"} | ConvertFrom-WinEvent | foreach-object {
+        new-object -Type PSObject -Property @{
+            EventId = $_.Id
+            TimeCreated = $_.TimeCreated
+            IP = $_."Source Network Address"
+            UserName = $_."User"
+            Action = $_."Remote Desktop Services"
+        }
     } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, Username, Action
 
-          
-$Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | where { $_.Message -match "Creator Subject:\s+Security ID:\s+S-1-5-21" } | foreach-object {
-    $m = $_.Message.split("`n")
-    (new-object -Type PSObject -Property @{
-        EventId = $_.Id
-        TimeCreated = $_.TimeCreated
-        SecurityId = Parse-EventLogTerm $_ "Security ID"
-        LogonId = Parse-EventLogTerm $_ "Logon ID"
-        UserName = Parse-EventLogTerm $_  "Account Name"
-        UserDomain = Parse-EventLogTerm $_ "Account Domain"
-        ProcessPath = Parse-EventLogTerm $_ "New Process Name"
-        ParentProcessId = Parse-EventLogTerm $_ "Creator Process ID"
-        ProcessId = Parse-EventLogTerm $_ "New Process ID"
-        Commandline = Parse-EventLogTerm $_ "Process Command Line"
-    })
-    } | where { $RDP_Logons.LogonId -contains $_.LogonId } | sort TimeCreated -Descending | Select TimeCreated, EventId, ProcessPath, Commandline, SecurityId, LogonId `
-        , @{N='Username';E={'{0}\{1}' -f $_.UserDomain,$_.UserName}} `
-        , @{N='ProcessId';E={[convert]::toint32($($_.ProcessId).Substring(2),16)}} `
-        , @{N='ParentProcessId';E={ [convert]::toint32($($_.ParentProcessId).Substring(2),16) }}
+            
+$RDP_Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | where { $_.Message -match "Creator Subject:\s+Security ID:\s+S-1-5-21" } | 
+    ConvertFrom-WinEvent | where { $RDP_Logons.LogonId -contains $_."Logon ID" } | foreach-object {
+        $LogonId = $_.LogonId;
+        $Session = $RDP_Logons | where-object { $_.LogonId -eq $LogonId };
+        if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "SecurityIds do not match! ProcessSecurityId=$($_."Security ID"), SessionSecurityId=$($Session.SecurityId)" }
+        if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "Usernames do not match! ProcessUsername=$($_."Account Name"), SessionUsername=$($Session.Username)" }
 
-$RDP_Processes = $Processes
-$RDP_Processes | foreach-object { 
-	$LogonId = $_.LogonId; 
-	$Session = $RDP_Logons | where-object { $_.LogonId -eq $LogonId }; 
-	$_ | Add-Member -MemberType NoteProperty -Name "LogonType" -Value $Session.LogonType; 
-	$_ | Add-Member -MemberType NoteProperty -Name "IP" -Value $Session.IP; 
-    $_ | Add-Member -MemberType NoteProperty -Name "SessionLogonTime" -Value $Session.TimeCreated 
-    $PProc = Get-Process -Id ($_.ParentProcessId) -ea 0
-    if ($PProc -AND ($_.TimeCreated -gt $PProc.StartTime)) {
-        $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value $PPoc.Name
-    } else {
-        $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value "N/A"
-    }
-}
-
-
+        new-object -Type PSObject -Property @{
+            EventId = $_.EventId
+            TimeCreated = $_.TimeCreated
+            SecurityId = $_."Security ID"
+            LogonId = $_."Logon ID"
+            Username = $_."Account Name"
+            Domain = $_."Account Domain"
+            ProcessId = $_."New Process ID"
+            ParentProcessId = $_."Creator Process ID"
+            ProcessPath = $_."New Process Name"
+            Commandline = $_."Process Command Line"
+            LogonType = $Session.LogonType
+            IP = $Session.IP
+            SessionTimeCreated = $Session.TimeCreated
+        }
+        $PProc = Get-Process -Id ($_.ParentProcessId) -ea 0
+        if ($PProc -AND ($_.TimeCreated -gt $PProc.StartTime)) {
+            $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value $PPoc.Name
+        } else {
+            $_ | Add-Member -MemberType NoteProperty -Name "ParentProcessName" -Value "N/A"
+        }
+    } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SessionTimeCreated, LogonType, LogonId, ProcessId, ProcessPath, Commandline, SecurityId, LogonId, Username, Domain, ParentProcessId, ParentProcessName
 
 $RDP_Logons | export-csv $temp\RDP_Logons.csv -NoTypeInformation -Force
 #$RDP_RemoteConnectionManager | export-csv $temp\RDP_RemoteConnectionManager.csv -NoTypeInformation -Force
@@ -380,17 +389,17 @@ if rdp_processes then
         artifact:executed(v['TimeCreated'])
         hunt.survey.add(artifact)
         n = n + 1
-        hunt.log("RDP Process ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['Username']..", sid=".. v['SecurityId']..", pid=".. v['ProcessId']..", path=".. v['ProcessPath'] ..", commandline=".. v['Commandline']..", ppid=".. v['ParentProcessId']..", ppname=".. v['ParentProcessName']..", logontime=".. v['SessionLogonTime'])
+        hunt.debug("RDP Process ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid=".. v['SecurityId']..", pid=".. v['ProcessId']..", path=".. v['ProcessPath'] ..", commandline=".. v['Commandline']..", ppid=".. v['ParentProcessId']..", ppname=".. v['ParentProcessName']..", logontime=".. v['SessionLogonTime'])
     end
-else 
+else
     hunt.warning("No processes found associated with RDP sessions. Logging may not be enabled for EventId 4688 or 4624")
 end
 
 if rdp_localSessionManager then 
     for i,v in pairs(rdp_localSessionManager) do 
         print("RDP Session")
-        --print_table(v)
-        hunt.log("RDP Session ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['Username']..", message="..v['Action'])
+        print_table(v)
+        hunt.log("RDP Session ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", message="..v['Action'])
     end
 else 
     hunt.warning("No remote RDP sessions found. Logging may not be enabled for EventId 21 or 24")
@@ -400,7 +409,7 @@ if rdp_remoteConnectionManager then
     for i,v in pairs(rdp_remoteConnectionManager) do 
         print("RDP Remote Connection Attempt")
         --print_table(v)
-        hunt.log("RDP Connection Attempt ["..v['EventId'].."]"..", eventtime="..v['TimeCreated']..", ip="..v['IP']..", username="..v['Username'])
+        hunt.log("RDP Connection Attempt ["..v['EventId'].."]"..", eventtime="..v['TimeCreated']..", ip="..v['IP']..", username="..v['domain'].."\\"..v['Username'])
     end
 else 
     hunt.warning("No remote RDP connection attempts found. Logging may not be enabled for EventId 1149")
@@ -410,9 +419,9 @@ end
 if rdp_logons then
     for i,v in pairs(rdp_logons) do 
         print("RDP Logons")
-        --print_table(v)
-        hunt.log("RDP Logon ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip="..v['IP']..", username=".. v['Username']..", sid="..v['SecurityId']..", logontype="..v['LogonType'])
+        print_table(v)
+        hunt.log("RDP Logon ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip="..v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid="..v['SecurityId']..", logontype="..v['LogonType'])
     end
-else 
+else
     hunt.warning("No remote RDP logon events found. Logging may not be enabled for EventId 4624")
 end
