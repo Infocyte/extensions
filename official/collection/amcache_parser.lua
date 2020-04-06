@@ -279,7 +279,7 @@ end
 paths = {}
 for _, item in pairs(csv) do
     -- dedup
-    if not oldhashlist[item["SHA1"]] and not paths[item["SHA1"]] and is_executable(item["FullPath"]) then
+    if not oldhashlist[item["SHA1"]] and not paths[item["SHA1"]] and is_executable(item["FullPath"]) and (nil ~= item["FullPath"]) then
         hunt.log("Adding Artifact: "..item["FullPath"].." ["..item["SHA1"].."] executed on "..item["FileKeyLastWriteTimestamp"])
         paths[item["SHA1"]] = true
         -- Create a new artifact
@@ -295,5 +295,6 @@ end
 
 -- Set Status (not really necessary since bad items will be flagged in artifacts)
 hunt.status.good()
+hunt.debug("Amcache Parser completed.")
 
 

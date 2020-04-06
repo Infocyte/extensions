@@ -6,25 +6,38 @@
         (currently only .doc and .docx files) with specified keywords or alldocs.
         1. Find any office doc on a desktop/server
         2. Upload doc directly to S3 Bucket
-        3. Upload metadata csv with filehash as key |
+        3. Upload metadata csv with filehash as key
+
+        https://asecuritysite.com/forensics/magic |
     Author: Multiple (Maintained by Gerritz)
     Guid: 5a0e3b34-4692-4f3c-afff-c84102785756
 	Created: 20190919
-	Updated: 20190919 (Gerritz)
+	Updated: 2020406 (Gerritz)
 --]]
 
 
 --[[ SECTION 1: Inputs --]]
-searchpath = [[C:\Users]]
-strings = {
-    'test'
+searchpaths = {
+    'C:/Users/'
 }
+
 all_office_docs = false -- set to true to bypass string search
+strings = {
+    'test',
+    'Gerritz'
+}
 --Options for all_office_docs:
 opts = {
     "files",
-    "size<1000kb",
-    "recurse=4"
+    "size<3000kb",
+    "recurse=2"
+}
+
+findByFileHeader = false -- SLOW! False [Default] will search by file path extensions:
+magic_numbers = { -- HEX
+    '504B0304', -- [PK] Zip or office docx, xlsx, pptx, etc.
+    '25504446', -- [%PDF] pdf
+    'D0CF11E0A1B11AE1' -- Legacy Office Document (doc, xls, ppt, msg)
 }
 extensions = {
     "doc",
@@ -44,7 +57,6 @@ s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-
 
 --Proxy
 proxy = nil -- "myuser:password@10.11.12.88:8888"
@@ -79,6 +91,31 @@ function get_fileextension(path)
     match = path:match("^.+(%..+)$")
     return match
 end
+
+function get_magicnumber(path)
+    --[[
+        Get file magic number (first 8 bytes) from header. 
+        Input:  [string]path
+        Output: [string]headerinhex
+    ]] 
+    local f,err = io.open(path, "rb")
+    if not f then
+        hunt.error('Could not open file: '..err)
+        return nil
+    end
+    local bytes, err = f:read(8)
+    if bytes then
+        header = string.char(tonumber(bytes, 16))
+        print(header)
+        f:close()
+        return true
+    else
+        hunt.error('Read Error: '..err)
+        f:close()
+        return nil
+    end
+end
+
 
 function userfolders()
     --[[
@@ -379,19 +416,19 @@ Function Get-StringsMatch {
 
                 if ($ZipArchive.Entries.FullName -match "^ppt") {
                     $ZipArchive.Entries | where { $_.FullName -match "xml$" -AND $_.FullName -match "slides"} | % {
-                        Write-Host "Entry($($file.FullName)): $($_.FullName)"
+                        Write-Verbose "Entry($($file.FullName)): $($_.FullName)"
                         $ZipEntry = $ZipArchive.GetEntry($_.FullName)
                         $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
                         $text += $EntryReader.ReadToEnd()
                     }
                 } elseif ($ZipArchive.Entries.FullName -match "^word") {
-                    Write-Host "Entry($($file.FullName)): 'word/document.xml'"
+                    Write-Verbose "Entry($($file.FullName)): 'word/document.xml'"
                     $ZipEntry = $ZipArchive.GetEntry('word/document.xml')
                     $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
                     $text = $EntryReader.ReadToEnd()
                 } else {
                     $ZipArchive.Entries | where { $_.FullName -match "xml$" } | % {
-                        Write-Host "Entry($($file.FullName)): $($_.FullName)"
+                        Write-Verbose "Entry($($file.FullName)): $($_.FullName)"
                         $ZipEntry = $ZipArchive.GetEntry($_.FullName)
                         $EntryReader = New-Object System.IO.StreamReader($ZipEntry.Open())
                         $text += $EntryReader.ReadToEnd()
@@ -458,37 +495,60 @@ Function Get-StringsMatch {
 ]==]
 -- #endregion
 
+
+
 if all_office_docs then
     officedocs = {}
 
-    for _,path in pairs(hunt.fs.ls(searchpath, opts)) do
-        ext = GetFileExtension(path:name())
-        for _,e in ipairs(extensions) do
-            if ext and ext:match(e.."$") and path_exists(path:path()) then
-                hash = hunt.hash.sha1(path:full())
-                if (string.len(hash)) ~= 40 then
-                    hunt.error("Problem with file "..path:path()..": "..hash)
-                    break
+    paths = {}
+    for _,rootpath in pairs(searchpaths) do
+        for _,path in pairs(hunt.fs.ls(rootpath, opts)) do
+            if path_exists(path:path()) then 
+                if findByFileHeader then 
+                    magic = get_magicnumber(path)
+                    print(magic)
+                    for _, m in ipairs(magic_numbers) do 
+                        paths:add(path)
+                    end
+                else 
+                    ext = GetFileExtension(path:name())
+                    for _,e in ipairs(extensions) do
+                        if ext and ext:match(e.."$") then
+                            paths:add(path)
+                        end
+                    end
                 end
-                --print("["..ext.."] "..path:full().." ["..hash.."]")
-                local file = {
-                    hash = hash,
-                    path = path:full(),
-                    size = path:size()
-                }
-                officedocs[hash] = file
-                if upload_to_s3 then
-                    s3path = s3path_preamble.."/"..hash..ext
-                    link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-                    hunt.log("Uploading "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
-                    s3:upload_file(path:path(), s3path)
-                else
-                    hunt.log("Found "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ")")
-                end
-                break
+            else
+                print('File does not exist')
             end
         end
     end
+    
+    for _, path in pairs(paths) do
+        hash = hunt.hash.sha1(path:full())
+        if (string.len(hash)) ~= 40 then
+            hunt.error("Problem with file "..path:path()..": "..hash)
+            break
+        end
+        --print("["..ext.."] "..path:full().." ["..hash.."]") -- debug
+        
+        local file = {
+            hash = hash,
+            path = path:full(),
+            size = path:size()
+        }
+        officedocs[hash] = file
+        if upload_to_s3 then
+            s3path = s3path_preamble.."/"..hash..ext
+            link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+            hunt.log("Uploading "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
+            s3:upload_file(path:path(), s3path)
+        else
+            hunt.log("Found "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ")")
+        end
+        break
+    end
+
     if upload_to_s3 then
         tmpfile = os.tmpname()
         tmp = io.open(tmpfile, "w")
