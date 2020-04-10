@@ -26,81 +26,13 @@ s3path_modifier = "evidence"
 
 --[[ SECTION 2: Functions --]]
 
--- Infocyte Powershell Functions
-powershell = {}
-function powershell.run_command(command)
-    --[[
-        Input:  [String] Small Powershell Command
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not command or (type(command) ~= "string") then 
-        throw "Required input [String]command not provided."
-    end
-
-    print("[PS] Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
-
-function powershell.run_script(psscript)
-    --[[
-        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    debug = debug or true
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not psscript or (type(psscript) ~= "string") then 
-        throw "Required input [String]script not provided."
-    end
-
-    print("[PS] Initiatializing Powershell to run Script")
-    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
-    local f = io.open(tempfile, 'w')
-    script = "# Ran via Infocyte Powershell Extension\n"..psscript
-    f:write(script) -- Write script to file
-    f:close()
-
-    -- Feed script (filter out empty lines) to Invoke-Expression to execute
-    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
-    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
-    print("[PS] Executing: "..cmd)
-    local pipe = io.popen(cmd, "r")
-    local output = pipe:read("*a") -- string output
-    if debug then 
-        for line in string.gmatch(output,'[^\n]+') do
-            if line ~= '' then print("[PS] "..line) end
-        end
-    end
-    local ret = pipe:close() -- success bool
-    os.remove(tempfile)
-    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
-        ret = false
-    end
-    return ret, output
-end
-
 -- PowerForensics (optional)
-function powershell.install_powerforensics()
+function install_powerforensics()
     --[[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
     ]]
-    if not powershell then 
-        hunt.error("Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions.")
-        throw "Error"
-    end
+
     script = [==[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
@@ -163,7 +95,7 @@ temppath = tmp.."\\icmft.csv"
 outpath = tmp.."\\icmft.zip"
 
 -- Install PowerForensics
-powershell.install_powerforensics()
+install_powerforensics()
 
 -- Get MFT w/ Powerforensics
 cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'

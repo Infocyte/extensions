@@ -169,72 +169,8 @@ function parse_csv(path, sep)
     return csvFile
 end
 
--- Infocyte Powershell Functions --
-powershell = {}
-function powershell.run_command(command)
-    --[[
-        Input:  [String] Small Powershell Command
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
 
-    if not command or (type(command) ~= "string") then 
-        throw "Required input [String]command not provided."
-    end
-
-    print("[PS] Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
-
-function powershell.run_script(psscript)
-    --[[
-        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    debug = debug or true
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not psscript or (type(psscript) ~= "string") then 
-        throw "Required input [String]script not provided."
-    end
-
-    print("[PS] Initiatializing Powershell to run Script")
-    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
-    local f = io.open(tempfile, 'w')
-    script = "# Ran via Infocyte Powershell Extension\n"..psscript
-    f:write(script) -- Write script to file
-    f:close()
-
-    -- Feed script (filter out empty lines) to Invoke-Expression to execute
-    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
-    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
-    print("[PS] Executing: "..cmd)
-    local pipe = io.popen(cmd, "r")
-    local output = pipe:read("*a") -- string output
-    if debug then 
-        for line in string.gmatch(output,'[^\n]+') do
-            if line ~= '' then print("[PS] "..line) end
-        end
-    end
-    local ret = pipe:close() -- success bool
-    os.remove(tempfile)
-    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
-        ret = false
-    end
-    return ret, output
-end
-
-function powershell.list_to_pslist(list)
+function list_to_pslist(list)
     --[[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
@@ -570,7 +506,7 @@ else
         tempfile = [[c:\windows\temp\icext.csv]]
 
     	-- Run powershell
-        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. powershell.list_to_pslist(strings) .. ' -filetypes '.. powershell.list_to_pslist(extensions)
+        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. list_to_pslist(strings) .. ' -filetypes '.. list_to_pslist(extensions)
         hunt.verbose("Executing Powershell Command: "..cmd)
         script = script..'\n'..cmd
         ret, output = powershell.run_script(script)
