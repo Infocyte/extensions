@@ -20,8 +20,8 @@
 --[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (Destination)
-s3_user = nil
-s3_pass = nil
+s3_keyid = nil
+s3_secret = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 s3path_modifier = "memory" -- /filename will be appended
@@ -127,8 +127,8 @@ end
 
 -- Scans have 1 hour timeouts currently so we're gunna spawn a background task to
 -- upload it in case it takes a few hours.
-if s3_user then
-    script = 'recovery = hunt.recovery.s3("'..s3_user..'", "'..s3_pass..'", "'..s3_region..'","'..s3_bucket..'")\n'
+if s3_keyid then
+    script = 'recovery = hunt.recovery.s3("'..s3_keyid..'", "'..s3_secret..'", "'..s3_region..'","'..s3_bucket..'")\n'
 else
     script = 'recovery = hunt.recovery.s3(nil, nil, "'..s3_region..'","'..s3_bucket..'")\n'
 end

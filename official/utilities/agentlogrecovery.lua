@@ -13,8 +13,8 @@
 --[[ SECTION 1: Inputs --]]
 
 -- S3 Bucket (mandatory)
-s3_user = nil
-s3_pass = nil
+s3_keyid = nil
+s3_secret = nil
 s3_region = 'us-east-1' -- 'us-east-2'
 s3_bucket = 'hunt-saas-logs' -- 'test-extensions'
 s3path_modifier = "agentlogs" -- /filename will be appended
@@ -80,7 +80,7 @@ elseif instance:match("infocyte") then
     -- get instancename
     instancename = instance:match("(.+).infocyte.com")
 end
-s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
 s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 
 

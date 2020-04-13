@@ -15,8 +15,8 @@
 --[[ SECTION 1: Inputs --]]
 
 -- Upload Options. S3 Bucket (Mandatory)
-s3_user = nil -- Optional for authenticated uploads
-s3_pass = nil -- Optional for authenticated uploads
+s3_keyid = nil -- Optional for authenticated uploads
+s3_secret = nil -- Optional for authenticated uploads
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 
@@ -134,7 +134,7 @@ elseif instance:match("infocyte") then
     -- get instancename
     instancename = instance:match("(.+).infocyte.com")
 end
-recovery = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+recovery = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
 s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 s3path = s3path_preamble .. '/mft.zip'
 hunt.debug("Uploading gzipped MFT (size= "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)

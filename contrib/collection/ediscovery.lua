@@ -51,8 +51,8 @@ extensions = {
 
 -- S3 Bucket
 upload_to_s3 = false -- set this to true to upload to your S3 bucket
-s3_user = nil
-s3_pass = nil
+s3_keyid = nil
+s3_secret = nil
 s3_region = 'us-east-2' -- US East (Ohio)
 s3_bucket = 'test-extensions'
 s3path_modifier = 'ediscovery'
@@ -212,7 +212,7 @@ if upload_to_s3 then
         instancename = instance:match("(.+).infocyte.com")
     end
     s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
-    s3 = hunt.recovery.s3(s3_user, s3_pass, s3_region, s3_bucket)
+    s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
     hunt.log("S3 Upload to "..s3_region.." bucket: "..s3_bucket)
 else
     hunt.log("No S3 file upload selected. Reporting only.")
