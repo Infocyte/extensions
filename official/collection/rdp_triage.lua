@@ -34,11 +34,7 @@ function powershell.run_command(command)
         throw "Required input [String]command not provided."
     end
 
-<<<<<<< Updated upstream
-    print("Initiatializing Powershell to run Command: "..command)
-=======
     print("[PS] Initiatializing Powershell to run Command: "..command)
->>>>>>> Stashed changes
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
     output = pipe:read("*a") -- string output
