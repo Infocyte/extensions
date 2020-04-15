@@ -52,11 +52,7 @@ function powershell.run_script(psscript)
         Output: [Bool] Success
                 [String] Output
     ]]
-<<<<<<< Updated upstream
     debug = debug or false
-=======
-    debug = debug or true
->>>>>>> Stashed changes
     if not hunt.env.has_powershell() then
         throw "Powershell not found."
     end
@@ -86,21 +82,13 @@ function powershell.run_script(psscript)
         end
     end
     local ret = pipe:close() -- success bool
-<<<<<<< Updated upstream
     if not debug then os.remove(tempfile) end
-=======
-    os.remove(tempfile)
->>>>>>> Stashed changes
     if ret and string.match( output, 'FullyQualifiedErrorId' ) then
         ret = false
     end
     return ret, output
 end
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 function path_exists(path)
     --[[
         Check if a file or directory exists in this path. 
