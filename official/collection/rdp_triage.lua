@@ -34,7 +34,11 @@ function powershell.run_command(command)
         throw "Required input [String]command not provided."
     end
 
+<<<<<<< Updated upstream
     print("Initiatializing Powershell to run Command: "..command)
+=======
+    print("[PS] Initiatializing Powershell to run Command: "..command)
+>>>>>>> Stashed changes
     cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
     pipe = io.popen(cmd, "r")
     output = pipe:read("*a") -- string output
@@ -48,7 +52,11 @@ function powershell.run_script(psscript)
         Output: [Bool] Success
                 [String] Output
     ]]
+<<<<<<< Updated upstream
     debug = debug or false
+=======
+    debug = debug or true
+>>>>>>> Stashed changes
     if not hunt.env.has_powershell() then
         throw "Powershell not found."
     end
@@ -78,14 +86,21 @@ function powershell.run_script(psscript)
         end
     end
     local ret = pipe:close() -- success bool
+<<<<<<< Updated upstream
     if not debug then os.remove(tempfile) end
+=======
+    os.remove(tempfile)
+>>>>>>> Stashed changes
     if ret and string.match( output, 'FullyQualifiedErrorId' ) then
         ret = false
     end
     return ret, output
 end
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 function path_exists(path)
     --[[
         Check if a file or directory exists in this path. 
@@ -102,7 +117,6 @@ function path_exists(path)
    end
    return ok, err
 end
-
 
 function print_table(tbl, indent)
     --[[
@@ -191,6 +205,7 @@ end
 
 tmppath = os.getenv("systemroot").."\\temp\\ic"
 --tmppath = os.getenv("TEMP").."\\ic"
+os.execute("mkdir "..tmppath)
 
 -- https://ponderthebits.com/2018/02/windows-rdp-related-event-logs-identification-tracking-and-investigation/
 -- Going to ignore reconnection timestamps as these are really noisy.
@@ -199,6 +214,7 @@ script = script..'$temp = "'..tmppath..'"\n'
 script = script..[==[
     #$trailing = -65
     #$temp = "C:\windows\temp\ic"
+    #$startdate = (Get-date).AddHours(-1)
     $startdate = (Get-date -hour 0 -minute 0 -second 0).AddDays($trailing)
     function ConvertFrom-WinEvent {
         [cmdletbinding()]
@@ -271,15 +287,16 @@ script = script..[==[
         new-object -Type PSObject -Property @{
             EventId = $_.EventId
             TimeCreated = $_.TimeCreated
-            IP = $_."Source Network Address"
-            Username = $_.Subject."Account Name"
-            Domain = $_.Subject."Account Domain"
-            LogonType = $_."Logon Type"
-            SecurityId = $_.Subject."Security ID"
-            LogonId = $_.Subject."Logon ID"
+            SourceIP = $_."Network Information"."Source Network Address"
+            Username = $_."New Logon"."Account Name"
+            Domain = $_."New Logon"."Account Domain"
+            LogonType = if ($_."Logon Information"."Logon Type") {$_."Logon Information"."Logon Type"} else { $_."Logon Type" } 
+            ElevatedToken = $_."Logon Information"."Elevated Token" #Windows10/2016+
+            SecurityId = $_."New Logon"."Security ID"
+            LogonId = [int]$_."New Logon"."Logon ID"
         }
-    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort-object TimeCreated -Descending | 
-        Select-object TimeCreated, EventId, IP, SecurityId, LogonId, Username, Domain, @{N='LogonType';E={
+    } | where { $_.SecurityId -match "S-1-5-21" -AND $_.SourceIP -ne "LOCAL" -AND $_.SourceIP -ne "-" -AND $_.SourceIP -ne "::1" } | sort-object TimeCreated -Descending | 
+        Select-object TimeCreated, EventId, SourceIP, ElevatedToken, SecurityId, LogonId, Username, Domain, @{N='LogonType';E={
             switch ([int]$_.LogonType) {
                 2 {'Interactive (local) Logon [2]'}
                 3 {'Network Connection (i.e. shared folder) [3]'}
@@ -301,32 +318,32 @@ script = script..[==[
             new-object -Type PSObject -Property @{
                 EventId = $_.EventId
                 TimeCreated = $_.TimeCreated
-                IP = $_."Source Network Address"
+                SourceIP = $_."Source Network Address"
                 Username = $_."User"
                 Domain = $_."Domain"
             }
-        } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "-" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, Username, Domain
+        } | where { $_.SourceIP -ne "LOCAL" -AND $_.SourceIP -ne "-" -AND $_.SourceIP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, SourceIP, Username, Domain
     
     $RDP_LocalSessionManager = Get-WinEvent -FilterHashtable @{ logname='Microsoft-Windows-TerminalServices-LocalSessionManager/Operational'; ID=21,24,25; StartTime=$startdate } -ea 0 | 
         where { $_.Message -notmatch "Source Network Address:\s+LOCAL"} | ConvertFrom-WinEvent | foreach-object {
             new-object -Type PSObject -Property @{
-                EventId = $_.Id
+                EventId = $_.EventId
                 TimeCreated = $_.TimeCreated
-                IP = $_."Source Network Address"
+                SourceIP = $_."Source Network Address"
                 UserName = $_."User"
                 Action = $_."Remote Desktop Services"
             }
-        } | where { $_.IP -ne "LOCAL" -AND $_.IP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, Username, Action
+        } | where { $_.SourceIP -ne "LOCAL" -AND $_.SourceIP -ne "::1" } | sort TimeCreated -Descending | Select TimeCreated, EventId, SourceIP, Username, Action
     
               
     $RDP_Processes = Get-WinEvent -FilterHashtable @{logname='security';id=4688; StartTime=$startdate}  -ea 0 | where { $_.Message -match "Creator Subject:\s+Security ID:\s+S-1-5-21" } | 
-        ConvertFrom-WinEvent | where { $RDP_Logons.LogonId -contains $_."Logon ID" } | foreach-object {
-            $LogonId = $_."Logon ID";
+        ConvertFrom-WinEvent | where { $RDP_Logons.LogonId -contains $_."Creator Subject"."Logon ID" } | foreach-object {
+            $LogonId = $_."Creator Subject"."Logon ID";
             $Session = $RDP_Logons | where-object { $_.LogonId -eq $LogonId };
-            if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "SecurityIds do not match! ProcessSecurityId=$($_."Security ID"), SessionSecurityId=$($Session.SecurityId)" }
-            if ($_."Security ID" -ne $Session.SecurityId) { Write-Error "Usernames do not match! ProcessUsername=$($_."Account Name"), SessionUsername=$($Session.Username)" }
+            $SecurityId = $_."Creator Subject"."Security ID"
+            if ($SecurityId -ne $Session.SecurityId) { Write-Error "SecurityIds do not match! ProcessSecurityId=$($_."Security ID"), SessionSecurityId=$($Session.SecurityId)" }
     
-            $proc = new-object -Type PSObject -Property @{
+            new-object -Type PSObject -Property @{
                 EventId = $_.EventId
                 TimeCreated = $_.TimeCreated
                 SecurityId = $_."Creator Subject"."Security ID"
@@ -339,17 +356,11 @@ script = script..[==[
                 ProcessPath = $_."Process Information"."New Process Name"
                 Commandline = $_."Process Information"."Process Command Line"
                 LogonType = $Session.LogonType
-                IP = $Session.IP
+                SourceIP = $Session.SourceIP
                 SessionTimeCreated = $Session.TimeCreated
             }
-            if (-NOT $proc.ParentProcessName -AND $proc.ParentProcessId) {
-                $PProc = Get-Process -Id ($proc.ParentProcessId) -ea 0
-                if ($PProc -AND ($_.TimeCreated -gt $PProc.StartTime)) {
-                    $proc.ParentProcessName = $PPoc.Path
-                } 
-            }
             $proc
-        } | sort TimeCreated -Descending | Select TimeCreated, EventId, IP, SessionTimeCreated, LogonType, LogonId, ProcessId, ProcessPath, Commandline, SecurityId, LogonId, Username, Domain, ParentProcessId, ParentProcessPath
+        } | sort TimeCreated -Descending | Select TimeCreated, EventId, SourceIP, SessionTimeCreated, LogonType, LogonId, ProcessId, ProcessPath, Commandline, SecurityId, Username, Domain, ParentProcessId, ParentProcessPath
     
     $RDP_Logons | export-csv $temp\RDP_Logons.csv -NoTypeInformation -Force
     $RDP_RemoteConnectionManager | export-csv $temp\RDP_RemoteConnectionManager.csv -NoTypeInformation -Force
