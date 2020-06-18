@@ -102,13 +102,14 @@ function install_powerforensics()
             Write-Host "Powerforensics Already Installed. Continuing."
         }
     ]==]
-    ret, output = powershell.run_script(script)
-    if ret then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..output)
+    out, err = hunt.env.run_powershell(script)
+    if out then 
+        hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+        return true
     else 
-        hunt.error("[install_powerforensics] Failed:\n"..output)
+        hunt.error("[install_powerforensics] Failed:\n"..err)
+        return
     end
-    return ret
 end
 
 
@@ -289,8 +290,8 @@ for name,path in pairs(paths) do
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
             hunt.debug("File Locked ["..err.."]. Executing: "..cmd)
-            ret, out = powershell.run_command(cmd)
-            hunt.debug("Powerforensics output: "..out)
+            out, err = hunt.env.run_powershell(cmd)
+            hunt.debug("Powerforensics output: "..out.." ["..err.."]")
         else
            -- Copy file to temp path
            data = infile:read("*all")

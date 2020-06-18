@@ -53,11 +53,11 @@ for ($i=1; $i -le $TotalControllers; $i++) {
 
 ]]
 
-success, out = powershell.run_script(script)
-if success then
+out, err = hunt.env.run_powershell(script)
+if out then
     hunt.log("New Controllers deployed on " .. host_info:hostname()..": "..out)
 else
-    hunt.error("Failure: "..out)
+    hunt.error("Failure: "..err)
 end
 --[[
 -- Create powershell process and feed script/commands to its stin

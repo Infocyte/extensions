@@ -1,81 +1,10 @@
 --[[
     Useful functions you may want to include in your scripts:
 
-    1. Powershell Library [powershell.*] -- Powershell functions to make it easier to execute PS commands and scripts.
-    2. Filesystem -- functions to simplify common filesystem tasks
-    3. Registry -- functions to simplify common windows registry lookups and tasks
-
 ]]
 
--- Infocyte Powershell Functions --
-powershell = {}
-function powershell.run_command(command)
-    --[[
-        Input:  [String] Small Powershell Command
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not command or (type(command) ~= "string") then 
-        throw "Required input [String]command not provided."
-    end
-
-    print("[PS] Initiatializing Powershell to run Command: "..command)
-    cmd = ('powershell.exe -nologo -nop -command "& {'..command..'}"')
-    pipe = io.popen(cmd, "r")
-    output = pipe:read("*a") -- string output
-    ret = pipe:close() -- success bool
-    return ret, output
-end
-
-function powershell.run_script(psscript)
-    --[[
-        Input:  [String] Powershell script. Ideally wrapped between [==[ ]==] to avoid possible escape characters.
-        Output: [Bool] Success
-                [String] Output
-    ]]
-    debug = debug or true
-    if not hunt.env.has_powershell() then
-        throw "Powershell not found."
-    end
-
-    if not psscript or (type(psscript) ~= "string") then 
-        throw "Required input [String]script not provided."
-    end
-
-    os.execute("mkdir "..os.getenv("systemroot").."\\temp\\ic")
-    print("Initiatializing Powershell to run Script")
-
-    local tempfile = os.getenv("systemroot").."\\temp\\ic"..os.tmpname().."script.ps1"
-    local f = io.open(tempfile, 'w')
-    script = "# Ran via Infocyte Powershell Extension\n"..psscript
-    f:write(script) -- Write script to file
-    f:close()
-
-    -- Feed script to Invoke-Expression to execute
-    -- This method bypasses translation issues with popen's cmd -> powershell -> cmd -> lua shinanigans
-    local cmd = 'powershell.exe -nologo -nop -command "gc '..tempfile..' | Out-String | iex'
-    print("Executing: "..cmd)
-    local pipe = io.popen(cmd, "r")
-    local output = pipe:read("*a") -- string output
-    if debug then 
-        for line in string.gmatch(output,'[^\n]+') do
-            if line ~= '' then print("[PS]: "..line) end
-        end
-    end
-    local ret = pipe:close() -- success bool
-    os.remove(tempfile)
-    if ret and string.match( output, 'FullyQualifiedErrorId' ) then
-        ret = false
-    end
-    return ret, output
-end
-
 -- PowerForensics (optional)
-function powershell.install_powerforensics()
+function install_powerforensics()
     --[[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
@@ -99,16 +28,17 @@ function powershell.install_powerforensics()
             Write-Host "Powerforensics Already Installed. Continuing."
         }
     ]==]
-    ret, output = powershell.run_script(script)
-    if ret then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..output)
+    out, err = hunt.env.run_powershell(script)
+    if out then 
+        hunt.log("[install_powerforensics] Succeeded:\n"..out)
+        return true
     else 
-        hunt.error("[install_powerforensics] Failed:\n"..output)
+        hunt.error("[install_powerforensics] Failed:\n"..err)
+        return false
     end
-    return ret
 end
 
-function powershell.list_to_pslist(list)
+function list_to_pslist(list)
     --[[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
@@ -392,11 +322,12 @@ function ftp.upload(path, address, username, password)
                 $Run.Dispose()
             }
         ]==]
-        ret, output = powershell.run_script(script)
-        if not ret then 
-            print("Failure: "..output)
+        out, err = hunt.env.run_powershell(script)
+        if not out then 
+            hunt.error("Failure: "..err)
+            return false
         end
-        return ret
+        return true
     end
 end
 
@@ -446,11 +377,12 @@ function ftp.download(path, address, username, password)
             while ($ReadLength -ne 0)
             return true              
         ]==]
-        ret, output = powershell.run_script(script)
-        if not ret then 
-            print("Failure: "..output)
+        out, err = hunt.env.run_powershell(script)
+        if not out then 
+            hunt.error("Failure: "..err)
+            return false
         end
-        return ret
+        return true
     end
 end
 

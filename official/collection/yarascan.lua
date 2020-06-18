@@ -46,6 +46,625 @@ add_opts = {
 
 -- #region bad_rules
 bad_rules = [==[
+
+rule HTTPCore_dll_loader : httpcore windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000312"
+		rule_group = "implant"
+		implant = "HTTPCore"
+		rule_version = "1"
+		
+	strings:
+		$dn1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 }
+		$dn2 = "_CorDllMain"
+
+		$path = /[A-Z]:[^\x00]{1,256}\\ccc.dll\x00/
+
+	condition:
+		uint16(0) == 0x5A4D and filesize < 1MB and any of ($dn*) and $path
+}
+
+rule HTTPCore_dll : httpcore windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000313"
+		rule_group = "implant"
+		implant = "HTTPCore"
+		rule_version = "1"
+
+	strings:
+		$dn1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 }
+		$dn2 = "_CorDllMain"
+
+		$param1 = "Url"				wide fullword
+		$param2 = "RootPath"		wide fullword
+		$param3 = "RemotePassword"	wide fullword
+		$param4 = "CurrentPassword"	wide fullword
+		$param5 = "Interval"		wide fullword
+		$param6 = "Run"				wide fullword
+
+		$pe_base64 = "TVqQAAMA"		wide
+
+	condition:
+		uint16(0) == 0x5A4D and any of ($dn*) and 5 of ($param*, $pe_base64)
+}
+
+rule HTTPCore_powershell_loader : httpcore windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000314"
+		rule_group = "implant"
+		implant = "HTTPCore"
+		rule_version = "1"
+
+	strings:
+		$load = "[System.Reflection.Assembly]::Load("
+		$agent = ".GetType(\"HttpCore.Agent\")"
+		$v1 = "::Url"
+		$v2 = "::RootPath"
+		$v3 = "::RemotePassword"
+		$v4 = "::CurrentPassword"
+		$v5 = "::RemoteLangType"
+		$v6 = "::Interval"
+		$v7 = "::Run("
+
+	condition:
+		filesize < 400KB and
+		$load and
+		$agent and
+		5 of ($v*)
+}
+
+rule HTTPCore_response_file : httpcore windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000315"
+		rule_group = "implant"
+		implant = "HTTPCore"
+		rule_version = "1"
+
+	strings:
+		$ = { 89 50 4e 47 0d 0a 1a 0a ( 3c 3c 3c 3c | 3e 3e 3e 3e ) }
+
+	condition:
+		filesize < 100KB and any of them
+}
+
+
+rule HTTPotato_dll : httpotato windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000316"
+		rule_group = "tool"
+		tool = "HTTPotato"
+		rule_version = "1"
+
+	strings:
+		$potato1 = "Ext.Potato"		fullword
+		$potato2 = "Potato.Ext"		fullword
+		$potato3 = "Potato.WinAi"	fullword
+		$potato4 = "Potato.dll"		ascii wide fullword
+
+		$a1  = "AddHttpListener"
+		$a2  = "HttpListenerStopper"
+		$a3  = "InvokeHttpListener"
+		$a4  = "OnHttpListenerStop"
+		$a5  = "AppDictionary"
+		$a6  = "GetRequestPostData"
+		$a7  = "LiveSocket"
+		$a8  = "OnStopEvent"
+		$a9  = "ReqDataToDict"
+		$a10 = "listenerPassword"
+		$a11 = "stopSuffix"
+		$a12 = "EE.Handler"
+		$a13 = "H4sIAAAAAAAEAO1Yb2wcxRV/u3u+f44vOTv4T3KON00OjjQ9nUlcx6Epts9O" wide
+
+	condition:
+		uint16(0) == 0x5A4D and filesize < 500KB and (
+			2 of ($potato*) or
+			4 of ($a*)
+		)
+}
+
+
+rule cve_2019_18935_rev_shell_binary : telerikcve windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000304"
+		rule_group = "implant"
+		implant = "telerik reverse shell"
+		rule_version = "1"
+		report = "https://know.bishopfox.com/research/cve-2019-18935-remote-code-execution-in-telerik-ui"
+		
+	strings:
+		$ = /rev_shell[^\x00]{,64}(amd64|x86)(\.dll)?\x00/
+		$ = /\x00([0-9]{1,3}\.){3}[0-9]{1,3}\x00{1,3}[\x00.23:\\cdeimnostwxy]{8,128}%s%s%s%s\x00/
+
+	condition:
+		uint16(0) == 0x5A4D and filesize < 500KB and any of them
+}
+
+rule cve_2019_18935_sleep_binary : telerikcve windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000305"
+		rule_group = "technique"
+		technique = "Telerik CVE-2019-18935 test DLL"
+		rule_version = "1"
+		report = "https://know.bishopfox.com/research/cve-2019-18935-remote-code-execution-in-telerik-ui"
+
+	strings:
+		$ = /sleep_[^\x00]{,64}(amd64|x86)(\.dll)?\x00/
+
+	condition:
+		uint16(0) == 0x5A4D and filesize < 500KB and any of them
+}
+
+
+rule webshell_HTTPCore_server : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000321"
+		rule_group = "implant"
+		implant = "TwoFace (aka HighShell) webshell"
+		rule_version = "1"
+
+	strings:
+		$x1 = /try{k=["'][^"']{1,32}["'],a=Request\.Files\[k\]/
+		$x2 = "d=D(c,8,k)"
+		$x3 = "var k,a,b,c,d;"
+
+		$a1 = "Cryptography.MD5"
+		$a2 = "ComputeHash("
+
+		$b1 = "Cryptography.Rijndael"
+		$b2 = "CreateDecryptor("
+		$b3 = "System.Security.Cryptography.CryptoSteam("
+		$b4 = "System.Security.Cryptography.CryptoStreamMode.Write"
+
+		$c = "eval("
+
+	condition:
+		filesize < 10KB and (
+			2 of ($x*) or
+			(1 of ($a*) and 1 of ($b*) and 1 of ($c*))
+		)
+}
+
+rule webshell_embedded_jscript_evaluator : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000323"
+		rule_group = "implant"
+		implant = "webshell embedded jscript evaluator assembly"
+		rule_version = "1"
+
+	strings:
+		$ = "H4sIAAAAAAAEA"
+		$ = "IsapiModule.Handler"
+		$ = "System.IO.Compression.GZipStream"
+		$ = "System.Convert.FromBase64String"
+		$ = "System.Reflection.Assembly"
+
+	condition:
+		filesize < 100KB and all of them
+}
+
+
+rule webshell_jscript_eval : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000310"
+		rule_group = "implant"
+		implant = "Jscript eval() webshell"
+		rule_version = "3"
+		creation_date = "2020-04-14"
+
+	strings:
+		$lang = "Language=\"JScript\"" nocase
+		$app = "var Application=I.Application;"
+		$b64 = "Convert.FromBase64String("
+		$eval = "eval("
+		$str = "GetString("
+
+	condition:
+		$lang and
+		$app or
+		$eval and
+		($b64 or $str)
+}
+
+rule webshell_csharp_assembler_a : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000309"
+		rule_group = "implant"
+		implant = "csharp assembler webshell"
+		rule_version = "2"
+		creation_date = "2020-04-06"
+
+	strings:
+		$pass_param = "3A3c3wPBSpJ4ouKzdhGAGOmmSpwzjMaDZu"
+		
+		$cdom = "CodeDomProvider.CreateProvider(\"CSharp\")"
+		
+		$comp_mem = "GenerateInMemory"
+		$comp_exe = "GenerateExecutable"
+		$comp_ref = "ReferencedAssemblies"
+		
+		$method = "GetMethod(\"exec\")"
+	condition:
+		$pass_param or
+		($cdom and
+		all of ($comp*) and
+		$method)
+}
+
+rule webshell_embedded_jscript_evaluator : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000323"
+		rule_group = "implant"
+		implant = "webshell embedded jscript evaluator assembly"
+		rule_version = "1"
+
+	strings:
+		$ = "H4sIAAAAAAAEA"
+		$ = "IsapiModule.Handler"
+		$ = "System.IO.Compression.GZipStream"
+		$ = "System.Convert.FromBase64String"
+		$ = "System.Reflection.Assembly"
+
+	condition:
+		filesize < 100KB and all of them
+}
+
+rule webshell_csharp_assembler_b : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000322"
+		rule_group = "implant"
+		implant = "csharp assembler webshell"
+		rule_version = "1"
+
+	strings:
+		$ = "ReferencedAssemblies.Add(\"System.dll\");"
+		$ = ".Invoke("
+		$ = "Response.Write("
+		$ = "System.Convert.FromBase64String"
+		$ = "System.IO.Compression.GZipStream"
+		$ = "CompileAssemblyFromSource"
+		$ = "CompiledAssembly"
+		$ = "new byte["
+		$ = "Import Namespace=\"System.CodeDom.Compiler\""
+
+	condition:
+		filesize < 50KB and 7 of them
+}
+
+rule webshell_awen_aspnet : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000308"
+		rule_group = "implant"
+		implant = "awen asp.net webshell"
+		rule_version = "2"
+		creation_date = "2020-04-06"
+
+	strings:
+		$language = /<%@ ?Page Language=\"?C#\"?/
+		
+		$cmd = ".FileName = \"cmd.exe\";"
+		
+		$psi = /ProcessStartInfo \w{,20} = new ProcessStartInfo\(\);/
+		$psi_start = /Process\.Start\(\w{,20}\)/
+		
+		$var_excmd = "ExcuteCmd"
+		$var_cmdexe = "cmdExe_Click"
+		$var_txt = "txtArg"
+		$var_strm = "stmrdr"
+		
+	condition:
+		$language and
+		$cmd and
+		(any of ($psi*) or
+		any of ($var*))
+}
+
+rule webshell_net_highshell : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000307"
+		rule_group = "implant"
+		implant = "highshell (aka twoface) webshell"
+		rule_version = "2"
+		creation_date = "2020-04-03"
+
+	strings:
+		$language = /<%@ ?Page Language=\"?C#\"?/
+		$param_pro = "\"pro\":pro"
+		$param_cmd = "\"cmd\":cmd"
+		$param_sav = "\"sav\":sav"
+		$param_vir = "\"vir\":vir"
+		$param_sqc = "\"sqc\":sqc"
+		$param_sqq = "\"sqq\":sqq"
+		
+		$net = "exec(\"net use\");"
+		
+		$b64_1 = "VXBsb2FkIEJhc2U2NA=="
+		$b64_2 = "QmFzZTY0IEZpbGU="
+		$b64_3 = "RmlsZSBQYXRoIGFuZCBOYW1l"
+		$b64_4 = "VHJ1c3RlZCBDb25uZWN0aW4gU2FtcGxl"
+		$b64_5 = "Q2hhbmdlIENyZWF0aW9uIFRpbWU="
+		$b64_6 = "U3FsIFNlcnZlcg=="
+		
+	condition:
+		$language and
+		$net or
+		(2 of ($param*) or
+		any of ($b64*))
+}
+
+rule webshell_twoface_common_strings : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000320"
+		rule_group = "implant"
+		implant = "TwoFace (aka HighShell) webshell"
+		rule_version = "1"
+
+	strings:
+		$ = "<input name=\"hid\" type=\"hidden\" />"
+		$ = "<input name=\"upl\" type=\"file\" /><br>"
+		$ = "<input name=\"vir\" type=\"checkbox\" /><g><%=x(\"SXMgdmlydHVhbCBwYXRo\")%></g><br>"
+		$ = "<input type=\"button\" value=\"<%=x(\"VXNl\")%>\" onclick=\"use()\" />"
+		$ = "<y id=\"d\"><%= Server.MapPath(string.Empty) + \"\\\\\"%></y>"
+		
+	condition:
+		filesize < 100KB and 2 of them
+}
+
+rule webshell_net_behinder : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000302"
+		rule_group = "implant"
+		implant = ".net behinder webshell"
+		rule_version = "3"
+		creation_date = "2020-02-20"
+
+	strings:
+		$language = /<%@ ?Page Language=\"?C#\"?/
+		$c1 = "Import Namespace=\"System.Reflection\""
+		$c2 = "Request.BinaryRead("
+		$c3 = "Assembly.Load("
+	condition:
+		filesize < 200KB and
+		$language and
+		all of ($c*)
+}
+
+rule heuristic_tiny_file_eval : webshell webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000013"
+		rule_group = "implant"
+		info = "generic webshell"
+		rule_version = "1"
+
+	strings:
+		$ = "eval("
+
+	condition:
+		filesize < 500 and
+		any of them
+}
+
+rule webshell_reverse : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000015"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+    strings:
+        $us = "dW5zYWZl"
+        $r = /eval\(.{3,20}\("dW5zYWZl"\)\);/
+        $s1 = "function Dec(str){"
+        $s2 = "Request.Item[\""
+        $s3 = "item.slice(5, -3)"
+        $j = "<%@ Page Language=\"Jscript\"%>"
+        
+    condition:
+        $us and
+        $r and
+        $j in (0..20) and
+        2 of ($s*)
+}
+
+rule webshell_rule1 : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000008"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+	strings:
+		$ = /eval.{,50}System\.Text\.Encoding\.(UTF8|GetEncoding\(65001\))\.GetString\(Convert\.FromBase64String\(/
+		$ = "<%@ Page Language=\"Jscript\" validateRequest=\"false\"%><%try{eval"
+		$ = "eval(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Request.Item[\""
+
+	condition:
+		any of them
+}
+
+rule webshell_rule2 : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000009"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+	strings:
+		$asp = /<%\s*(eval|execute)\s+request\s*\(/
+		$asp_js = /<%@\s*Page\s+Language\s*=\s*\"Jscript\"[^>]*%>\s*<%\s*eval\s*\(\s*Request.Item/
+		$php = /<?php\s+@*eval\s*\(\s*\$_POST\s*\[/
+
+	condition:
+		any of them
+		
+}
+
+rule webshell_rule3 : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000010"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+	strings:
+		$ = "System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Request.Item["
+		$ = "eval("
+	condition:
+		filesize < 50KB and 
+		all of them
+}
+
+rule webshell_rule4 : webshell windows webserver
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000011"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+    strings:
+        $ = "<%@ Page Language=\"Jscript\" validateRequest=\"false\"%>"
+        $ = /eval(.{,20}, .{,20})/
+        $ = "System.Text.Encoding.UTF8.GetString"
+        $ = "Convert.FromBase64String"
+
+    condition:
+        all of them        
+}
+
+rule webshell_rule5 : webshell windows webserver
+{
+
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000012"
+		rule_group = "implant"
+		implant = "chinachopper"
+		rule_version = "1"
+
+    strings:
+        $h1 = "<%@ WebService Language=\"JScript\" class=\""
+        $h2 = "<%@ WebHandler Language=\"JScript\" class=\""
+        $i = "import"
+        $e = /eval\(System\.Text\.Encoding\.UTF8\.GetString\(Convert\.FromBase64String\(.+\),.{,12}\);/
+        $s = "import System.Web;"
+
+    condition:
+        #i > 7 and
+        $e and
+        1 of ($h*) and
+        $s
+}
+
+rule macro_dotnet_assembly_loader : macro
+{
+    meta:
+        organisation = "ACSC"
+	    id = "acsc_000318"
+	    rule_group = "technique"
+	    technique = "Office Macro with .NET assembly loading/execution"
+	    rule_version = "1"
+
+	strings:
+		$ = "System.IO.Me" wide ascii fullword
+		$ = /CreateObject\([A-Za-z0-9]{1,5} & "moryStream"\)/ wide ascii
+		$ = "System.Runt" wide ascii fullword
+		$ = "ime.Serialization.Formatters.B" wide ascii fullword
+		$ = "Sub AutoExec()" wide ascii
+
+	condition:
+		all of them
+}
+
+rule macro_write_office_file : macro
+{
+    meta:
+        organisation = "ACSC"
+	    id = "acsc_000317"
+	    rule_group = "technique"
+	    technique = "Office Macro which writes an Office document to disk"
+	    rule_version = "1"
+
+	strings:
+		$a1 = "WriteBin" wide ascii
+		$a2 = "Module=Module1" wide ascii
+		$b1 = "Auto_Open" wide ascii
+		$b2 = "AutoOpen" wide ascii
+		$v = /_[A-Za-z]{1}_var_[A-Za-z]{1}\d{1,4}/ wide ascii
+
+	condition:
+		filesize < 5MB and
+		(
+			uint32be(0) == 0xd0cf11e0 or
+			uint32be(0) == 0x504b0304
+		)
+		and ((all of ($a*)) and (#v > 50) and (any of ($b*)))
+}
+
+rule empire_onedrive_listener_strings : librarypse windows
+{
+	meta:
+		organisation = "ACSC"
+		id = "acsc_000319"
+		rule_group = "technique"
+		technique = "PowerShell Empire OneDrive listener"
+		rule_version = "1"
+
+	strings:
+		$ = "Microsoft SkyDriveSync 17.005.0107.0008 ship; Windows NT 10.0 (16299)" wide ascii
+		$ = "api.onedrive.com" wide ascii
+
+	condition:
+		uint16(0) == 0x5a4d and all of them
+}
+
+
+]==]
+bad_rules2 = [==[
 rule Base64d_PE
 {
 	meta:

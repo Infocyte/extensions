@@ -287,11 +287,11 @@ script = script..[==[
 ]==]
 
 
-ret, out = powershell.run_script(script)
-if ret then 
+out, err = hunt.env.run_powershell(script)
+if out then 
     hunt.log(out)
 else
-    hunt.error(out)
+    hunt.error(err)
     return
 end
 

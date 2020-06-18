@@ -48,13 +48,14 @@ function install_powerforensics()
             Write-Host "Powerforensics Already Installed. Continuing."
         }
     ]==]
-    ret, output = powershell.run_script(script)
-    if ret then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..output)
+    out, err = hunt.env.run_powershell(script)
+    if out then 
+        hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+        return true
     else 
-        hunt.error("[install_powerforensics] Failed:\n"..output)
+        hunt.error("[install_powerforensics] Failed:\n"..err)
+        return
     end
-    return ret
 end
 
 function path_exists(path)
@@ -101,8 +102,8 @@ install_powerforensics()
 cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
 hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
 hunt.debug("Executing Powershell command: "..cmd)
-ret, err = powershell.run_command(cmd)
-if not ret then 
+out, err = hunt.env.run_powershell(cmd)
+if not out then 
     hunt.error("Failed to run Get-ForensicFileRecord: "..err)
     return
 end

@@ -200,13 +200,13 @@ $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 Remove-item "$temp\temp" -Force -Recurse
 ]==]
 hunt.debug("Initiatializing Powershell to parse output")
-ret, output = powershell.run_script(script)
-if ret then
+out, err = hunt.env.run_powershell(script)
+if out then
     if debug then
-        hunt.debug(output)
+        hunt.debug(out)
     end
 else
-    hunt.error("Failed: Could not parse AmCache output with Powershell.\n"..output)
+    hunt.error("Failed: Could not parse AmCache output with Powershell.\n"..err)
     return
 end
 

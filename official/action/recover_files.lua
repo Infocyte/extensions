@@ -85,13 +85,14 @@ function install_powerforensics()
             Install-Module -name PowerForensics -Scope CurrentUser -Force
         }
     ]==]
-    ret, output = powershell.run_script(script)
-    if ret then 
-        hunt.debug("Powershell Succeeded:\n"..output)
+    out, err = hunt.env.run_powershell(script)
+    if out then 
+        hunt.debug("Powershell Succeeded:\n"..out)
+        return true
     else 
-        hunt.error("Powershell Failed:\n"..output)
+        hunt.error("Powershell Failed:\n"..err)
+        return false
     end
-    return ret
 end
 
 --[[ SECTION 3: Collection --]]

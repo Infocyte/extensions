@@ -509,8 +509,12 @@ else
         cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. list_to_pslist(strings) .. ' -filetypes '.. list_to_pslist(extensions)
         hunt.verbose("Executing Powershell Command: "..cmd)
         script = script..'\n'..cmd
-        ret, output = powershell.run_script(script)
-        hunt.debug("Powershell Returned: "..output)
+        out, err = hunt.env.run_powershell(script)
+        if out then
+            hunt.debug("Powershell Returned: "..out)
+        else 
+            hunt.error("Powershell command errored: "..err)
+        end
 
         -- Parse CSV output from Powershell
         csv = parse_csv(tempfile, '|')
