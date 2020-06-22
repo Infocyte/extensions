@@ -438,11 +438,12 @@ end
 
 #### Status
 The result of an extension can optionally carry a threat status which influences the rest
-of the Infocyte HUNT analysis system.
+of the Infocyte HUNT analysis system. Default is unknown.
 
 | Function | Description |
 | --- | --- |
 | **hunt.status.good()** | Marks the extension output as benign |
+| **hunt.status.low_risk()** | Marks the extension output as low risk |
 | **hunt.status.suspicious()** | Marks the extension output as suspicious |
 | **hunt.status.bad()** | Marks the extension output as bad/malicious |
 
