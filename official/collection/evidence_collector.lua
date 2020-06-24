@@ -227,18 +227,15 @@ if hunt.env.is_windows() then
         cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
         hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
         hunt.debug("Executing Powershell command: "..cmd)
-        local pipe = io.popen('powershell.exe -noexit -nologo -nop -command "'..cmd..'" >> '..logfile, 'r')
-        print(pipe:read('*a'))
-        r = pipe:close()
-        if debug then
-            local file,msg = io.open(logfile, "r")
-            if file then
-                hunt.debug("Powershell Output (success="..tostring(r).."):\n"..file:read("*all"))
-            end
-            file:close()
-            os.remove(logfile)
+        out, err = hunt.env.run_powershell(cmd)
+        if out then 
+            hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+            return true
+        else 
+            hunt.error("[install_powerforensics] Failed:\n"..err)
+            return
         end
-
+        
         -- Compress results
         if path_exists(temppath) then
             hash = hunt.hash.sha1(temppath)
@@ -291,7 +288,9 @@ for name,path in pairs(paths) do
             cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
             hunt.debug("File Locked ["..err.."]. Executing: "..cmd)
             out, err = hunt.env.run_powershell(cmd)
-            hunt.debug("Powerforensics output: "..out.." ["..err.."]")
+            if not out then 
+                hunt.error("Powerforensics error: "..err)
+            end
         else
            -- Copy file to temp path
            data = infile:read("*all")
