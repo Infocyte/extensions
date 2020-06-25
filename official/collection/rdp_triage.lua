@@ -15,53 +15,9 @@
 
 --[[ SECTION 1: Inputs --]]
 trailing_days = 60
-debug = true
+debug = false
 
 --[[ SECTION 2: Functions --]]
-
-function path_exists(path)
-    --[[
-        Check if a file or directory exists in this path. 
-        Input:  [string]path -- Add '/' on end of the path to test if it is a folder
-        Output: [bool] Exists
-                [string] Error message -- only if failed
-    ]] 
-   local ok, err = os.rename(path, path)
-   if not ok then
-      if err == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
-end
-
-function print_table(tbl, indent)
-    --[[
-        Prints a table -- used for debugging table contents
-        Input:  [list] table/list
-                [int] (do not use manually) indent spaces for recursive printing of sub lists
-        Output: [string]  -- stringified version of the table
-    ]] 
-    if not indent then indent = 1 end
-    local toprint = ""
-    if not tbl then return toprint end
-    if type(tbl) ~= "table" then 
-        print("print_table error: Not a table. "..tostring(tbl))
-        return toprint
-    end
-    for k, v in pairs(tbl) do
-        toprint = toprint .. "[Table]" .. string.rep(" ", indent)
-        toprint = toprint .. tostring(k) .. ": "
-        if (type(v) == "table") then
-            toprint = toprint .. print_table(v, indent + 4) .. "\n"
-        else
-            toprint = toprint .. tostring(v) .. "\n"
-        end
-    end
-    print(toprint)
-    return toprint
-end
 
 function parse_csv(path, sep)
     --[[
@@ -70,7 +26,6 @@ function parse_csv(path, sep)
                 [string]sep -- CSV seperator to use. defaults to ','
         Output: [list]
     ]] 
-    tonum = true
     sep = sep or ','
     local csvFile = {}
     local file,msg = io.open(path, "r")
@@ -115,7 +70,7 @@ end
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
@@ -289,7 +244,7 @@ script = script..[==[
 
 out, err = hunt.env.run_powershell(script)
 if out then 
-    hunt.log(out)
+    hunt.verbose(out)
 else
     hunt.error(err)
     return
@@ -310,8 +265,6 @@ end
 n = 0
 if rdp_processes then 
     for i,v in pairs(rdp_processes) do 
-        print("RDP Processes")
-        print_table(v)
         -- Create a new artifact
         artifact = hunt.survey.artifact()
         artifact:exe(v['ProcessPath'])
@@ -320,38 +273,32 @@ if rdp_processes then
         artifact:executed(v['TimeCreated'])
         hunt.survey.add(artifact)
         n = n + 1
-        hunt.debug("RDP Process ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid=".. v['SecurityId']..", pid=".. v['ProcessId']..", path=".. v['ProcessPath'] ..", commandline=".. v['Commandline']..", ppid=".. v['ParentProcessId']..", pppath=".. v['ParentProcessPath']..", logontime=".. v['SessionLogonTime'])
+        hunt.log("RDP Process ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid=".. v['SecurityId']..", pid=".. v['ProcessId']..", path=".. v['ProcessPath'] ..", commandline=".. v['Commandline']..", ppid=".. v['ParentProcessId']..", pppath=".. v['ParentProcessPath']..", logontime=".. v['SessionLogonTime'])
     end
 else
-    hunt.warning("No processes found associated with RDP sessions. Logging may not be enabled for EventId 4688 or 4624")
+    hunt.warn("No processes found associated with RDP sessions. Logging may not be enabled for EventId 4688 or 4624")
 end
 
 if rdp_localSessionManager then 
     for i,v in pairs(rdp_localSessionManager) do 
-        print("RDP Session")
-        print_table(v)
         hunt.log("RDP Session ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", message="..v['Action'])
     end
 else 
-    hunt.warning("No remote RDP sessions found. Logging may not be enabled for EventId 21 or 24")
+    hunt.warn("No remote RDP sessions found. Logging may not be enabled for EventId 21 or 24")
 end
 
 if rdp_remoteConnectionManager then
     for i,v in pairs(rdp_remoteConnectionManager) do 
-        print("RDP Remote Connection Attempt")
-        --print_table(v)
         hunt.log("RDP Connection Attempt ["..v['EventId'].."]"..", eventtime="..v['TimeCreated']..", ip="..v['IP']..", username="..v['domain'].."\\"..v['Username'])
     end
 else 
-    hunt.warning("No remote RDP connection attempts found. Logging may not be enabled for EventId 1149")
+    hunt.warn("No remote RDP connection attempts found. Logging may not be enabled for EventId 1149")
 end
 
 if rdp_logons then
     for i,v in pairs(rdp_logons) do 
-        print("RDP Logons")
-        print_table(v)
         hunt.log("RDP Logon ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip="..v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid="..v['SecurityId']..", logontype="..v['LogonType'])
     end
 else
-    hunt.warning("No remote RDP logon events found. Logging may not be enabled for EventId 4624")
+    hunt.warn("No remote RDP logon events found. Logging may not be enabled for EventId 4624")
 end

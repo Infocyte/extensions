@@ -122,8 +122,8 @@ if not s3_region or not s3_bucket then
 end
 
 host_info = hunt.env.host_info()
-osversion = host_info:os()
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then

@@ -100,11 +100,8 @@ if hunt.env.is_windows() and hunt.env.has_powershell() then
     -- Insert your Windows Code
 
     -- Create powershell process and feed script/commands to its stdin
-    local pipe = io.popen("powershell.exe -noexit -nologo -nop -command -", "w")
-    pipe:write(psscript) -- load up powershell functions and vars
-    pipe:write("Enable-ShadowCopies -Drive C")
-    r = pipe:close()
-    print("Powershell Returned: "..tostring(r))
+    out, err = hunt.env.run_powershell(psscript.."`nEnable-ShadowCopies -Drive C")
+    hunt.log("Powershell returned: "..tostring(out).."["..toString(err).."]")
 end
 
 hunt.log("VSS is now enforced for Drive C") -- send to Infocyte

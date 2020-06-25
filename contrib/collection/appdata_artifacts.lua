@@ -75,6 +75,9 @@ end
 
 
 host_info = hunt.env.host_info()
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
 if not hunt.env.is_windows() then
     hunt.log("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
     return

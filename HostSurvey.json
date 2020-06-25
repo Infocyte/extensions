@@ -1,0 +1,1831 @@
+{
+  "surveyInfo": {
+    "authenticator": null,
+    "startTime": "2020-06-24T23:22:43.466471100Z",
+    "endTime": "2020-06-24T23:23:02.677268600Z",
+    "scanId": null,
+    "postback": null,
+    "outputFileName": null,
+    "totalTasks": 0,
+    "surveyVersion": "1.0.327"
+  },
+  "hostInfo": {
+    "hostname": "pegasusactual",
+    "osVersion": "Windows 10 Pro 2004 Professional 64-bit",
+    "domain": "",
+    "architecture": "64-bit",
+    "cpe23Uri": null,
+    "ip": null
+  },
+  "processes": [],
+  "drivers": [],
+  "installedApplications": [],
+  "autostarts": [],
+  "artifacts": [
+    {
+      "path": "c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\infocyte\\dev\\agent.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\bonjour\\mdnsresponder.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\teamviewer\\teamviewer_service.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\nvidia corporation\\display.nvcontainer\\nvdisplay.container.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "C:\\Windows\\System32\\securityhealthservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\teamviewer\\tv_x64.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\windowsapps\\microsoft.windowsterminal_1.0.1401.0_x64__8wekyb3d8bbwe\\openconsole.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\docker\\docker\\resources\\vpnkit.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\spoolsv.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\cylance\\desktop\\cylancesvc.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\driverstore\\filerepository\\sgx_psw.inf_amd64_bff7913eb62bbf90\\aesm_service.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\common files\\steam\\steamservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\acrotray.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\steam\\steam.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\viscosity\\viscosityservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\nvidia corporation\\nvcontainer\\nvcontainer.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\dbxsvc.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\svchost.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\teamviewer\\teamviewer.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\teamviewer\\tv_w32.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "C:\\Windows\\System32\\services.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "C:\\Windows\\System32\\svchost.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\winlogon.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "C:\\Windows\\System32\\wininit.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\microsoft vs code\\code.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\system32\\vmms.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\steam\\bin\\cef\\cef.win7x64\\steamwebhelper.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\boxcryptor\\boxcryptor.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\windows\\explorer.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files\\infocyte\\agent\\agent.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\vyprvpn\\vyprvpnservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    },
+    {
+      "path": "c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe",
+      "params": null,
+      "kind": "Yara Match",
+      "executedOn": null,
+      "modifiedOn": null,
+      "created": null,
+      "modified": null,
+      "md5": "",
+      "sha1": "",
+      "sha256": "",
+      "ssdeep": "",
+      "size": 0,
+      "entropy": 0.0,
+      "error": null,
+      "signed": null,
+      "signature": null,
+      "managed": null,
+      "package": null
+    }
+  ],
+  "accounts": [],
+  "modules": [],
+  "interfaces": [],
+  "networkConnections": [],
+  "memscan": [],
+  "extensions": [
+    {
+      "id": "yarascan.lua",
+      "body": "LS1bWw0KICAgIEluZm9jeXRlIEV4dGVuc2lvbg0KICAgIE5hbWU6IFlhcmEgU2Nhbm5lcg0KICAgIFR5cGU6IENvbGxlY3Rpb24NCiAgICBEZXNjcmlwdGlvbjogRXhhbXBsZSBzY3JpcHQgc2hvd2luZyBob3cgdG8gdXNlIFlBUkENCiAgICBBdXRob3I6IEluZm9jeXRlDQogICAgR3VpZDogZjA1NjUzNTEtMWRjMy00YTk0LTkwYjMtMzRhNTc2NWIzM2JjDQogICAgQ3JlYXRlZDogMjAxOTEwMTgNCiAgICBVcGRhdGVkOiAyMDIwMDMxOCAoR2Vycml0eikNCi0tXV0NCg0KLS1bWyBTRUNUSU9OIDE6IElucHV0cyAtLV1dDQoNCi0tIFRoaXMgZXh0ZW5zaW9uIHdpbGwgeWFyYSBzY2FuIGZpbGVzIGJlbG93DQpzY2FuYWN0aXZlcHJvY2Vzc2VzID0gdHJ1ZQ0Kc2NhbmFwcGRhdGEgPSBmYWxzZSAtLSBTY2FucyBBUFBEQVRBIGZvbGRlcnMgZm9yIGV2ZXJ5IHVzZXINCmFwcGRhdGFfb3B0cyA9IHsNCiAgICAiZmlsZXMiLA0KICAgICJzaXplPDVtYiIsIC0tIGFueSBmaWxlIGJlbG93IHRoaXMgc2l6ZQ0KICAgICJyZWN1cnNlPTEiIC0tIGRlcHRoIG9mIDENCn0NCg0KDQotLSBQcm92aWRlIGFkZGl0aW9uYWwgcGF0aHMgYmVsb3cNCmlmIGh1bnQuZW52LmlzX3dpbmRvd3MoKSB0aGVuDQogICAgYWRkaXRpb25hbHBhdGhzID0gew0KICAgICAgICAnYzpcXHdpbmRvd3NcXHN5c3RlbTMyXFxjYWxjLmV4ZScNCiAgICB9DQoNCmVsc2VpZiBodW50LmVudi5pc19saW51eCgpIHRoZW4NCiAgICBhZGRpdGlvbmFscGF0aHMgPSB7DQogICAgICAgICcvYmluL2NhdCcsDQogICAgICAgICcvYmluL3RhcicNCiAgICB9DQoNCmVsc2VpZiBodW50LmVudi5pc19tYWNvcygpIHRoZW4NCiAgICBhZGRpdGlvbmFscGF0aHMgPSB7DQogICAgICAgICcvYmluL3NoJywNCiAgICAgICAgJy9iaW4vbHMnDQogICAgfQ0KZW5kDQphZGRfb3B0cyA9IHsNCiAgICAiZmlsZXMiLA0KICAgICJzaXplPDVtYiIgLS0gYW55IGZpbGUgYmVsb3cgdGhpcyBzaXplDQp9DQoNCi0tICNyZWdpb24gYmFkX3J1bGVzDQpiYWRfcnVsZXMgPSBbPT1bDQpydWxlIEhUVFBDb3JlX2RsbF9sb2FkZXIgOiBodHRwY29yZSB3aW5kb3dzDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMzEyIg0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiSFRUUENvcmUiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KCQkNCglzdHJpbmdzOg0KCQkkZG4xID0geyA0MiA1MyA0QSA0MiAwMSAwMCAwMSAwMCAwMCAwMCAwMCAwMCB9DQoJCSRkbjIgPSAiX0NvckRsbE1haW4iDQoNCgkJJHBhdGggPSAvW0EtWl06W15ceDAwXXsxLDI1Nn1cXGNjYy5kbGxceDAwLw0KDQoJY29uZGl0aW9uOg0KCQl1aW50MTYoMCkgPT0gMHg1QTREIGFuZCBmaWxlc2l6ZSA8IDFNQiBhbmQgYW55IG9mICgkZG4qKSBhbmQgJHBhdGgNCn0NCg0KcnVsZSBIVFRQQ29yZV9kbGwgOiBodHRwY29yZSB3aW5kb3dzDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMzEzIg0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiSFRUUENvcmUiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJGRuMSA9IHsgNDIgNTMgNEEgNDIgMDEgMDAgMDEgMDAgMDAgMDAgMDAgMDAgfQ0KCQkkZG4yID0gIl9Db3JEbGxNYWluIg0KDQoJCSRwYXJhbTEgPSAiVXJsIgkJCQl3aWRlIGZ1bGx3b3JkDQoJCSRwYXJhbTIgPSAiUm9vdFBhdGgiCQl3aWRlIGZ1bGx3b3JkDQoJCSRwYXJhbTMgPSAiUmVtb3RlUGFzc3dvcmQiCXdpZGUgZnVsbHdvcmQNCgkJJHBhcmFtNCA9ICJDdXJyZW50UGFzc3dvcmQiCXdpZGUgZnVsbHdvcmQNCgkJJHBhcmFtNSA9ICJJbnRlcnZhbCIJCXdpZGUgZnVsbHdvcmQNCgkJJHBhcmFtNiA9ICJSdW4iCQkJCXdpZGUgZnVsbHdvcmQNCg0KCQkkcGVfYmFzZTY0ID0gIlRWcVFBQU1BIgkJd2lkZQ0KDQoJY29uZGl0aW9uOg0KCQl1aW50MTYoMCkgPT0gMHg1QTREIGFuZCBhbnkgb2YgKCRkbiopIGFuZCA1IG9mICgkcGFyYW0qLCAkcGVfYmFzZTY0KQ0KfQ0KDQpydWxlIEhUVFBDb3JlX3Bvd2Vyc2hlbGxfbG9hZGVyIDogaHR0cGNvcmUgd2luZG93cw0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMxNCINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gIkhUVFBDb3JlIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KCXN0cmluZ3M6DQoJCSRsb2FkID0gIltTeXN0ZW0uUmVmbGVjdGlvbi5Bc3NlbWJseV06OkxvYWQoIg0KCQkkYWdlbnQgPSAiLkdldFR5cGUoXCJIdHRwQ29yZS5BZ2VudFwiKSINCgkJJHYxID0gIjo6VXJsIg0KCQkkdjIgPSAiOjpSb290UGF0aCINCgkJJHYzID0gIjo6UmVtb3RlUGFzc3dvcmQiDQoJCSR2NCA9ICI6OkN1cnJlbnRQYXNzd29yZCINCgkJJHY1ID0gIjo6UmVtb3RlTGFuZ1R5cGUiDQoJCSR2NiA9ICI6OkludGVydmFsIg0KCQkkdjcgPSAiOjpSdW4oIg0KDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDQwMEtCIGFuZA0KCQkkbG9hZCBhbmQNCgkJJGFnZW50IGFuZA0KCQk1IG9mICgkdiopDQp9DQoNCnJ1bGUgSFRUUENvcmVfcmVzcG9uc2VfZmlsZSA6IGh0dHBjb3JlIHdpbmRvd3MNCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMTUiDQoJCXJ1bGVfZ3JvdXAgPSAiaW1wbGFudCINCgkJaW1wbGFudCA9ICJIVFRQQ29yZSINCgkJcnVsZV92ZXJzaW9uID0gIjEiDQoNCglzdHJpbmdzOg0KCQkkID0geyA4OSA1MCA0ZSA0NyAwZCAwYSAxYSAwYSAoIDNjIDNjIDNjIDNjIHwgM2UgM2UgM2UgM2UgKSB9DQoNCgljb25kaXRpb246DQoJCWZpbGVzaXplIDwgMTAwS0IgYW5kIGFueSBvZiB0aGVtDQp9DQoNCg0KcnVsZSBIVFRQb3RhdG9fZGxsIDogaHR0cG90YXRvIHdpbmRvd3MNCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMTYiDQoJCXJ1bGVfZ3JvdXAgPSAidG9vbCINCgkJdG9vbCA9ICJIVFRQb3RhdG8iDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJHBvdGF0bzEgPSAiRXh0LlBvdGF0byIJCWZ1bGx3b3JkDQoJCSRwb3RhdG8yID0gIlBvdGF0by5FeHQiCQlmdWxsd29yZA0KCQkkcG90YXRvMyA9ICJQb3RhdG8uV2luQWkiCWZ1bGx3b3JkDQoJCSRwb3RhdG80ID0gIlBvdGF0by5kbGwiCQlhc2NpaSB3aWRlIGZ1bGx3b3JkDQoNCgkJJGExICA9ICJBZGRIdHRwTGlzdGVuZXIiDQoJCSRhMiAgPSAiSHR0cExpc3RlbmVyU3RvcHBlciINCgkJJGEzICA9ICJJbnZva2VIdHRwTGlzdGVuZXIiDQoJCSRhNCAgPSAiT25IdHRwTGlzdGVuZXJTdG9wIg0KCQkkYTUgID0gIkFwcERpY3Rpb25hcnkiDQoJCSRhNiAgPSAiR2V0UmVxdWVzdFBvc3REYXRhIg0KCQkkYTcgID0gIkxpdmVTb2NrZXQiDQoJCSRhOCAgPSAiT25TdG9wRXZlbnQiDQoJCSRhOSAgPSAiUmVxRGF0YVRvRGljdCINCgkJJGExMCA9ICJsaXN0ZW5lclBhc3N3b3JkIg0KCQkkYTExID0gInN0b3BTdWZmaXgiDQoJCSRhMTIgPSAiRUUuSGFuZGxlciINCgkJJGExMyA9ICJINHNJQUFBQUFBQUVBTzFZYjJ3Y3hSVi91M3UrZjQ0dk9UdjRUM0tPTjAwT2pqUTluVWxjeDZFcHRzOU8iIHdpZGUNCg0KCWNvbmRpdGlvbjoNCgkJdWludDE2KDApID09IDB4NUE0RCBhbmQgZmlsZXNpemUgPCA1MDBLQiBhbmQgKA0KCQkJMiBvZiAoJHBvdGF0byopIG9yDQoJCQk0IG9mICgkYSopDQoJCSkNCn0NCg0KDQpydWxlIGN2ZV8yMDE5XzE4OTM1X3Jldl9zaGVsbF9iaW5hcnkgOiB0ZWxlcmlrY3ZlIHdpbmRvd3Mgd2Vic2VydmVyDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMzA0Ig0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAidGVsZXJpayByZXZlcnNlIHNoZWxsIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCgkJcmVwb3J0ID0gImh0dHBzOi8va25vdy5iaXNob3Bmb3guY29tL3Jlc2VhcmNoL2N2ZS0yMDE5LTE4OTM1LXJlbW90ZS1jb2RlLWV4ZWN1dGlvbi1pbi10ZWxlcmlrLXVpIg0KCQkNCglzdHJpbmdzOg0KCQkkID0gL3Jldl9zaGVsbFteXHgwMF17LDY0fShhbWQ2NHx4ODYpKFwuZGxsKT9ceDAwLw0KCQkkID0gL1x4MDAoWzAtOV17MSwzfVwuKXszfVswLTldezEsM31ceDAwezEsM31bXHgwMC4yMzpcXGNkZWltbm9zdHd4eV17OCwxMjh9JXMlcyVzJXNceDAwLw0KDQoJY29uZGl0aW9uOg0KCQl1aW50MTYoMCkgPT0gMHg1QTREIGFuZCBmaWxlc2l6ZSA8IDUwMEtCIGFuZCBhbnkgb2YgdGhlbQ0KfQ0KDQpydWxlIGN2ZV8yMDE5XzE4OTM1X3NsZWVwX2JpbmFyeSA6IHRlbGVyaWtjdmUgd2luZG93cyB3ZWJzZXJ2ZXINCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMDUiDQoJCXJ1bGVfZ3JvdXAgPSAidGVjaG5pcXVlIg0KCQl0ZWNobmlxdWUgPSAiVGVsZXJpayBDVkUtMjAxOS0xODkzNSB0ZXN0IERMTCINCgkJcnVsZV92ZXJzaW9uID0gIjEiDQoJCXJlcG9ydCA9ICJodHRwczovL2tub3cuYmlzaG9wZm94LmNvbS9yZXNlYXJjaC9jdmUtMjAxOS0xODkzNS1yZW1vdGUtY29kZS1leGVjdXRpb24taW4tdGVsZXJpay11aSINCg0KCXN0cmluZ3M6DQoJCSQgPSAvc2xlZXBfW15ceDAwXXssNjR9KGFtZDY0fHg4NikoXC5kbGwpP1x4MDAvDQoNCgljb25kaXRpb246DQoJCXVpbnQxNigwKSA9PSAweDVBNEQgYW5kIGZpbGVzaXplIDwgNTAwS0IgYW5kIGFueSBvZiB0aGVtDQp9DQoNCg0KcnVsZSB3ZWJzaGVsbF9IVFRQQ29yZV9zZXJ2ZXIgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMyMSINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gIlR3b0ZhY2UgKGFrYSBIaWdoU2hlbGwpIHdlYnNoZWxsIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KCXN0cmluZ3M6DQoJCSR4MSA9IC90cnl7az1bIiddW14iJ117MSwzMn1bIiddLGE9UmVxdWVzdFwuRmlsZXNcW2tcXS8NCgkJJHgyID0gImQ9RChjLDgsaykiDQoJCSR4MyA9ICJ2YXIgayxhLGIsYyxkOyINCg0KCQkkYTEgPSAiQ3J5cHRvZ3JhcGh5Lk1ENSINCgkJJGEyID0gIkNvbXB1dGVIYXNoKCINCg0KCQkkYjEgPSAiQ3J5cHRvZ3JhcGh5LlJpam5kYWVsIg0KCQkkYjIgPSAiQ3JlYXRlRGVjcnlwdG9yKCINCgkJJGIzID0gIlN5c3RlbS5TZWN1cml0eS5DcnlwdG9ncmFwaHkuQ3J5cHRvU3RlYW0oIg0KCQkkYjQgPSAiU3lzdGVtLlNlY3VyaXR5LkNyeXB0b2dyYXBoeS5DcnlwdG9TdHJlYW1Nb2RlLldyaXRlIg0KDQoJCSRjID0gImV2YWwoIg0KDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDEwS0IgYW5kICgNCgkJCTIgb2YgKCR4Kikgb3INCgkJCSgxIG9mICgkYSopIGFuZCAxIG9mICgkYiopIGFuZCAxIG9mICgkYyopKQ0KCQkpDQp9DQoNCnJ1bGUgd2Vic2hlbGxfZW1iZWRkZWRfanNjcmlwdF9ldmFsdWF0b3IgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMyMyINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gIndlYnNoZWxsIGVtYmVkZGVkIGpzY3JpcHQgZXZhbHVhdG9yIGFzc2VtYmx5Ig0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KCXN0cmluZ3M6DQoJCSQgPSAiSDRzSUFBQUFBQUFFQSINCgkJJCA9ICJJc2FwaU1vZHVsZS5IYW5kbGVyIg0KCQkkID0gIlN5c3RlbS5JTy5Db21wcmVzc2lvbi5HWmlwU3RyZWFtIg0KCQkkID0gIlN5c3RlbS5Db252ZXJ0LkZyb21CYXNlNjRTdHJpbmciDQoJCSQgPSAiU3lzdGVtLlJlZmxlY3Rpb24uQXNzZW1ibHkiDQoNCgljb25kaXRpb246DQoJCWZpbGVzaXplIDwgMTAwS0IgYW5kIGFsbCBvZiB0aGVtDQp9DQoNCg0KcnVsZSB3ZWJzaGVsbF9qc2NyaXB0X2V2YWwgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMxMCINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gIkpzY3JpcHQgZXZhbCgpIHdlYnNoZWxsIg0KCQlydWxlX3ZlcnNpb24gPSAiMyINCgkJY3JlYXRpb25fZGF0ZSA9ICIyMDIwLTA0LTE0Ig0KDQoJc3RyaW5nczoNCgkJJGxhbmcgPSAiTGFuZ3VhZ2U9XCJKU2NyaXB0XCIiIG5vY2FzZQ0KCQkkYXBwID0gInZhciBBcHBsaWNhdGlvbj1JLkFwcGxpY2F0aW9uOyINCgkJJGI2NCA9ICJDb252ZXJ0LkZyb21CYXNlNjRTdHJpbmcoIg0KCQkkZXZhbCA9ICJldmFsKCINCgkJJHN0ciA9ICJHZXRTdHJpbmcoIg0KDQoJY29uZGl0aW9uOg0KCQkkbGFuZyBhbmQNCgkJJGFwcCBvcg0KCQkkZXZhbCBhbmQNCgkJKCRiNjQgb3IgJHN0cikNCn0NCg0KcnVsZSB3ZWJzaGVsbF9jc2hhcnBfYXNzZW1ibGVyX2EgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMwOSINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gImNzaGFycCBhc3NlbWJsZXIgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIyIg0KCQljcmVhdGlvbl9kYXRlID0gIjIwMjAtMDQtMDYiDQoNCglzdHJpbmdzOg0KCQkkcGFzc19wYXJhbSA9ICIzQTNjM3dQQlNwSjRvdUt6ZGhHQUdPbW1TcHd6ak1hRFp1Ig0KCQkNCgkJJGNkb20gPSAiQ29kZURvbVByb3ZpZGVyLkNyZWF0ZVByb3ZpZGVyKFwiQ1NoYXJwXCIpIg0KCQkNCgkJJGNvbXBfbWVtID0gIkdlbmVyYXRlSW5NZW1vcnkiDQoJCSRjb21wX2V4ZSA9ICJHZW5lcmF0ZUV4ZWN1dGFibGUiDQoJCSRjb21wX3JlZiA9ICJSZWZlcmVuY2VkQXNzZW1ibGllcyINCgkJDQoJCSRtZXRob2QgPSAiR2V0TWV0aG9kKFwiZXhlY1wiKSINCgljb25kaXRpb246DQoJCSRwYXNzX3BhcmFtIG9yDQoJCSgkY2RvbSBhbmQNCgkJYWxsIG9mICgkY29tcCopIGFuZA0KCQkkbWV0aG9kKQ0KfQ0KcnVsZSB3ZWJzaGVsbF9jc2hhcnBfYXNzZW1ibGVyX2IgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMyMiINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gImNzaGFycCBhc3NlbWJsZXIgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9ICJSZWZlcmVuY2VkQXNzZW1ibGllcy5BZGQoXCJTeXN0ZW0uZGxsXCIpOyINCgkJJCA9ICIuSW52b2tlKCINCgkJJCA9ICJSZXNwb25zZS5Xcml0ZSgiDQoJCSQgPSAiU3lzdGVtLkNvbnZlcnQuRnJvbUJhc2U2NFN0cmluZyINCgkJJCA9ICJTeXN0ZW0uSU8uQ29tcHJlc3Npb24uR1ppcFN0cmVhbSINCgkJJCA9ICJDb21waWxlQXNzZW1ibHlGcm9tU291cmNlIg0KCQkkID0gIkNvbXBpbGVkQXNzZW1ibHkiDQoJCSQgPSAibmV3IGJ5dGVbIg0KCQkkID0gIkltcG9ydCBOYW1lc3BhY2U9XCJTeXN0ZW0uQ29kZURvbS5Db21waWxlclwiIg0KDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDUwS0IgYW5kIDcgb2YgdGhlbQ0KfQ0KDQpydWxlIHdlYnNoZWxsX2F3ZW5fYXNwbmV0IDogd2Vic2hlbGwgd2luZG93cyB3ZWJzZXJ2ZXINCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMDgiDQoJCXJ1bGVfZ3JvdXAgPSAiaW1wbGFudCINCgkJaW1wbGFudCA9ICJhd2VuIGFzcC5uZXQgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIyIg0KCQljcmVhdGlvbl9kYXRlID0gIjIwMjAtMDQtMDYiDQoNCglzdHJpbmdzOg0KCQkkbGFuZ3VhZ2UgPSAvPCVAID9QYWdlIExhbmd1YWdlPVwiP0MjXCI/Lw0KCQkNCgkJJGNtZCA9ICIuRmlsZU5hbWUgPSBcImNtZC5leGVcIjsiDQoJCQ0KCQkkcHNpID0gL1Byb2Nlc3NTdGFydEluZm8gXHd7LDIwfSA9IG5ldyBQcm9jZXNzU3RhcnRJbmZvXChcKTsvDQoJCSRwc2lfc3RhcnQgPSAvUHJvY2Vzc1wuU3RhcnRcKFx3eywyMH1cKS8NCgkJDQoJCSR2YXJfZXhjbWQgPSAiRXhjdXRlQ21kIg0KCQkkdmFyX2NtZGV4ZSA9ICJjbWRFeGVfQ2xpY2siDQoJCSR2YXJfdHh0ID0gInR4dEFyZyINCgkJJHZhcl9zdHJtID0gInN0bXJkciINCgkJDQoJY29uZGl0aW9uOg0KCQkkbGFuZ3VhZ2UgYW5kDQoJCSRjbWQgYW5kDQoJCShhbnkgb2YgKCRwc2kqKSBvcg0KCQlhbnkgb2YgKCR2YXIqKSkNCn0NCg0KcnVsZSB3ZWJzaGVsbF9uZXRfaGlnaHNoZWxsIDogd2Vic2hlbGwgd2luZG93cyB3ZWJzZXJ2ZXINCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMDciDQoJCXJ1bGVfZ3JvdXAgPSAiaW1wbGFudCINCgkJaW1wbGFudCA9ICJoaWdoc2hlbGwgKGFrYSB0d29mYWNlKSB3ZWJzaGVsbCINCgkJcnVsZV92ZXJzaW9uID0gIjIiDQoJCWNyZWF0aW9uX2RhdGUgPSAiMjAyMC0wNC0wMyINCg0KCXN0cmluZ3M6DQoJCSRsYW5ndWFnZSA9IC88JUAgP1BhZ2UgTGFuZ3VhZ2U9XCI/QyNcIj8vDQoJCSRwYXJhbV9wcm8gPSAiXCJwcm9cIjpwcm8iDQoJCSRwYXJhbV9jbWQgPSAiXCJjbWRcIjpjbWQiDQoJCSRwYXJhbV9zYXYgPSAiXCJzYXZcIjpzYXYiDQoJCSRwYXJhbV92aXIgPSAiXCJ2aXJcIjp2aXIiDQoJCSRwYXJhbV9zcWMgPSAiXCJzcWNcIjpzcWMiDQoJCSRwYXJhbV9zcXEgPSAiXCJzcXFcIjpzcXEiDQoJCQ0KCQkkbmV0ID0gImV4ZWMoXCJuZXQgdXNlXCIpOyINCgkJDQoJCSRiNjRfMSA9ICJWWEJzYjJGa0lFSmhjMlUyTkE9PSINCgkJJGI2NF8yID0gIlFtRnpaVFkwSUVacGJHVT0iDQoJCSRiNjRfMyA9ICJSbWxzWlNCUVlYUm9JR0Z1WkNCT1lXMWwiDQoJCSRiNjRfNCA9ICJWSEoxYzNSbFpDQkRiMjV1WldOMGFXNGdVMkZ0Y0d4bCINCgkJJGI2NF81ID0gIlEyaGhibWRsSUVOeVpXRjBhVzl1SUZScGJXVT0iDQoJCSRiNjRfNiA9ICJVM0ZzSUZObGNuWmxjZz09Ig0KCQkNCgljb25kaXRpb246DQoJCSRsYW5ndWFnZSBhbmQNCgkJJG5ldCBvcg0KCQkoMiBvZiAoJHBhcmFtKikgb3INCgkJYW55IG9mICgkYjY0KikpDQp9DQoNCnJ1bGUgd2Vic2hlbGxfdHdvZmFjZV9jb21tb25fc3RyaW5ncyA6IHdlYnNoZWxsIHdpbmRvd3Mgd2Vic2VydmVyDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMzIwIg0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiVHdvRmFjZSAoYWthIEhpZ2hTaGVsbCkgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9ICI8aW5wdXQgbmFtZT1cImhpZFwiIHR5cGU9XCJoaWRkZW5cIiAvPiINCgkJJCA9ICI8aW5wdXQgbmFtZT1cInVwbFwiIHR5cGU9XCJmaWxlXCIgLz48YnI+Ig0KCQkkID0gIjxpbnB1dCBuYW1lPVwidmlyXCIgdHlwZT1cImNoZWNrYm94XCIgLz48Zz48JT14KFwiU1hNZ2RtbHlkSFZoYkNCd1lYUm9cIiklPjwvZz48YnI+Ig0KCQkkID0gIjxpbnB1dCB0eXBlPVwiYnV0dG9uXCIgdmFsdWU9XCI8JT14KFwiVlhObFwiKSU+XCIgb25jbGljaz1cInVzZSgpXCIgLz4iDQoJCSQgPSAiPHkgaWQ9XCJkXCI+PCU9IFNlcnZlci5NYXBQYXRoKHN0cmluZy5FbXB0eSkgKyBcIlxcXFxcIiU+PC95PiINCgkJDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDEwMEtCIGFuZCAyIG9mIHRoZW0NCn0NCg0KcnVsZSB3ZWJzaGVsbF9uZXRfYmVoaW5kZXIgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDMwMiINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gIi5uZXQgYmVoaW5kZXIgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIzIg0KCQljcmVhdGlvbl9kYXRlID0gIjIwMjAtMDItMjAiDQoNCglzdHJpbmdzOg0KCQkkbGFuZ3VhZ2UgPSAvPCVAID9QYWdlIExhbmd1YWdlPVwiP0MjXCI/Lw0KCQkkYzEgPSAiSW1wb3J0IE5hbWVzcGFjZT1cIlN5c3RlbS5SZWZsZWN0aW9uXCIiDQoJCSRjMiA9ICJSZXF1ZXN0LkJpbmFyeVJlYWQoIg0KCQkkYzMgPSAiQXNzZW1ibHkuTG9hZCgiDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDIwMEtCIGFuZA0KCQkkbGFuZ3VhZ2UgYW5kDQoJCWFsbCBvZiAoJGMqKQ0KfQ0KDQpydWxlIGhldXJpc3RpY190aW55X2ZpbGVfZXZhbCA6IHdlYnNoZWxsIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDAxMyINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbmZvID0gImdlbmVyaWMgd2Vic2hlbGwiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9ICJldmFsKCINCg0KCWNvbmRpdGlvbjoNCgkJZmlsZXNpemUgPCA1MDAgYW5kDQoJCWFueSBvZiB0aGVtDQp9DQoNCnJ1bGUgd2Vic2hlbGxfcmV2ZXJzZSA6IHdlYnNoZWxsIHdpbmRvd3Mgd2Vic2VydmVyDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMDE1Ig0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiY2hpbmFjaG9wcGVyIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KICAgIHN0cmluZ3M6DQogICAgICAgICR1cyA9ICJkVzV6WVdabCINCiAgICAgICAgJHIgPSAvZXZhbFwoLnszLDIwfVwoImRXNXpZV1psIlwpXCk7Lw0KICAgICAgICAkczEgPSAiZnVuY3Rpb24gRGVjKHN0cil7Ig0KICAgICAgICAkczIgPSAiUmVxdWVzdC5JdGVtW1wiIg0KICAgICAgICAkczMgPSAiaXRlbS5zbGljZSg1LCAtMykiDQogICAgICAgICRqID0gIjwlQCBQYWdlIExhbmd1YWdlPVwiSnNjcmlwdFwiJT4iDQogICAgICAgIA0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgJHVzIGFuZA0KICAgICAgICAkciBhbmQNCiAgICAgICAgJGogaW4gKDAuLjIwKSBhbmQNCiAgICAgICAgMiBvZiAoJHMqKQ0KfQ0KDQpydWxlIHdlYnNoZWxsX3J1bGUxIDogd2Vic2hlbGwgd2luZG93cyB3ZWJzZXJ2ZXINCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAwMDgiDQoJCXJ1bGVfZ3JvdXAgPSAiaW1wbGFudCINCgkJaW1wbGFudCA9ICJjaGluYWNob3BwZXIiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9IC9ldmFsLnssNTB9U3lzdGVtXC5UZXh0XC5FbmNvZGluZ1wuKFVURjh8R2V0RW5jb2RpbmdcKDY1MDAxXCkpXC5HZXRTdHJpbmdcKENvbnZlcnRcLkZyb21CYXNlNjRTdHJpbmdcKC8NCgkJJCA9ICI8JUAgUGFnZSBMYW5ndWFnZT1cIkpzY3JpcHRcIiB2YWxpZGF0ZVJlcXVlc3Q9XCJmYWxzZVwiJT48JXRyeXtldmFsIg0KCQkkID0gImV2YWwoU3lzdGVtLlRleHQuRW5jb2RpbmcuVVRGOC5HZXRTdHJpbmcoQ29udmVydC5Gcm9tQmFzZTY0U3RyaW5nKFJlcXVlc3QuSXRlbVtcIiINCg0KCWNvbmRpdGlvbjoNCgkJYW55IG9mIHRoZW0NCn0NCg0KcnVsZSB3ZWJzaGVsbF9ydWxlMiA6IHdlYnNoZWxsIHdpbmRvd3Mgd2Vic2VydmVyDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMDA5Ig0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiY2hpbmFjaG9wcGVyIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KCXN0cmluZ3M6DQoJCSRhc3AgPSAvPCVccyooZXZhbHxleGVjdXRlKVxzK3JlcXVlc3RccypcKC8NCgkJJGFzcF9qcyA9IC88JUBccypQYWdlXHMrTGFuZ3VhZ2Vccyo9XHMqXCJKc2NyaXB0XCJbXj5dKiU+XHMqPCVccypldmFsXHMqXChccypSZXF1ZXN0Lkl0ZW0vDQoJCSRwaHAgPSAvPD9waHBccytAKmV2YWxccypcKFxzKlwkX1BPU1RccypcWy8NCg0KCWNvbmRpdGlvbjoNCgkJYW55IG9mIHRoZW0NCgkJDQp9DQoNCnJ1bGUgd2Vic2hlbGxfcnVsZTMgOiB3ZWJzaGVsbCB3aW5kb3dzIHdlYnNlcnZlcg0Kew0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDAxMCINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gImNoaW5hY2hvcHBlciINCgkJcnVsZV92ZXJzaW9uID0gIjEiDQoNCglzdHJpbmdzOg0KCQkkID0gIlN5c3RlbS5UZXh0LkVuY29kaW5nLlVURjguR2V0U3RyaW5nKENvbnZlcnQuRnJvbUJhc2U2NFN0cmluZyhSZXF1ZXN0Lkl0ZW1bIg0KCQkkID0gImV2YWwoIg0KCWNvbmRpdGlvbjoNCgkJZmlsZXNpemUgPCA1MEtCIGFuZCANCgkJYWxsIG9mIHRoZW0NCn0NCg0KcnVsZSB3ZWJzaGVsbF9ydWxlNCA6IHdlYnNoZWxsIHdpbmRvd3Mgd2Vic2VydmVyDQp7DQoJbWV0YToNCgkJb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJCWlkID0gImFjc2NfMDAwMDExIg0KCQlydWxlX2dyb3VwID0gImltcGxhbnQiDQoJCWltcGxhbnQgPSAiY2hpbmFjaG9wcGVyIg0KCQlydWxlX3ZlcnNpb24gPSAiMSINCg0KICAgIHN0cmluZ3M6DQogICAgICAgICQgPSAiPCVAIFBhZ2UgTGFuZ3VhZ2U9XCJKc2NyaXB0XCIgdmFsaWRhdGVSZXF1ZXN0PVwiZmFsc2VcIiU+Ig0KICAgICAgICAkID0gL2V2YWwoLnssMjB9LCAueywyMH0pLw0KICAgICAgICAkID0gIlN5c3RlbS5UZXh0LkVuY29kaW5nLlVURjguR2V0U3RyaW5nIg0KICAgICAgICAkID0gIkNvbnZlcnQuRnJvbUJhc2U2NFN0cmluZyINCg0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgYWxsIG9mIHRoZW0gICAgICAgIA0KfQ0KDQpydWxlIHdlYnNoZWxsX3J1bGU1IDogd2Vic2hlbGwgd2luZG93cyB3ZWJzZXJ2ZXINCnsNCg0KCW1ldGE6DQoJCW9yZ2FuaXNhdGlvbiA9ICJBQ1NDIg0KCQlpZCA9ICJhY3NjXzAwMDAxMiINCgkJcnVsZV9ncm91cCA9ICJpbXBsYW50Ig0KCQlpbXBsYW50ID0gImNoaW5hY2hvcHBlciINCgkJcnVsZV92ZXJzaW9uID0gIjEiDQoNCiAgICBzdHJpbmdzOg0KICAgICAgICAkaDEgPSAiPCVAIFdlYlNlcnZpY2UgTGFuZ3VhZ2U9XCJKU2NyaXB0XCIgY2xhc3M9XCIiDQogICAgICAgICRoMiA9ICI8JUAgV2ViSGFuZGxlciBMYW5ndWFnZT1cIkpTY3JpcHRcIiBjbGFzcz1cIiINCiAgICAgICAgJGkgPSAiaW1wb3J0Ig0KICAgICAgICAkZSA9IC9ldmFsXChTeXN0ZW1cLlRleHRcLkVuY29kaW5nXC5VVEY4XC5HZXRTdHJpbmdcKENvbnZlcnRcLkZyb21CYXNlNjRTdHJpbmdcKC4rXCksLnssMTJ9XCk7Lw0KICAgICAgICAkcyA9ICJpbXBvcnQgU3lzdGVtLldlYjsiDQoNCiAgICBjb25kaXRpb246DQogICAgICAgICNpID4gNyBhbmQNCiAgICAgICAgJGUgYW5kDQogICAgICAgIDEgb2YgKCRoKikgYW5kDQogICAgICAgICRzDQp9DQoNCnJ1bGUgbWFjcm9fZG90bmV0X2Fzc2VtYmx5X2xvYWRlciA6IG1hY3JvDQp7DQogICAgbWV0YToNCiAgICAgICAgb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJICAgIGlkID0gImFjc2NfMDAwMzE4Ig0KCSAgICBydWxlX2dyb3VwID0gInRlY2huaXF1ZSINCgkgICAgdGVjaG5pcXVlID0gIk9mZmljZSBNYWNybyB3aXRoIC5ORVQgYXNzZW1ibHkgbG9hZGluZy9leGVjdXRpb24iDQoJICAgIHJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9ICJTeXN0ZW0uSU8uTWUiIHdpZGUgYXNjaWkgZnVsbHdvcmQNCgkJJCA9IC9DcmVhdGVPYmplY3RcKFtBLVphLXowLTldezEsNX0gJiAibW9yeVN0cmVhbSJcKS8gd2lkZSBhc2NpaQ0KCQkkID0gIlN5c3RlbS5SdW50IiB3aWRlIGFzY2lpIGZ1bGx3b3JkDQoJCSQgPSAiaW1lLlNlcmlhbGl6YXRpb24uRm9ybWF0dGVycy5CIiB3aWRlIGFzY2lpIGZ1bGx3b3JkDQoJCSQgPSAiU3ViIEF1dG9FeGVjKCkiIHdpZGUgYXNjaWkNCg0KCWNvbmRpdGlvbjoNCgkJYWxsIG9mIHRoZW0NCn0NCg0KcnVsZSBtYWNyb193cml0ZV9vZmZpY2VfZmlsZSA6IG1hY3JvDQp7DQogICAgbWV0YToNCiAgICAgICAgb3JnYW5pc2F0aW9uID0gIkFDU0MiDQoJICAgIGlkID0gImFjc2NfMDAwMzE3Ig0KCSAgICBydWxlX2dyb3VwID0gInRlY2huaXF1ZSINCgkgICAgdGVjaG5pcXVlID0gIk9mZmljZSBNYWNybyB3aGljaCB3cml0ZXMgYW4gT2ZmaWNlIGRvY3VtZW50IHRvIGRpc2siDQoJICAgIHJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJGExID0gIldyaXRlQmluIiB3aWRlIGFzY2lpDQoJCSRhMiA9ICJNb2R1bGU9TW9kdWxlMSIgd2lkZSBhc2NpaQ0KCQkkYjEgPSAiQXV0b19PcGVuIiB3aWRlIGFzY2lpDQoJCSRiMiA9ICJBdXRvT3BlbiIgd2lkZSBhc2NpaQ0KCQkkdiA9IC9fW0EtWmEtel17MX1fdmFyX1tBLVphLXpdezF9XGR7MSw0fS8gd2lkZSBhc2NpaQ0KDQoJY29uZGl0aW9uOg0KCQlmaWxlc2l6ZSA8IDVNQiBhbmQNCgkJKA0KCQkJdWludDMyYmUoMCkgPT0gMHhkMGNmMTFlMCBvcg0KCQkJdWludDMyYmUoMCkgPT0gMHg1MDRiMDMwNA0KCQkpDQoJCWFuZCAoKGFsbCBvZiAoJGEqKSkgYW5kICgjdiA+IDUwKSBhbmQgKGFueSBvZiAoJGIqKSkpDQp9DQoNCnJ1bGUgZW1waXJlX29uZWRyaXZlX2xpc3RlbmVyX3N0cmluZ3MgOiBsaWJyYXJ5cHNlIHdpbmRvd3MNCnsNCgltZXRhOg0KCQlvcmdhbmlzYXRpb24gPSAiQUNTQyINCgkJaWQgPSAiYWNzY18wMDAzMTkiDQoJCXJ1bGVfZ3JvdXAgPSAidGVjaG5pcXVlIg0KCQl0ZWNobmlxdWUgPSAiUG93ZXJTaGVsbCBFbXBpcmUgT25lRHJpdmUgbGlzdGVuZXIiDQoJCXJ1bGVfdmVyc2lvbiA9ICIxIg0KDQoJc3RyaW5nczoNCgkJJCA9ICJNaWNyb3NvZnQgU2t5RHJpdmVTeW5jIDE3LjAwNS4wMTA3LjAwMDggc2hpcDsgV2luZG93cyBOVCAxMC4wICgxNjI5OSkiIHdpZGUgYXNjaWkNCgkJJCA9ICJhcGkub25lZHJpdmUuY29tIiB3aWRlIGFzY2lpDQoNCgljb25kaXRpb246DQoJCXVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGFsbCBvZiB0aGVtDQp9DQoNCg0KXT09XQ0KYmFkX3J1bGVzMiA9IFs9PVsNCnJ1bGUgQmFzZTY0ZF9QRQ0Kew0KCW1ldGE6DQoJCWRlc2NyaXB0aW9uID0gIkNvbnRhaW5zIGEgYmFzZTY0LWVuY29kZWQgZXhlY3V0YWJsZSINCgkJYXV0aG9yID0gIkZsb3JpYW4gUm90aCINCgkJZGF0ZSA9ICIyMDE3LTA0LTIxIg0KDQoJc3RyaW5nczoNCgkJJHMwID0gIlRWcVFBQUlBQUFBRUFBOEEvLzhBQUxnQUFBQSIgd2lkZSBhc2NpaQ0KCQkkczEgPSAiVFZxUUFBTUFBQUFFQUFBQS8vOEFBTGdBQUFBIiB3aWRlIGFzY2lpDQoNCgljb25kaXRpb246DQoJCWFueSBvZiB0aGVtDQp9DQoNCnJ1bGUgQVBUX0tpbVN1a3lfYmNrZHJfZGxsIHsNCg0KICAgbWV0YToNCg0KICAgICAgZGVzY3JpcHRpb24gPSAiQXJtYWRpbGxvIHBhY2tlZCBETEwgdXNlZCBpbiBLaW1zdWt5IGNhbXBhaWduIg0KICAgICAgYXV0aG9yID0gIkNocmlzdGlhYW4gQmVlayAtIE1jQWZlZSBBZHZhbmNlZCBUaHJlYXQgUmVzZWFyY2giDQogICAgICByZWZlcmVuY2UgPSAiaHR0cHM6Ly9zZWN1cmVsaXN0LmNvbS90aGUta2ltc3VreS1vcGVyYXRpb24tYS1ub3J0aC1rb3JlYW4tYXB0LzU3OTE1LyINCiAgICAgIGRhdGUgPSAiMjAxOC0wMi0wOSINCiAgICAgIGhhc2gxID0gImFmZTQyMzdmZjFhMzQxNTA3MmQyZTFjMmM4OTU0YjAxMzQ3MTQ5MWM2YWZkY2UzZjA0ZDJmNzdlOTFiMGI2ODgiDQogICAgICBoYXNoMiA9ICIzODg5N2JlMTA5MjRiYzY5NDYzMmU3NzRlZjgwZDIyYTk0ZmVkMTAwYjBiYTI5ZjliZDZmMjU0ZGI1ZjViZTBmIg0KICAgICAgaGFzaDMgPSAiODQzM2Y2NDg3ODliY2M5NzY4NGI1ZWMxMTJlZTk5NDhmNDY2NzA4N2M2MTVmZjE5YTQ1MjE2YjhhM2MyNzUzOSINCiAgICAgIGhhc2g0ID0gIjFjZGJlOWVkYTc3YTEyM2NmMjViYWYyZGMxNTIxOGUwYWZkOWI2NWRhZTgwZWE5ZTAwYzQ2NWI2NzYxODdhMWQiDQogICAgICBoYXNoNSA9ICI1M2UzY2RiZmJmYjRmZTY3M2UxMGM4YmRhZGM1ZDg3OTBlMjFkMDFmMGI0MGZmZGUwYTA4ODM3YWI5YTNkZjkxIg0KICAgICAgaGFzaDYgPSAiZDY0M2QwMzc1MTY4ZGNiMTY0MGQ5ZmVmYzBjNDAzNWQ3NzcyYzBhM2U0MWIwNDk4NzgwZWVlOWUxOTM1ZGZmZiINCiAgICAgIGhhc2g3ID0gIjdjZGU3ODYzM2EyY2IxNGIwODhhM2ZlNTljZmFkN2RkMjk0OTNkYzQxYzkyZTMyMTVhMjc1MTY3NzAyNzNiODQiDQoNCiAgIHN0cmluZ3M6DQoNCiAgICAgICR4MSA9ICJ0YXNrbWdyLmV4ZSBFeGVjdXRlIE9rISEhIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHgyID0gInRhc2ttZ3IuZXhlIEV4ZWN1dGUgRXJyISEhIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHgzID0gImtray5leGUgRXhlY3V0aW5nISEhIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM0ID0gIlNoZWxsRXhlY3V0ZUEgT2shISEiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczUgPSAiU2hlbGxFeGVjdXRlQSBFcnIhISEiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczYgPSAiTWFuYWdlLmRsbCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNyA9ICIlc18lcy50eHQiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczggPSAia2trLmV4ZSBDb3B5IE9rISIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzOSA9ICJGaWxlIEV4ZWN1dGluZyEiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczEwID0gIi8vLy8vLyBLZXlMb2cgRW5kIC8vLy8vLyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTEgPSAiLy8vLy8vLy8gU3lzdGVtSW5mbyBFbmQgLy8vLy8vLyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTIgPSAiLy8vLy8vLy8gU3lzdGVtSW5mbyAvLy8vLy8vIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMyA9ICIvLy8vLyBVc2VySWQgLy8vLy8vIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxNCA9ICIvLy8vLyBVc2VySWQgRW5kIC8vLy8vLyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTUgPSAiLy8vLy8vIEtleUxvZyAvLy8vLy8iIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczE2ID0gIkRlY3J5cHQgRXJybyEhISIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTcgPSAiRmlsZSBEZWxldGUgT2shIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxOCA9ICJEb3duIE9rISEhIiBmdWxsd29yZCBhc2NpaQ0KDQogICAgICAkb3AwID0geyBiZSA0MCBlOSAwMCAxMCA4ZCBiZCAzYyBmZiBmZiBmZiA4MyBjNCA0OCBmMyBhNSB9DQogICAgICAkb3AxID0geyA4YiBjZSAzMyBjMCA4YiBkMSA4ZCBiYyAyNCAzNCAwMiAwMCAwMCBjMSBlOSAwMiB9DQogICAgICAkb3AyID0geyBiZSBkYyBlOSAwMCAxMCA4ZCBiZCAxYyBmZiBmZiBmZiBmMyBhNSA4ZCBiZCAxYyB9DQoNCiAgIGNvbmRpdGlvbjoNCg0KICAgICAgKCB1aW50MTYoMCkgPT0gMHg1YTRkIGFuZCBmaWxlc2l6ZSA8IDIwMEtCIGFuZCAoIDEgb2YgKCR4KikgYW5kIDQgb2YgdGhlbSApIGFuZCBhbGwgb2YgKCRvcCopKSBvciAoIGFsbCBvZiB0aGVtICkNCn0NCnJ1bGUgU2hpZnUgew0KDQoJbWV0YToNCg0KCQlyZWZlcmVuY2UgPSAiaHR0cHM6Ly9ibG9ncy5tY2FmZWUuY29tL21jYWZlZS1sYWJzL2phcGFuZXNlLWJhbmtpbmctdHJvamFuLXNoaWZ1LWNvbWJpbmVzLW1hbHdhcmUtdG9vbHMvIg0KCQlhdXRob3IgPSAiTWNBZmVlIExhYnMiDQoNCglzdHJpbmdzOg0KDQoJCSRiID0gIlJlZ0NyZWF0ZUtleUEiDQoJCSRhID0gIkNyeXB0Q3JlYXRlSGFzaCINCgkJJGMgPSB7MkYgMDAgNjMgMDAgMjAgMDAgNzMgMDAgNzQgMDAgNjEgMDAgNzIgMDAgNzQgMDAgMjAgMDAgMjIgMDAgMjIgMDAgMjAgMDAgMjIgMDAgMjUgMDAgNzMgMDAgMjIgMDAgMjAgMDAgMjUgMDAgNzMgMDAgMDAgMDAgMDAgMDAgNjMgMDAgNkQgMDAgNjQgMDAgMkUgMDAgNjUgMDAgNzggMDAgNjUgMDAgMDAgMDAgNzIgMDAgNzUgMDAgNkV9DQoJCSRkID0gezUzIDAwIDZFIDAwIDY0IDAwIDU2IDAwIDZGIDAwIDZDIDAwIDJFIDAwIDY1IDAwIDc4IDAwIDY1fQ0KCQkkZSA9IHs1MiAwMCA2NSAwMCA2NCAwMCA2OSAwMCA3MiAwMCA2NSAwMCA2MyAwMCA3NCAwMCA0NSAwMCA1OCAwMCA0NX0NCg0KCWNvbmRpdGlvbjoNCg0KCQlhbGwgb2YgdGhlbQ0KfQ0KcnVsZSBWUE5GaWx0ZXIgew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJGaWx0ZXIgZm9yIDJuZCBzdGFnZSBtYWx3YXJlIHVzZWQgaW4gVlBOZmlsdGVyIGF0dGFjayINCiAgICAgIGF1dGhvciA9ICJDaHJpc3RpYWFuIEJlZWsgQCBNY0FmZWUgQWR2YW5jZWQgVGhyZWF0IFJlc2VhcmNoIg0KICAgICAgcmVmZXJlbmNlID0gImh0dHBzOi8vYmxvZy50YWxvc2ludGVsbGlnZW5jZS5jb20vMjAxOC8wNS9WUE5GaWx0ZXIuaHRtbCINCiAgICAgIGRhdGUgPSAiMjAxOC0wNS0yMyINCiAgICAgIGhhc2gxID0gIjllYjZjNzc5ZGJhZDFiNzE3Y2FhNDYyZDhlMDQwODUyNzU5NDM2ZWQ3OWNjMjE3MjY5MjMzOWJjNjI0MzIzODciDQogICAgICBoYXNoMiA9ICI0YjAzMjg4ZTllNDRkMjE0NDI2YTAyMzI3MjIzYjVlNTE2YjFlYTI5Y2U3MmZhMjVhMmZjZWY5YWE2NWM0YjBiIg0KICAgICAgaGFzaDMgPSAiOTY4M2IwNDEyM2Q3ZTlmZTRjOGMyNmM2OWIwOWMyMjMzZjdlMTQ0MGY4Mjg4Mzc0MjJjZTMzMDA0MDc4MmQxNyINCiAgICAgIGhhc2g0ID0gIjA2NDlmZGE4ODg4ZDcwMWViMmY5MWU2ZTBhMDVhMmUyYmU3MTRmNTY0NDk3YzQ0YTM4MTMwODJlZjhmZjI1MGIiDQogICAgICBoYXNoNSA9ICI4YTIwZGM5NTM4ZDYzOTYyMzg3OGEzZDNkMThkODhkYThiNjM1ZWE1MmU1ZTJkMGMyY2NlNGE4YzVhNzAzZGIxIg0KICAgICAgaGFzaDYgPSAiNzc2Y2I5YTdhOWY1YWZiYWZmZGQ0ZGJkMDUyYzY0MjAwMzBiMmM3YzMwNThjMTQ1NWUwYTc5ZGYwZTZmN2ExZCINCiAgICAgIGhhc2g3ID0gIjM3ZTI5YjBlYTdhOWI5NzU5NzM4NWExMmY1MjVlMTNjM2E3ZDAyYmE0MTYxYTY5NDZmMmE3ZDk3OGNjMDQ1YjQiDQogICAgICBoYXNoOCA9ICJkNjA5N2U5NDJkZDBmZGMxZmIyOGVjMTgxNDc4MGU2ZWNjMTY5ZWM2ZDI0Zjk5NTRlNzE5NTRlZWRiYzRjNzBlIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiaWQtYXQtcG9zdGFsQWRkcmVzcyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMiA9ICIvYmluL3NoZWxsIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMzID0gIi9EWnJ0ZW5OTFFOaVRyTTlBTSt2ZHFCcFZvTnEwcWpVNTFCeDVyVTJCWGNGYlh2STVNVDlUTlVoWHdJREFRQUIiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczQgPSAiVXNhZ2UgZG9lcyBub3QgbWF0Y2ggdGhlIGtleVVzYWdlIGV4dGVuc2lvbiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNSA9ICJpZC1hdC1wb3N0YWxDb2RlIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM2ID0gInZUZVk0S1pNYVVydmVFZWw1dFdaQzk0UlNNS2d4UjZjeUUxbkJYeVRRbkRPR2JmcE5OZ0JLeHlLYklOV29PSlUiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczcgPSAiaWQtY2UtZXh0S2V5VXNhZ2UiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczggPSAiL2Y4d1l3WURWUjBqQkZ3d1dvQVV0RnJrcGJQZTBsTDJ1ZFdtbFEvclByekgvZitoUDZROU1Ec3hDekFKQmdOViIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzOSA9ICIvZXRjL2NvbmZpZy9ob3N0cyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTAgPSAiJXMlLTE4czogJWQgYml0cyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTEgPSAiaWQtY2Uta2V5VXNhZ2UiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczEyID0gIk1hY2hpbmUgaXMgbm90IG9uIHRoZSBuZXR3b3JrIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMyA9ICJObyBYRU5JWCBzZW1hcGhvcmVzIGF2YWlsYWJsZSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTQgPSAiTm8gQ1NJIHN0cnVjdHVyZSBhdmFpbGFibGUiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczE1ID0gIk5hbWUgbm90IHVuaXF1ZSBvbiBuZXR3b3JrIiBmdWxsd29yZCBhc2NpaQ0KDQogICBjb25kaXRpb246DQoNCiAgICAgICggdWludDE2KDApID09IDB4NDU3ZiBhbmQgZmlsZXNpemUgPCA1MDBLQiBhbmQgKCA4IG9mIHRoZW0gKSkgb3IgKCBhbGwgb2YgdGhlbSApDQp9DQoNCnJ1bGUgTW9uZXJvX01pbmluZ19EZXRlY3Rpb24gew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJNb25lcm8gbWluaW5nIHNvZnR3YXJlIg0KICAgICAgYXV0aG9yID0gIkNocmlzdGlhYW4gQmVlayINCiAgICAgIHJlZmVyZW5jZSA9ICJNb25lcm9NaW5lciINCiAgICAgIGRhdGUgPSAiMjAxOC0wNC0wNSINCg0KICAgc3RyaW5nczoNCg0KICAgICAgJDEgPSAiKiBDT01NQU5EUzogICAgICdoJyBoYXNocmF0ZSwgJ3AnIHBhdXNlLCAncicgcmVzdW1lIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDIgPSAiLS1jcHUtYWZmaW5pdHkgICAgICAgc2V0IHByb2Nlc3MgYWZmaW5pdHkgdG8gQ1BVIGNvcmUocyksIG1hc2sgMHgzIGZvciBjb3JlcyAwIGFuZCAxIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDMgPSAiKiBUSFJFQURTOiAgICAgICVkLCAlcywgYXY9JWQsICVzZG9uYXRlPSVkJSUlcyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQ0ID0gIi0tdXNlci1hZ2VudCAgICAgICAgIHNldCBjdXN0b20gdXNlci1hZ2VudCBzdHJpbmcgZm9yIHBvb2wiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkNSA9ICItTywgLS11c2VycGFzcz1VOlAgICAgICAgdXNlcm5hbWU6cGFzc3dvcmQgcGFpciBmb3IgbWluaW5nIHNlcnZlciIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQ2ID0gIi0tY3B1LXByaW9yaXR5ICAgICAgIHNldCBwcm9jZXNzIHByaW9yaXR5ICgwIGlkbGUsIDIgbm9ybWFsIHRvIDUgaGlnaGVzdCkiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkNyA9ICItcCwgLS1wYXNzPVBBU1NXT1JEICAgICAgcGFzc3dvcmQgZm9yIG1pbmluZyBzZXJ2ZXIiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkOCA9ICIqIFZFUlNJT05TOiAgICAgWE1SaWcvJXMgbGlidXYvJXMlcyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQ5ID0gIi1rLCAtLWtlZXBhbGl2ZSAgICAgICAgICBzZW5kIGtlZXBhbGl2ZWQgZm9yIHByZXZlbnQgdGltZW91dCAobmVlZCBwb29sIHN1cHBvcnQpIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDEwID0gIi0tbWF4LWNwdS11c2FnZT1OICAgIG1heGltdW0gQ1BVIHVzYWdlIGZvciBhdXRvbWF0aWMgdGhyZWFkcyBtb2RlIChkZWZhdWx0IDc1KSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQxMSA9ICItLW5pY2VoYXNoICAgICAgICAgICBlbmFibGUgbmljZWhhc2gveG1yaWctcHJveHkgc3VwcG9ydCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQxMiA9ICI8IS0tVGhlIElEIGJlbG93IGluZGljYXRlcyBhcHBsaWNhdGlvbiBzdXBwb3J0IGZvciBXaW5kb3dzIDEwIC0tPiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQxMyA9ICIqIENQVTogICAgICAgICAgJXMgKCVkKSAlc3g2NCAlc0FFUy1OSSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQxNCA9ICItciwgLS1yZXRyaWVzPU4gICAgICAgICAgbnVtYmVyIG9mIHRpbWVzIHRvIHJldHJ5IGJlZm9yZSBzd2l0Y2ggdG8gYmFja3VwIHNlcnZlciAoZGVmYXVsdDogNSkiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkMTUgPSAiLUIsIC0tYmFja2dyb3VuZCAgICAgICAgIHJ1biB0aGUgbWluZXIgaW4gdGhlIGJhY2tncm91bmQiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkMTYgPSAiKiBBUEkgUE9SVDogICAgICVkIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDE3ID0gIi0tYXBpLWFjY2Vzcy10b2tlbj1UIGFjY2VzcyB0b2tlbiBmb3IgQVBJIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDE4ID0gIi10LCAtLXRocmVhZHM9TiAgICAgICAgICBudW1iZXIgb2YgbWluZXIgdGhyZWFkcyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICQxOSA9ICItLXByaW50LXRpbWU9TiAgICAgICBwcmludCBoYXNocmF0ZSByZXBvcnQgZXZlcnkgTiBzZWNvbmRzIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDIwID0gIi11LCAtLXVzZXI9VVNFUk5BTUUgICAgICB1c2VybmFtZSBmb3IgbWluaW5nIHNlcnZlciIgZnVsbHdvcmQgYXNjaWkNCg0KICAgY29uZGl0aW9uOg0KDQogICAgICAoIHVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGZpbGVzaXplIDwgNDAwMEtCIGFuZCAoIDggb2YgdGhlbSApKSBvciAoIGFsbCBvZiB0aGVtICkNCn0NCg0KcnVsZSBzY3JlZW5sb2NrZXJfYWNyb3dhcmUgew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJSdWxlIHRvIGRldGVjdCB0aGUgU2NyZWVuTG9ja2VyIEFjcm93YXJlIg0KICAgICAgYXV0aG9yID0gIk1hcmMgUml2ZXJvIHwgTWNBZmVlIEFUUiBUZWFtIg0KICAgICAgcmVmZXJlbmNlID0gImh0dHBzOi8vd3d3LmJsZWVwaW5nY29tcHV0ZXIuY29tL25ld3Mvc2VjdXJpdHkvdGhlLXdlZWstaW4tcmFuc29td2FyZS1hdWd1c3QtMzFzdC0yMDE4LWRldnMtb24tdmFjYXRpb24vIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiQzpcXFVzZXJzXFxwYXRyaVxcRG9jdW1lbnRzXFxWaXN1YWwgU3R1ZGlvIDIwMTVcXFByb2plY3RzXFxBZHZhbmNlZCBSYW5zaVxcQWR2YW5jZWQgUmFuc2lcXG9ialxcRGVidWdcXEFkdmFuY2VkIFJhbnNpLnBkYiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMiA9ICJBbGwgeW91ciBQZXJzb25hbCBEYXRhIGdvdCBlbmNyeXB0ZWQgYW5kIHRoZSBkZWNyeXB0aW9uIGtleSBpcyBzdG9yZWQgb24gYSBoaWRkZW4iIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczMgPSAiYWxwaGFvaWxAbWFpbDJ0b3IuY29tIGFueSB0cnkgb2YgcmVtb3ZpbmcgdGhpcyBSYW5zb213YXJlIHdpbGwgcmVzdWx0IGluIGFuIGluc3RhbnRseSAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczQgPSAiSEtFWV9DVVJSRU5UX1VTRVJcXFNvZnR3YXJlRVxcTWljcm9zb2Z0XFxXaW5kb3dzXFxDdXJyZW50VmVyc2lvblxcUnVuIiBmdWxsd29yZCB3aWRlDQogICAgICAkczUgPSAid2Vic2VydmVyLCBhZnRlciA3MiBob3VycyB0aGVkZWNyeXB0aW9uIGtleSB3aWxsIGdldCByZW1vdmVkIGFuZCB5b3VyIHBlcnNvbmFsIiBmdWxsd29yZCBhc2NpaQ0KDQogICBjb25kaXRpb246DQogICAgICAoIHVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGZpbGVzaXplIDwgMjAwMEtCICkgYW5kIGFsbCBvZiB0aGVtDQp9DQpydWxlIGFtYmFfcmFuc29td2FyZSB7DQoNCiAgIG1ldGE6DQoNCiAgICAgIGRlc2NyaXB0aW9uID0gIlJ1bGUgdG8gZGV0ZWN0IEFtYmEgUmFuc29td2FyZSINCiAgICAgIGF1dGhvciA9ICJNYXJjIFJpdmVybyB8IE1jQWZlZSBBVFIgVGVhbSINCiAgICAgIGhhc2gxID0gIjdjMDhjZGY5ZjRlOGJlMzRlZjZhZjViNTM3OTQxNjMwMjNjMmIwMTNmMzRjNDEzNGI4OTIyZjQyOTMzMDEyYTAiDQogICAgICBoYXNoMiA9ICI3MzE1NWEwODRhYWM4NDM0YmIwNzc5YTBiODhlOTdkNWNmMmQwNzYwZTlkMjVmMmY0MjM0NmQzZTA2Y2RhYWMyIg0KICAgICAgaGFzaDMgPSAiZWMyMzdiYzkyNmNlOTAwOGEyMTliOGIzMDg4MmYzYWMxODUzMWJkMzE0ZWU4NTIzNjlmYzcxMjM2OGM2YWNkNSINCiAgICAgIGhhc2g0ID0gImI5YjYwNDVhNDVkZDIyZmNhZjJmYzEzZDM5ZWJhNDYxODBkNDg5Y2I0ZWIxNTJjODc1NjhjMjQwNGFlY2FjMmYiDQoNCiAgIHN0cmluZ3M6DQoNCiAgICAgICRzMSA9ICI2NERDUllQVC5TWVMiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMiA9ICIzMkRDUllQVC5TWVMiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMyA9ICI2NERDSU5TVC5FWEUiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzNCA9ICIzMkRDSU5TVC5FWEUiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzNSA9ICIzMkRDQ09OLkVYRSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM2ID0gIjY0RENDT04uRVhFIiBmdWxsd29yZCB3aWRlDQogICAgICAkczggPSAiMzJEQ0FQSS5ETEwiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzOSA9ICI2NERDQVBJLkRMTCIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMxMCA9ICJJQ1lnYzJoMWRHUnZkMjRnTDJZZ0wzSWdMM1FnTUE9PSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTEgPSAiUXpwY1ZYTmxjbk5jUVVKRFJGeHVaWFJ3WVhOekxuUjRkQT09IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMiA9ICIpIXBzc3h9diFwc3N4fXYpKSFwc3N4fXYhcHNzeH12KSkhcHNzeH12IXBzc3h9dikpIXBzc3h9diFwc3N4fXYpKSFwc3N4fXYhcHNzeH12KSkhcHNzeH12IXBzc3h9dikpIXBzc3h9diFwc3N4fXYpIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMyA9ICJSR1ZtY21GbmJXVnVkRk5sY25acFkyVT0iDQogICAgICAkczE0ID0gIkxXVnVZM0o1Y0hRZ2NIUTVJQzF3SUE9PSINCiAgICAgICRzMTUgPSAiTFdWdVkzSjVjSFFnY0hRM0lDMXdJQT09Ig0KICAgICAgJHMxNiA9ICJMV1Z1WTNKNWNIUWdjSFEySUMxd0lBPT0iDQogICAgICAkczE3ID0gIkxXVnVZM0o1Y0hRZ2NIUXpJQzF3SUE9PSINCg0KICAgY29uZGl0aW9uOg0KICAgICAgKCB1aW50MTYoMCkgPT0gMHg1YTRkIGFuZCBmaWxlc2l6ZSA8IDMwMDBLQiBhbmQgKCA4IG9mIHRoZW0gKQ0KICAgICAgKSBvciAoIGFsbCBvZiB0aGVtICkNCn0NCnJ1bGUgYW5hdG92YV9yYW5zb213YXJlIHsNCg0KICAgbWV0YToNCg0KICAgICAgZGVzY3JpcHRpb24gPSAiUnVsZSB0byBkZXRlY3QgdGhlIEFuYXRvdmEgUmFuc29td2FyZSINCiAgICAgIGF1dGhvciA9ICJNYXJjIFJpdmVybyB8IE1jQWZlZSBBVFIgVGVhbSINCiAgICAgIHJlZmVyZW5jZSA9ICJodHRwczovL3NlY3VyaW5ndG9tb3Jyb3cubWNhZmVlLmNvbS9vdGhlci1ibG9ncy9tY2FmZWUtbGFicy9oYXBweS1uZXcteWVhci0yMDE5LWFuYXRvdmEtaXMtaGVyZS8iDQoNCiAgIHN0cmluZ3M6DQoNCiAgICAgICAgJHJlZ2V4ID0gL2FuYXRvdmFbMC05XUB0dXRhbm90YS5jb20vDQoNCiAgICBjb25kaXRpb246DQogICAgICAgIHVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGZpbGVzaXplIDwgMjAwMEtCIGFuZCAkcmVnZXgNCn0NCg0KcnVsZSBjcnlwdG9uYXJfcmFuc29td2FyZSB7DQoNCiAgIG1ldGE6DQoNCiAgICAgIGRlc2NyaXB0aW9uID0gIlJ1bGUgdG8gZGV0ZWN0IENyeXB0b05hciBSYW5zb213YXJlIg0KICAgICAgYXV0aG9yID0gIk1hcmMgUml2ZXJvIHwgTWNBZmVlIEFUUiBUZWFtIg0KICAgICAgcmVmZXJlbmNlID0gImh0dHBzOi8vd3d3LmJsZWVwaW5nY29tcHV0ZXIuY29tL25ld3Mvc2VjdXJpdHkvY3J5cHRvbmFyLXJhbnNvbXdhcmUtZGlzY292ZXJlZC1hbmQtcXVpY2tseS1kZWNyeXB0ZWQvIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiQzpcXG5hcm5hclxcQ3J5cHRvTmFyXFxDcnlwdG9OYXJEZWNyeXB0b3JcXG9ialxcRGVidWdcXENyeXB0b05hci5wZGIiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczIgPSAiQ3J5cHRvTmFyRGVjcnlwdG9yLmV4ZSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMzID0gInNlcnZlciB3aWxsIGVsaW1pbmF0ZSB0aGUga2V5IGFmdGVyIDcyIGhvdXJzIHNpbmNlIGl0cyBnZW5lcmF0aW9uIChzaW5jZSB0aGUgbW9tZW50IHlvdXIgY29tcHV0ZXIgd2FzIGluZmVjdGVkKS4gT25jZSB0aGlzIGhhcyAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczQgPSAiRG8gbm90IGRlbGV0ZSB0aGlzIGZpbGUsIGVsc2UgdGhlIGRlY3J5cHRpb24gcHJvY2VzcyB3aWxsIGJlIGJyb2tlbiIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM1ID0gImtleSB5b3UgcmVjZWl2ZWQsIGFuZCB3YWl0IHVudGlsIHRoZSBkZWNyeXB0aW9uIHByb2Nlc3MgaXMgZG9uZS4iIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczYgPSAiSW4gb3JkZXIgdG8gcmVjZWl2ZSB5b3VyIGRlY3J5cHRpb24ga2V5LCB5b3Ugd2lsbCBoYXZlIHRvIHBheSAkMjAwIGluIGJpdGNvaW5zIHRvIHRoaXMgYml0Y29pbiBhZGRyZXNzOiBbYml0Y29pbiBhZGRyZXNzXSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNyA9ICJEZWNyeXB0aW9uIHByb2Nlc3MgZmFpbGVkIiBmdWxsd29yZCB3aWRlDQogICAgICAkczggPSAiQ3J5cHRvTmFyRGVjcnlwdG9yLktleVZhbGlkYXRpb25XaW5kb3cucmVzb3VyY2VzIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM5ID0gIkltcG9ydGFudCBub3RlOiBSZW1vdmluZyBDcnlwdG9OYXIgd2lsbCBub3QgcmVzdG9yZSBhY2Nlc3MgdG8geW91ciBlbmNyeXB0ZWQgZmlsZXMuIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMCA9ICJqb2huc21pdGg5ODc2NTRAdHV0YW5vdGEuY29tIiBmdWxsd29yZCB3aWRlDQogICAgICAkczExID0gIkRlY3J5cHRpb24gcHJvY2VzcyB3aWxsIHN0YXJ0IHNvb24iIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTIgPSAiQ3J5cHRvTmFyRGVjcnlwdG9yLkRlY3J5cHRpb25Qcm9ncmVzc0JhckZvcm0ucmVzb3VyY2VzIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMyA9ICJEZWNyeXB0aW9uUHJvY2Vzc1Byb2dyZXNzQmFyIiBmdWxsd29yZCB3aWRlDQogICAgICAkczE0ID0gIkNyeXB0b05hckRlY3J5cHRvci5Qcm9wZXJ0aWVzLlJlc291cmNlcy5yZXNvdXJjZXMiIGZ1bGx3b3JkIGFzY2lpDQoNCiAgIGNvbmRpdGlvbjoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCAyMDAwS0IpIGFuZCBhbGwgb2YgdGhlbQ0KfQ0KcnVsZSBjcmltZV9yYW5zb213YXJlX3dpbmRvd3NfR1BHUXdlcnR5DQp7DQptZXRhOg0KDQoJYXV0aG9yID0gIk1jQWZlZSBMYWJzIg0KCWRlc2NyaXB0aW9uID0gIkRldGVjdCBHUEdRd2VydHkgcmFuc29td2FyZSINCglyZWZlcmVuY2UgPSAiaHR0cHM6Ly9zZWN1cmluZ3RvbW9ycm93Lm1jYWZlZS5jb20vbWNhZmVlLWxhYnMvcmFuc29td2FyZS10YWtlcy1vcGVuLXNvdXJjZS1wYXRoLWVuY3J5cHRzLWdudS1wcml2YWN5LWd1YXJkLyINCglkYXRlID0gIjIwMTgtMDMtMjEiDQoNCnN0cmluZ3M6DQoNCgkkYSA9ICJncGcuZXhlID8/P3JlY2lwaWVudCBxd2VydHkgIC1vIg0KCSRiID0gIiVzJXMuJWQucXdlcnR5Ig0KCSRjID0gImRlbCAvUSAvRiAvUyAlcyRyZWN5Y2xlLmJpbiINCgkkZCA9ICJjcnl6MUBwcm90b25tYWlsLmNvbSINCg0KY29uZGl0aW9uOg0KCWFsbCBvZiB0aGVtDQp9DQoNCnJ1bGUga3Jha2VuX2NyeXB0b3JfcmFuc29td2FyZV9sb2FkZXIgew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJSdWxlIHRvIGRldGVjdCB0aGUgS3Jha2VuIENyeXB0b3IgUmFuc29td2FyZSBsb2FkZXIiDQogICAgICBhdXRob3IgPSAiTWFyYyBSaXZlcm8gfCBNY0FmZWUgQVRSIFRlYW0iDQoNCiAgIHN0cmluZ3M6DQoNCiAgICAgICRwZGIgPSAiQzpcXFVzZXJzXFxLcnlwdG9uXFxzb3VyY2VcXHJlcG9zXFxVQUNcXFVBQ1xcb2JqXFxSZWxlYXNlXFxVQUMucGRiIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMyID0gIlNPRlRXQVJFXFxDbGFzc2VzXFxtc2NmaWxlXFxzaGVsbFxcb3BlblxcY29tbWFuZCIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMzID0gInB1YmxpY19rZXkiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczQgPSAiS1JBS0VOIERFQ1JZUFRPUiIgYXNjaWkNCiAgICAgICRzNSA9ICJVTklRVUUgS0VZIiBmdWxsd29yZCBhc2NpaQ0KDQoNCiAgIGNvbmRpdGlvbjoNCg0KICAgICAgKCB1aW50MTYoMCkgPT0gMHg1YTRkIGFuZCBmaWxlc2l6ZSA8IDYwMEtCICkgYW5kICRwZGIgb3IgYWxsIG9mICgkcyopDQp9DQoNCnJ1bGUga3Jha2VuX2NyeXB0b3JfcmFuc29td2FyZSB7DQoNCiAgIG1ldGE6DQoNCiAgICAgIGRlc2NyaXB0aW9uID0gIlJ1bGUgdG8gZGV0ZWN0IHRoZSBLcmFrZW4gQ3J5cHRvciBSYW5zb213YXJlIg0KICAgICAgYXV0aG9yID0gIk1hcmMgUml2ZXJvIHwgTWNBZmVlIEFUUiBUZWFtIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiS3Jha2VuIENyeXB0b3IiIGZ1bGx3b3JkIGFzY2lpIG5vY2FzZQ0KICAgICAgJHMyID0gInN1cHBvcnRfZW1haWwiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkZncxID0gIkwwTWdibVYwYzJnZ1lXUjJabWx5WlhkaGJHd2dabWx5WlhkaGJHd2dZV1JrSUhKMWJHVWdibUZ0WlQwaVUwMUNJRkJ5YjNSdlkyOXNJRUpzYjJOcklpQndjbTkwYjJOdmJEMVVRMUFnWkdseVBXbHVJR3h2WTJGc2NHOXlkRDAwIiBhc2NpaQ0KICAgICAgJGZ3MiA9ICJMME1nYm1WMGMyZ2dZV1IyWm1seVpYZGhiR3dnWm1seVpYZGhiR3dnWVdSa0lISjFiR1VnYm1GdFpUMGlVa1JRSUZCeWIzUnZZMjlzSUVKc2IyTnJJaUJ3Y205MGIyTnZiRDFVUTFBZ1pHbHlQV2x1SUd4dlkyRnNjRzl5ZEQweiIgYXNjaWkNCiAgICAgICRmdzMgPSAiTDBNZ2JtVjBjMmdnWVdSMlptbHlaWGRoYkd3Z1ptbHlaWGRoYkd3Z1lXUmtJSEoxYkdVZ2JtRnRaVDBpVWtSUUlGQnliM1J2WTI5c0lFSnNiMk5ySWlCd2NtOTBiMk52YkQxVVExQWdaR2x5UFdsdUlHeHZZMkZzY0c5eWREMHoiIGFzY2lpDQogICAgICAkZnc0ID0gIkwwTWdibVYwYzJnZ1lXUjJabWx5WlhkaGJHd2dabWx5WlhkaGJHd2dZV1JrSUhKMWJHVWdibUZ0WlQwaVUwMUNJRkJ5YjNSdlkyOXNJRUpzYjJOcklpQndjbTkwYjJOdmJEMVVRMUFnWkdseVBXbHVJR3h2WTJGc2NHOXlkRDAwIiBhc2NpaQ0KICAgICAgJHVhYyA9ICI8IS0tPHJlcXVlc3RlZEV4ZWN1dGlvbkxldmVsIGxldmVsPVwiYXNJbnZva2VyXCIgdWlBY2Nlc3M9XCJmYWxzZVwiIC8+LS0+ICAgIiBmdWxsd29yZCBhc2NpaQ0KDQogICBjb25kaXRpb246DQoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCA2MDBLQiApIGFuZCBhbGwgb2YgKCRmdyopIG9yIGFsbCBvZiAoJHMqKSBvciAkdWFjDQp9DQoNCnJ1bGUgbG9jZG9vcl9yYW5zb213YXJlIHsNCg0KICAgbWV0YToNCg0KICAgICAgZGVzY3JpcHRpb24gPSAiUnVsZSB0byBkZXRlY3QgTG9jZG9vci9EcnlDcnkiDQogICAgICBhdXRob3IgPSAiTWFyYyBSaXZlcm8gfCBNY0FmZWUgQVRSIFRlYW0iDQogICAgICByZWZlcmVuY2UgPSAiaHR0cHM6Ly90d2l0dGVyLmNvbS9sZW90cHNjL3N0YXR1cy8xMDM2MTgwNjE1NzQ0Mzc2ODMyIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiY29weSBcIkxvY2Rvb3IuZXhlXCIgXCJDOlxcUHJvZ3JhbURhdGFcXE1pY3Jvc29mdFxcV2luZG93c1xcU3RhcnQgTWVudVxcUHJvZ3JhbXNcXFN0YXJ0VXBcXHRlbXAwMDAwMDAwMC5leGVcIiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMiA9ICJjb3B5IHdzY3JpcHQudmJzIEM6XFxQcm9ncmFtRGF0YVxcTWljcm9zb2Z0XFxXaW5kb3dzXFxTdGFydCBNZW51XFxQcm9ncmFtc1xcU3RhcnRVcFxcd3NjcmlwdC52YnMiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczMgPSAiISEgWW91ciBjb21wdXRlcidzIGltcG9ydGFudCBmaWxlcyBoYXZlIGJlZW4gZW5jcnlwdGVkISBZb3VyIGNvbXB1dGVyJ3MgaW1wb3J0YW50IGZpbGVzIGhhdmUgYmVlbiBlbmNyeXB0ZWQhIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM0ID0gImVjaG8gQ3JlYXRlT2JqZWN0KFwiU0FQSS5TcFZvaWNlXCIpLlNwZWFrIFwiWW91ciBjb21wdXRlcidzIGltcG9ydGFudCBmaWxlcyBoYXZlIGJlZW4gZW5jcnlwdGVkISAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczUgPSAiISBZb3VyIGNvbXB1dGVyJ3MgaW1wb3J0YW50IGZpbGVzIGhhdmUgYmVlbiBlbmNyeXB0ZWQhICIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNyA9ICJUaGlzIHByb2dyYW0gaXMgbm90IHN1cHBvcnRlZCBvbiB5b3VyIG9wZXJhdGluZyBzeXN0ZW0uIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM4ID0gImVjaG8gWW91ciBjb21wdXRlcidzIGZpbGVzIGhhdmUgYmVlbiBlbmNyeXB0ZWQgdG8gTG9jZG9vciBSYW5zb213YXJlISBUbyBtYWtlIGEgcmVjb3ZlcnkgZ28gdG8gbG9jYWxiaXRjb2lucy5jb20gYW5kIGNyZWF0ZSBhIHdhIiBhc2NpaQ0KICAgICAgJHM5ID0gIlBsZWFzZSBlbnRlciB0aGUgcGFzc3dvcmQuIiBmdWxsd29yZCBhc2NpaQ0KDQogICBjb25kaXRpb246DQoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCA2MDBLQiApIGFuZCBhbGwgb2YgdGhlbQ0KfQ0KDQpydWxlIExvY2tlckdvZ2FSYW5zb213YXJlIHsNCg0KICAgbWV0YToNCg0KICAgICAgZGVzY3JpcHRpb24gPSAiTG9ja2VyR29nYSBSYW5zb213YXJlIg0KICAgICAgYXV0aG9yID0gIkNocmlzdGlhYW4gQmVlayAtIE1jQWZlZSBBVFIgdGVhbSINCiAgICAgIGRhdGUgPSAiMjAxOS0wMy0yMCINCiAgICAgIGhhc2gxID0gIjg4ZDE0OWYzZTQ3ZGMzMzc2OTVkNzZkYTUyYjI1NjYwZTNhNDU0NzY4YWYwZDdlNTljOTEzOTk1YWY0OTZhMGYiDQogICAgICBoYXNoMiA9ICJjOTdkOWJiYzgwYjU3M2JkZWVkYTM4MTJmNGQwMGU1MTgzNDkzZGQwZDU4MDVlMjUwODcyOGY2NTk3N2RkYTE1Ig0KICAgICAgaGFzaDMgPSAiYmExNWMyN2YyNjI2NWY0YjA2M2I2NTY1NGU5ZDdjMjQ4ZDBkNjUxOTE5ZmFmYjY4Y2I0NzY1ZDFlMDU3ZjkzZiINCg0KICAgc3RyaW5nczoNCg0KICAgICAgJDEgPSAiYm9vc3Q6OmludGVycHJvY2Vzczo6c3Bpbl9yZWN1cnNpdmVfbXV0ZXggcmVjdXJzaXZlIGxvY2sgb3ZlcmZsb3ciIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkMiA9ICIuP0FVPyRlcnJvcl9pbmZvX2luamVjdG9yQFVzeW5jX3F1ZXVlX2lzX2Nsb3NlZEBjb25jdXJyZW50QGJvb3N0QEBAZXhjZXB0aW9uX2RldGFpbEBib29zdEBAIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDMgPSAiLj9BVj8kQ2lwaGVyTW9kZUZpbmFsVGVtcGxhdGVfQ2lwaGVySG9sZGVyQFY/JEJsb2NrQ2lwaGVyRmluYWxAJDAwVkRlY0BSQzZAQ3J5cHRvUFBAQEBDcnlwdG9QUEBAVkNCQ19EZWNyeXB0aW9uQDJAQENyeXB0b1BQQEAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkNCA9ICI/aHR0cDovL2NybC51c2VydHJ1c3QuY29tL1VTRVJUcnVzdFJTQUNlcnRpZmljYXRpb25BdXRob3JpdHkuY3JsMHYiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkNSA9ICJjaXBoZXIuZXhlIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDYgPSAiLj9BVT8kcGxhY2VtZW50X2Rlc3Ryb3lAVXRyYWNlX3F1ZXVlQEBAaXBjZGV0YWlsQGludGVycHJvY2Vzc0Bib29zdEBAIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDcgPSAiM2h0dHA6Ly9jcnQudXNlcnRydXN0LmNvbS9VU0VSVHJ1c3RSU0FBZGRUcnVzdENBLmNydDAlIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJDggPSAiQ3JlYXRlUHJvY2VzcyBmYWlsZWQiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkOSA9ICJib29zdDo6ZGxsOjpzaGFyZWRfbGlicmFyeTo6bG9hZCgpIGZhaWxlZCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRvcDEgPSB7IDhiIGRmIDgzIGNiIDBmIDgxIGZiIGZmIGZmIGZmIDdmIDc2IDA3IGJiIGZmIGZmIH0NCiAgICAgICRvcDIgPSB7IDhiIGRmIDgzIGNiIDBmIDgxIGZiIGZmIGZmIGZmIDdmIDc2IDA3IGJiIGZmIGZmIH0NCg0KICAgY29uZGl0aW9uOg0KDQogICAgICAoIHVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGZpbGVzaXplIDwgMjAwMEtCIGFuZCAoIDYgb2YgdGhlbSApIGFuZCBhbGwgb2YgKCRvcCopKSBvciAoIGFsbCBvZiB0aGVtICkNCn0NCnJ1bGUgbG9vY2lwaGVyX3JhbnNvbXdhcmUgew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJSdWxlIHRvIGRldGVjdCBMb29jaXBoZXIgcmFuc29td2FyZSINCiAgICAgIGF1dGhvciA9ICJNYXJjIFJpdmVybyB8IE1jQWZlZSBBVFIgVGVhbSINCg0KICAgc3RyaW5nczoNCg0KICAgICAgJHgxID0gImM6XFx1c2Vyc1xcdXN1YXJpb1xcZGVza3RvcFxcY3J5cHRvbGliXFxnZnBjcnlwdC5oIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHgyID0gImM6XFx1c2Vyc1xcdXN1YXJpb1xcZGVza3RvcFxcY3J5cHRvbGliXFxlY2NyeXB0by5oIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMzID0gImM6XFx1c2Vyc1xcdXN1YXJpb1xcZGVza3RvcFxcY3J5cHRvbGliXFxnZjJuLmgiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczQgPSAiYzpcXHVzZXJzXFx1c3VhcmlvXFxkZXNrdG9wXFxjcnlwdG9saWJcXHF1ZXVlLmgiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczUgPSAiVGhyZWFkVXNlclRpbWVyOiBHZXRUaHJlYWRUaW1lcyBmYWlsZWQgd2l0aCBlcnJvciAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczYgPSAic3RkOjpfVmVjdG9yX2NvbnN0X2l0ZXJhdG9yPGNsYXNzIHN0ZDo6X1ZlY3Rvcl92YWw8c3RydWN0IHN0ZDo6X1NpbXBsZV90eXBlczxzdHJ1Y3QgQ3J5cHRvUFA6OlByb2plY3RpdmVQb2ludD4gPiA+OjpvcGVyYXRvciAqIiBmdWxsd29yZCB3aWRlDQogICAgICAkczcgPSAic3RkOjpfVmVjdG9yX2NvbnN0X2l0ZXJhdG9yPGNsYXNzIHN0ZDo6X1ZlY3Rvcl92YWw8c3RydWN0IHN0ZDo6X1NpbXBsZV90eXBlczxzdHJ1Y3QgQ3J5cHRvUFA6OlByb2plY3RpdmVQb2ludD4gPiA+OjpvcGVyYXRvciArPSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM4ID0gInN0ZDo6YmFzaWNfc3RyaW5nPHVuc2lnbmVkIHNob3J0LHN0cnVjdCBzdGQ6OmNoYXJfdHJhaXRzPHVuc2lnbmVkIHNob3J0PixjbGFzcyBzdGQ6OmFsbG9jYXRvcjx1bnNpZ25lZCBzaG9ydD4gPjo6b3BlcmF0b3IgW10iIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzOSA9ICJzdGQ6OnZlY3RvcjxzdHJ1Y3QgQ3J5cHRvUFA6OlByb2plY3RpdmVQb2ludCxjbGFzcyBzdGQ6OmFsbG9jYXRvcjxzdHJ1Y3QgQ3J5cHRvUFA6OlByb2plY3RpdmVQb2ludD4gPjo6b3BlcmF0b3IgW10iIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTAgPSAic3RkOjpfVmVjdG9yX2NvbnN0X2l0ZXJhdG9yPGNsYXNzIHN0ZDo6X1ZlY3Rvcl92YWw8c3RydWN0IHN0ZDo6X1NpbXBsZV90eXBlczxjbGFzcyBDcnlwdG9QUDo6SW50ZWdlcj4gPiA+OjpvcGVyYXRvciAqIiBmdWxsd29yZCB3aWRlDQogICAgICAkczExID0gInN0ZDo6X1ZlY3Rvcl9jb25zdF9pdGVyYXRvcjxjbGFzcyBzdGQ6Ol9WZWN0b3JfdmFsPHN0cnVjdCBzdGQ6Ol9TaW1wbGVfdHlwZXM8Y2xhc3MgQ3J5cHRvUFA6OkludGVnZXI+ID4gPjo6b3BlcmF0b3IgKz0iIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTIgPSAic3RkOjp2ZWN0b3I8c3RydWN0IENyeXB0b1BQOjpXaW5kb3dTbGlkZXIsY2xhc3Mgc3RkOjphbGxvY2F0b3I8c3RydWN0IENyeXB0b1BQOjpXaW5kb3dTbGlkZXI+ID46Om9wZXJhdG9yIFtdIiBmdWxsd29yZCB3aWRlDQogICAgICAkczEzID0gInN0ZDo6aXN0cmVhbWJ1Zl9pdGVyYXRvcjxjaGFyLHN0cnVjdCBzdGQ6OmNoYXJfdHJhaXRzPGNoYXI+ID46Om9wZXJhdG9yICsrIiBmdWxsd29yZCB3aWRlDQogICAgICAkczE0ID0gInN0ZDo6aXN0cmVhbWJ1Zl9pdGVyYXRvcjxjaGFyLHN0cnVjdCBzdGQ6OmNoYXJfdHJhaXRzPGNoYXI+ID46Om9wZXJhdG9yICoiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTUgPSAic3RkOjpfVmVjdG9yX2NvbnN0X2l0ZXJhdG9yPGNsYXNzIHN0ZDo6X1ZlY3Rvcl92YWw8c3RydWN0IHN0ZDo6X1NpbXBsZV90eXBlczxzdHJ1Y3QgQ3J5cHRvUFA6OlByb2plY3RpdmVQb2ludD4gPiA+OjpfQ29tcGF0IiBmdWxsd29yZCB3aWRlDQogICAgICAkczE2ID0gInN0ZDo6dmVjdG9yPGNsYXNzIENyeXB0b1BQOjpQb2x5bm9taWFsTW9kMixjbGFzcyBzdGQ6OmFsbG9jYXRvcjxjbGFzcyBDcnlwdG9QUDo6UG9seW5vbWlhbE1vZDI+ID46Om9wZXJhdG9yIFtdIiBmdWxsd29yZCB3aWRlDQogICAgICAkczE3ID0gIkRMX0VsZ2FtYWxMaWtlU2lnbmF0dXJlQWxnb3JpdGhtOiB0aGlzIHNpZ25hdHVyZSBzY2hlbWUgZG9lcyBub3Qgc3VwcG9ydCBtZXNzYWdlIHJlY292ZXJ5IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxOCA9ICJzdGQ6OnZlY3RvcjxzdHJ1Y3QgQ3J5cHRvUFA6OkVDUFBvaW50LGNsYXNzIHN0ZDo6YWxsb2NhdG9yPHN0cnVjdCBDcnlwdG9QUDo6RUNQUG9pbnQ+ID46Om9wZXJhdG9yIFtdIiBmdWxsd29yZCB3aWRlDQogICAgICAkczE5ID0gInN0ZDo6dmVjdG9yPHN0cnVjdCBDcnlwdG9QUDo6RUMyTlBvaW50LGNsYXNzIHN0ZDo6YWxsb2NhdG9yPHN0cnVjdCBDcnlwdG9QUDo6RUMyTlBvaW50PiA+OjpvcGVyYXRvciBbXSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMyMCA9ICJzdGQ6Ol9WZWN0b3JfY29uc3RfaXRlcmF0b3I8Y2xhc3Mgc3RkOjpfVmVjdG9yX3ZhbDxzdHJ1Y3Qgc3RkOjpfU2ltcGxlX3R5cGVzPGNsYXNzIENyeXB0b1BQOjpJbnRlZ2VyPiA+ID46Ol9Db21wYXQiIGZ1bGx3b3JkIHdpZGUNCg0KICAgY29uZGl0aW9uOg0KICAgICAgKCB1aW50MTYoMCkgPT0gMHg1YTRkIGFuZCBmaWxlc2l6ZSA8IDE3MDAwS0IgYW5kICggMSBvZiAoJHgqKSBhbmQgNCBvZiB0aGVtICkgKSBvciAoIGFsbCBvZiB0aGVtICkNCn0NCg0KcnVsZSByYW5zb21fbW9uZ2xvY2sgew0KICAgbWV0YToNCiAgICAgIGRlc2NyaXB0aW9uID0gIlJhbnNvbXdhcmUgZW5jcnlwdGluZyBNb25nbyBEYXRhYmFzZXMgIg0KICAgICAgYXV0aG9yID0gIkNocmlzdGlhYW4gQmVlayAtIE1jQWZlZSBBVFIgdGVhbSINCiAgICAgIGRhdGUgPSAiMjAxOS0wNC0yNSINCiAgICAgIGhhc2gxID0gImVmODBlZGJlYTVlMjJmMTM0YmQ3NjcwNGJlYzAwM2ZiZDBjMTYwOThmNzNlMWM1MDFjNTE0Y2I3MjhiZDU2NmIiDQogICAgICBoYXNoMiA9ICI4Zjg0NTUyNTJmM2U0NTE4ZGM4MGI5Y2ZjNDI2YjdjZTIwZDIyOGUyNDNmNzJjMDdjOGU5ZDA3NjA0NTQ2MmQwIg0KICAgICAgaGFzaDMgPSAiOThiYjk5ZGI5OTY5ZjgwYzE3NDkxOWYxNjk4MmU0MmRiZDliOTE2Yzg5MjVjMzZiYTRmNzE0NmUzZjI5MjE1YyINCiAgICAgIGhhc2g0ID0gImNjYmJmZDM4M2UzMTY0YTJkZmYxMjQ1ZTc1ZmIxNjIyZmMwOTJkMWE5MGVkYjJmMjU5NzMwZGZkMjNiZjI1MzgiDQogICAgICBoYXNoNSA9ICJjNGRlMmQ0ODVlYzg2MmIzMDhkMDBmYWNlNmI5OGE3ODAxY2U0MzI5YThmYzEwYzYzY2Y2OTVhZjUzNzE5NGE4Ig0KICAgc3RyaW5nczoNCiAgICAgICR4MSA9ICJDOlxcV2luZG93c1xcc3lzdGVtMzJcXGNtZC5leGUiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMSA9ICJhbmQgYSBQcm9vZiBvZiBQYXltZW50IHRvZ2V0aGVyIHdpbGwgYmUgaWdub3JlZC4gV2Ugd2lsbCBkcm9wIHRoZSBiYWNrdXAgYWZ0ZXIgMjQgaG91cnMuIFlvdSBhcmUgd2VsY29tZSEgIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMyID0gIllvdXIgRmlsZSBhbmQgRGF0YUJhc2UgaXMgZG93bmxvYWRlZCBhbmQgYmFja2VkIHVwIG9uIG91ciBzZWN1cmVkIHNlcnZlcnMuIFRvIHJlY292ZXIgeW91ciBsb3N0IGRhdGEgOiBTZW5kIDAuMSBCVEMgdG8gb3VyIEJpdENvaW4iIGFzY2lpDQogICAgICAkczMgPSAiTm8gdmFsaWQgcG9ydCBudW1iZXIgaW4gY29ubmVjdCB0byBob3N0IHN0cmluZyAoJXMpIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM0ID0gIlNPQ0tTNCVzOiBjb25uZWN0aW5nIHRvIEhUVFAgcHJveHkgJXMgcG9ydCAlZCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNSA9ICIjIGh0dHBzOi8vY3VybC5oYXh4LnNlL2RvY3MvaHR0cC1jb29raWVzLmh0bWwiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczYgPSAiQ29ubmVjdGlvbiBjbG9zdXJlIHdoaWxlIG5lZ290aWF0aW5nIGF1dGggKEhUVFAgMS4wPykiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczcgPSAiZGV0YWlsIG1heSBiZSBhdmFpbGFibGUgaW4gdGhlIFdpbmRvd3MgU3lzdGVtIGV2ZW50IGxvZy4iIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczggPSAiRm91bmQgYnVuZGxlIGZvciBob3N0ICVzOiAlcCBbJXNdIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM5ID0gIk5vIHZhbGlkIHBvcnQgbnVtYmVyIGluIHByb3h5IHN0cmluZyAoJXMpIiBmdWxsd29yZCBhc2NpaQ0KDQoNCiAgICAgICRvcDAgPSB7IDUwIDhkIDg1IDc4IGY2IGZmIGZmIDUwIGZmIGI1IDcwIGY2IGZmIGZmIGZmIDE1IH0NCiAgICAgICRvcDEgPSB7IDgzIGZiIDAxIDc1IDQ1IDgzIDdlIDE0IDA4IDcyIDM0IDhiIDBlIDY2IDhiIDQ1IH0NCiAgICAgICRvcDIgPSB7IGM3IDQxIDBjIGRmIGZmIGZmIGZmIGM3IDQxIDEwIH0NCiAgIGNvbmRpdGlvbjoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCAyMDAwS0IgYW5kICggMSBvZiAoJHgqKSBhbmQgNCBvZiB0aGVtICkgYW5kIGFsbCBvZiAoJG9wKikNCiAgICAgICkgb3IgKCBhbGwgb2YgdGhlbSApDQp9DQoNCnJ1bGUgbmVtdHlfcmFuc29td2FyZSB7DQoNCiAgIG1ldGE6DQoNCiAgICAgIGRlc2NyaXB0aW9uID0gIlJ1bGUgdG8gZGV0ZWN0IE5lbXR5IFJhbnNvbXdhcmUiDQogICAgICBhdXRob3IgPSAiTWFyYyBSaXZlcm8gfCBNY0FmZWUgQVRSIFRlYW0iDQoNCiAgIHN0cmluZ3M6DQoNCiAgICAgICR4MSA9ICIvYyB2c3NhZG1pbi5leGUgZGVsZXRlIHNoYWRvd3MgL2FsbCAvcXVpZXQgJiBiY2RlZGl0IC9zZXQge2RlZmF1bHR9IGJvb3RzdGF0dXNwb2xpY3kgaWdub3JlYWxsZmFpbHVyZXMgJiBiY2RlZGl0IC9zZXQge2RlZmF1bHR9IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMyID0gImh0dHBzOi8vcGJzLnR3aW1nLmNvbS9tZWRpYS9EbjR2d2FSVzBBWS10VXUuanBnOmxhcmdlIDpEIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMzID0gIk1TRE9TLlNZUyIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM0ID0gIi9jIHZzc2FkbWluLmV4ZSBkZWxldGUgc2hhZG93cyAvYWxsIC9xdWlldCAmIGJjZGVkaXQgL3NldCB7ZGVmYXVsdH0gYm9vdHN0YXR1c3BvbGljeSBpZ25vcmVhbGxmYWlsdXJlcyAmIGJjZGVkaXQgL3NldCB7ZGVmYXVsdH0gIiBhc2NpaQ0KICAgICAgJHM1ID0gInJlY292ZXJ5ZW5hYmxlZCBubyAmIHdiYWRtaW4gZGVsZXRlIGNhdGFsb2cgLXF1aWV0ICYgd21pYyBzaGFkb3djb3B5IGRlbGV0ZSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNiA9ICJERUNSWVBULnR4dCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzNyA9ICJwdjNtaStOUXBsTHFra0pwVE5tamkvTTZtTDROR2U1SUhzUkZKaXJWNkhTeXg4bUM4Z29za2Y1bFhIMmQ1N3ZoNTJpcWhoRWM1bWFMY1NySUtidWtjbm1Vd3ltK0luMU9udkhwMDcwPSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzOCA9ICJcXE5FTVRZLURFQ1JZUFQudHh0XCIiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczkgPSAicmZ5UHZjY3hnVmFMdlc5T09ZMkowOTBNcTk4N045bGlmL1JvSURQODlsdVM5T3V2OWdVSW1wZ0NUVkdXdkp6cnFpUzhoUTVFbDAyTGRFdktjSis3ZG4zRHhpWFNORzFQd0xyWTU5S3pHcy9nVXZYblljbVQ2dDM0cWZabXI4ZzgiIGFzY2lpDQogICAgICAkczEwID0gIklPLlNZUyIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMxMSA9ICJRZ3pqS1hjRDFKaC9jT0xCaDFPTWIrcld4VWJUb3lzMkFyRzlsYU5XQVdrMHJOSXYyZG5JRHBjK21TYnA5MUU4cVZOOE12OEs1akMzRUJyNFRCOGpoNU5zL29uQmhQWjlyTFhSN3dJa2FYR2VUWmkvNC9YT3RPM0RGaWFkNCt2ZiIgYXNjaWkNCiAgICAgICRzMTIgPSAiTkVNVFktREVDUllQVC50eHQiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTMgPSAicHZYbWpQUVJvVW1qajBnOVFaMjR3dkVxeXZjSlZ2RldYYzBMTDJYTDVEV216OG1lNXdFbGgvNDhGSEtjcGJucThDMmt3UT09IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxNCA9ICJhL1FSQUdsTkx2cU51T05rVVdDUVROZm9XNDVERmtaVmpVUG4wdDN0SlFuSFdQaEpSMkhXdHRYcVlwUVFJTXBuIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxNSA9ICJLZW9KckxGb1RnWGFUS1RJcit2L09id3RDNUJLdE1pdFhxOGFhRFQ4YXB6OThRUXZRZ01ibmNMU0pXSkcrYkh2YU1oRyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTYgPSAicHUvaGo2WWVyVW5xbFVNOUE4aStpL1VobnZzSUUrOVhUWXM9IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxNyA9ICJnclFrTHhhR3ZMMElCR0dDUmxKOFE0cVFQL21pZG96WlNCaEZHRURwTkVsd3ZXWGhiYTZrVEgxTG9YOFZZTk9DWlREekxlODJrVUQxVFNBb1ovZnorOFFON3BMcW9sNStmOVFuQ0xCOVFLT2kwT21wSVMxRExsbmdyOVlIOTl2dCIgYXNjaWkNCiAgICAgICRzMTggPSAiQk9PVFNFQ1QuQkFLIiBmdWxsd29yZCB3aWRlDQogICAgICAkczE5ID0gImJiVlUvOVR5Y3dQTys1TWdrb2tTSGtBYlVTUlR3Y2JZeTV0bURYQVUxbGNGN2QzNkJUcGZ2emFWNS9WSTZBUlJ0Mnlwc3hIR2xuT0pRVVRINllhLy9FdTBqUGkvNnMyTW1PazY3Y3N3L21zaWFheHVIWERvc3RzU0NDK2tvbFZYIiBhc2NpaQ0KICAgICAgJHMyMCA9ICJwdWg0d1hqVllXSnpGTjZhSWduQ2xMNFcvMS81RWc2Ym01dUV2NkRydTBwZk92aG1iRjFTWTN6YXY0UlFWUVRZTWZaeEFzYUJZZkorR3grNmdERW1LZ2d5cGwxVmNWWFdSYnhBdURJWGFCeWg5YVA0QjJRdmhMbkp4WkxlK0FHNSIgYXNjaWkNCg0KICAgY29uZGl0aW9uOg0KICAgICAgKCB1aW50MTYoMCkgPT0gMHg1YTRkIGFuZCBmaWxlc2l6ZSA8IDQwMEtCIGFuZCAoIDEgb2YgKCR4KikgYW5kIDQgb2YgdGhlbSApKQ0KfQ0KcnVsZSBwaWNvX3JhbnNvbXdhcmUgew0KDQogICBtZXRhOg0KDQogICAgICBkZXNjcmlwdGlvbiA9ICJSdWxlIHRvIGRldGVjdCBQaWNvIFJhbnNvbXdhcmUiDQogICAgICBhdXRob3IgPSAiTWFyYyBSaXZlcm8gfCBNY0FmZWUgQVRSIFRlYW0iDQogICAgICByZWZlcmVuY2UgPSAiaHR0cHM6Ly90d2l0dGVyLmNvbS9zaXJpX3Vyei9zdGF0dXMvMTAzNTEzODU3NzkzNDU1NzE4NCINCg0KICAgc3RyaW5nczoNCg0KICAgICAgJHMxID0gIkM6XFxVc2Vyc1xccmlrZmVcXERlc2t0b3BcXFJhbnNvbXdhcmVcXFRoYW5hdG9zU291cmNlXFxSZWxlYXNlXFxSYW5zb213YXJlLnBkYiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMiA9ICJcXERvd25sb2Fkc1xcUkVBRE1FLnR4dCIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMyA9ICJcXE11c2ljXFxSRUFETUUudHh0IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM0ID0gIlxcVmlkZW9zXFxSRUFETUUudHh0IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM1ID0gIlxcUGljdHVyZXNcXFJFQURNRS50eHQiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczYgPSAiXFxEZXNrdG9wXFxSRUFETUUudHh0IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM3ID0gIlxcRG9jdW1lbnRzXFxSRUFETUUudHh0IiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM4ID0gIi9jIHRhc2traWxsIC9pbSAiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczkgPSAiXFxBcHBEYXRhXFxSb2FtaW5nXFwiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkczEwID0gImdNb3ppbGxhLzUuMCAoV2luZG93cyBOVCA2LjEpIFRoYW5hdG9zLzEuMSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMxMSA9ICJBcHBEYXRhXFxSb2FtaW5nIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHMxMiA9ICJcXERvd25sb2FkcyIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTMgPSAib3BlcmF0b3IgY29fYXdhaXQiIGZ1bGx3b3JkIGFzY2lpDQoNCiAgIGNvbmRpdGlvbjoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCA3MDBLQiApIGFuZCBhbGwgb2YgdGhlbQ0KfQ0KDQpydWxlIFJvYmJpbmhvb2RfcmFuc29td2FyZSB7DQogICBtZXRhOg0KICAgICAgZGVzY3JpcHRpb24gPSAiUm9iYmluaG9vZCBHb0xhbmcgcmFuc293bWFyZSINCiAgICAgIGF1dGhvciA9ICJDaHJpc3RpYWFuIEJlZWsgQCBNY0FmZWUgQVRSIg0KICAgICAgZGF0ZSA9ICIyMDE5LTA1LTEwIg0KICAgICAgaGFzaDEgPSAiOTk3N2JhODYxMDE2ZWRlZjBjM2ZiMzg1MTdhOGE2OGRiZjdkM2MxN2RlMDcyNjZjZmE1MTViNzUwYjBkMjQ5ZSINCiAgICAgIGhhc2gyID0gIjI3ZjlmNzQwMjYzYjczYTliN2U2ZGQ4MDcxYzhjYTJiMmMyMmYzMTBiZGU5YTY1MGZjNTI0YTQxMTVmMmZhMTQiDQogICAgICBoYXNoMyA9ICIzYmM3ODE0MWZmM2Y3NDJjNWU5NDI5OTNhZGZiZWYzOWMyMTI3Zjk2ODJhMzAzYjVlNzg2ZWQ3ZjlhOGQxODRiIg0KICAgICAgaGFzaDQgPSAiNGU1OGIwMjg5MDE3ZDUzZGRhNGM5MTJmMGVhZGY1Njc4NTIxOTlkMDQ0ZDJlMmJkYTUzMzRlYjk3ZmEwYjY3YyINCiAgICAgIGhhc2g1ID0gIjIxY2I4NGZjN2IzM2U4ZTMxMzY0ZmYwZTU4YjA3OGRiOGY0NzQ5NGEyMzlkYzNjY2JlYTgwMTdmZjYwODA3ZTMiDQogICAgICBoYXNoNiA9ICJlMTI4ZDVhYTBiNWE5YzY4NTFlNjljYmY5ZDJjOTgzZWVmZDMwNWExMGNiYTdlMGM4MjQwYzhlMmY3OWE1NDRmIg0KICAgc3RyaW5nczoNCiAgICAgICRzMSA9ICIuZW5jX3JvYmJpbmhvb2QiIG5vY2FzZQ0KICAgICAgJHMyID0gInNjLmV4ZSBzdG9wIFNRTEFnZW50JFNRTEVYUFJFU1MiIG5vY2FzZQ0KICAgICAgJHMzID0gInB1Yi5rZXkiIG5vY2FzZQ0KICAgICAgJHM0ID0gIm1haW4uRW5hYmxlU2hhZG93RnVja3MiIG5vY2FzZQ0KICAgICAgJHM1ID0gIm1haW4uRW5hYmxlUmVjb3ZlcnlGQ0siIG5vY2FzZQ0KICAgICAgJHM2ID0gIm1haW4uRW5hYmxlTG9nTGF1bmRlcnMiIG5vY2FzZQ0KICAgICAgJHM3ID0gIm1haW4uRW5hYmxlU2VydmljZUZ1Y2siIG5vY2FzZQ0KDQoNCiAgICAgICRvcDAgPSB7IDhkIDA1IDJkIDk4IDUxIDAwIDg5IDQ0IDI0IDMwIGM3IDQ0IDI0IDM0IDFkIH0NCiAgICAgICRvcDEgPSB7IDhiIDVmIDEwIDAxIGMzIDhiIDQ3IDA0IDgxIGMzIGI1IGJjIGIwIDM0IDhiIDRmIH0NCiAgICAgICRvcDIgPSB7IDBmIGI2IDM0IDE4IDhkIDdlIGQwIDk3IDgwIGY4IDA5IDk3IDc3IDM5IDgxIGZkIH0NCiAgIGNvbmRpdGlvbjoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCAzMDAwS0IgYW5kICggMSBvZiAoJHMqKSApIGFuZCBhbGwgb2YgKCRvcCopDQogICAgICApIG9yICggYWxsIG9mIHRoZW0gKQ0KfQ0KDQpydWxlIFJ5dWtfUmFuc29td2FyZSB7DQogICBtZXRhOg0KICAgICAgZGVzY3JpcHRpb24gPSAiUnl1ayBSYW5zb213YXJlIGh1bnRpbmcgcnVsZSINCiAgICAgIGF1dGhvciA9ICJDaHJpc3RpYWFuIEJlZWsgLSBNY0FmZWUgQVRSIHRlYW0iDQogICAgICByZWZlcmVuY2UgPSAiaHR0cHM6Ly9zZWN1cmluZ3RvbW9ycm93Lm1jYWZlZS5jb20vb3RoZXItYmxvZ3MvbWNhZmVlLWxhYnMvcnl1ay1yYW5zb213YXJlLWF0dGFjay1ydXNoLXRvLWF0dHJpYnV0aW9uLW1pc3Nlcy10aGUtcG9pbnQvIg0KICAgICAgZGF0ZSA9ICIyMDE5LTA0LTI1Ig0KICAgc3RyaW5nczoNCiAgICAgICR4MSA9ICJDOlxcV2luZG93c1xcU3lzdGVtMzJcXGNtZC5leGUiIGZ1bGx3b3JkIGFzY2lpDQogICAgICAkeDIgPSAiXFxTeXN0ZW0zMlxcY21kLmV4ZSIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMxID0gIkM6XFxVc2Vyc1xcQWRtaW5cXERvY3VtZW50c1xcVmlzdWFsIFN0dWRpbyAyMDE1XFxQcm9qZWN0c1xcQ29uc29sZUFwcGxpY2F0aW9uNTRuZXcgY3J5cHRlZCIgYXNjaWkNCiAgICAgICRzMiA9ICJmZzR0Z2Y0ZjMuZGxsIiBmdWxsd29yZCB3aWRlDQogICAgICAkczMgPSAibHNhYXMuZXhlIiBmdWxsd29yZCB3aWRlDQogICAgICAkczQgPSAiXFxEb2N1bWVudHMgYW5kIFNldHRpbmdzXFxEZWZhdWx0IFVzZXJcXHN5cyIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM1ID0gIlxcRG9jdW1lbnRzIGFuZCBTZXR0aW5nc1xcRGVmYXVsdCBVc2VyXFxmaW5pc2giIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzNiA9ICJcXHVzZXJzXFxQdWJsaWNcXHN5cyIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHM3ID0gIlxcdXNlcnNcXFB1YmxpY1xcZmluaXNoIiBmdWxsd29yZCB3aWRlDQogICAgICAkczggPSAiWW91IHdpbGwgcmVjZWl2ZSBidGMgYWRkcmVzcyBmb3IgcGF5bWVudCBpbiB0aGUgcmVwbHkgbGV0dGVyIiBmdWxsd29yZCBhc2NpaQ0KICAgICAgJHM5ID0gImhybWxvZyIgZnVsbHdvcmQgd2lkZQ0KICAgICAgJHMxMCA9ICJObyBzeXN0ZW0gaXMgc2FmZSIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMTEgPSAia2V5c3RvcmFnZTIiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTIgPSAia2xuYWdlbnQiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTMgPSAic3FiY29yZXNlcnZpY2UiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTQgPSAidGJpcmRjb25maWciIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzMTUgPSAidGFza2tpbGwiIGZ1bGx3b3JkIHdpZGUNCg0KICAgICAgJG9wMCA9IHsgOGIgNDAgMTAgODkgNDQgMjQgMzQgYzcgODQgMjQgYzQgfQ0KICAgICAgJG9wMSA9IHsgYzcgNDQgMjQgMzQgMDAgNDAgMDAgMDAgYzcgNDQgMjQgMzggMDEgfQ0KDQogICBjb25kaXRpb246DQogICAgICAoIHVpbnQxNigwKSA9PSAweDVhNGQgYW5kIGZpbGVzaXplIDwgNDAwS0IgYW5kICggMSBvZiAoJHgqKSBhbmQgNCBvZiB0aGVtICkgYW5kIGFsbCBvZiAoJG9wKikNCiAgICAgICkgb3IgKCBhbGwgb2YgdGhlbSApDQp9DQpydWxlIHNocnVnMl9yYW5zb213YXJlIHsNCg0KICAgbWV0YToNCg0KICAgICAgZGVzY3JpcHRpb24gPSAiUnVsZSB0byBkZXRlY3QgdGhlIFNocnVnIFJhbnNvbXdhcmUiDQogICAgICBhdXRob3IgPSAiTWFyYyBSaXZlcm8gfCBNY0FmZWUgQVRSIFRlYW0iDQogICAgICByZWZlcmVuY2UgPSAiaHR0cHM6Ly9ibG9ncy5xdWlja2hlYWwuY29tL25ldy1uZXQtcmFuc29td2FyZS1zaHJ1ZzIvIg0KDQogICBzdHJpbmdzOg0KDQogICAgICAkczEgPSAiQzpcXFVzZXJzXFxHYW1lclxcRGVza3RvcFxcU2hydWcyXFxTaHJ1Z1R3b1xcU2hydWdUd29cXG9ialxcRGVidWdcXFNocnVnVHdvLnBkYiIgZnVsbHdvcmQgYXNjaWkNCiAgICAgICRzMiA9ICJodHRwOi8vdGVtcGFjYzExdmwuMDAwd2ViaG9zdGFwcC5jb20vIiBmdWxsd29yZCB3aWRlDQogICAgICAkczQgPSAiU2hvcnRjdXQgZm9yIEBTaHJ1Z0RlY3J5cHRvckAuZXhlIiBmdWxsd29yZCB3aWRlDQogICAgICAkczUgPSAiQzpcXFVzZXJzXFwiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzNiA9ICJodHRwOi8vY2xpZW50czMuZ29vZ2xlLmNvbS9nZW5lcmF0ZV8yMDQiIGZ1bGx3b3JkIHdpZGUNCiAgICAgICRzNyA9ICJcXERlc2t0b3BcXEBTaHJ1Z0RlY3J5cHRvckAubG5rIiBmdWxsd29yZCB3aWRlDQoNCiAgIGNvbmRpdGlvbjoNCiAgICAgICggdWludDE2KDApID09IDB4NWE0ZCBhbmQgZmlsZXNpemUgPCAyMDAwS0IgKSBhbmQgYWxsIG9mIHRoZW0NCn0NCl09PV0NCi0tICNlbmRyZWdpb24NCg0KDQotLSAjcmVnaW9uIHN1c3BpY2lvdXNfcnVsZXMNCnN1c3BpY2lvdXNfcnVsZXMgPSBbPT1bDQovKg0KICAgIFRoZXNlIHJ1bGVzIGFyZSB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UuIFNlZSA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzLz4uDQoqLw0KcnVsZSBSRV9Ub29sUmVmZXJlbmNlcw0Kew0KICAgIG1ldGE6DQogICAgICAgIGRlc2NyaXB0aW9uID0gIkNvbnRhaW5zIHJlZmVyZW5jZXMgdG8gZGVidWdnaW5nIG9yIHJldmVyc2luZyB0b29scyINCiAgICAgICAgYXV0aG9yID0gIkl2YW4gS3dpYXRrb3dza2kgKEBKdXN0aWNlUmFnZSkiDQogICAgc3RyaW5nczoNCiAgICAgICAgJGEwID0gL2lkYShxKT8oNjQpPy5leGUvIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMSA9ICJJbW11bml0eURlYnVnZ2VyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyID0gIm9sbHlkYmcuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMgPSAibG9yZHBlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0ID0gInBlaWQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUgPSAid2luZGJnLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICBjb25kaXRpb246DQogICAgICAgIGFueSBvZiB0aGVtDQp9DQoNCnJ1bGUgQW50aXZpcnVzUmVmZXJlbmNlcw0Kew0KICAgIG1ldGE6DQogICAgICAgIGRlc2NyaXB0aW9uID0gIkNvbnRhaW5zIHJlZmVyZW5jZXMgdG8gc2VjdXJpdHkgc29mdHdhcmUiDQogICAgICAgIGF1dGhvciA9ICJKZXJvbWUgQXRoaWFzIg0KICAgICAgICBzb3VyY2UgPSAiTWV0YXNwbG9pdCdzIGtpbGxhdi5yYiBzY3JpcHQiDQoNCiAgICBzdHJpbmdzOg0KICAgICAgICAkYTAgPSAiQUFXVHJheS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMSA9ICJBZC1Bd2FyZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMiA9ICJNU0FTQ3VpLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzID0gIl9hdnAzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNCA9ICJfYXZwY2MuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUgPSAiX2F2cG0uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTYgPSAiYUF2Z0FwaS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNyA9ICJhY2t3aW4zMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhOCA9ICJhZGF3YXJlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE5ID0gImFkdnhkd2luLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMCA9ICJhZ2VudHN2ci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTEgPSAiYWdlbnR3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMiA9ICJhbGVydHN2Yy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTMgPSAiYWxldmlyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNCA9ICJhbG9nc2Vydi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTUgPSAiYW1vbjl4LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNiA9ICJhbnRpLXRyb2phbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTcgPSAiYW50aXZpcnVzLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExOCA9ICJhbnRzLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExOSA9ICJhcGltb25pdG9yLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMCA9ICJhcGxpY2EzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjEgPSAiYXB2eGR3aW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIyID0gImFyci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjMgPSAiYXRjb24uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI0ID0gImF0Z3VhcmQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI1ID0gImF0cm81NWVuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNiA9ICJhdHVwZGF0ZXIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3ID0gImF0d2F0Y2guZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI4ID0gImF1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyOSA9ICJhdXBkYXRlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMSA9ICJhdXRvZG93bi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzIgPSAiYXV0b3RyYWNlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMyA9ICJhdXRvdXBkYXRlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNCA9ICJhdmNvbnNvbC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzUgPSAiYXZlMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM2ID0gImF2Z2NjMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM3ID0gImF2Z2N0cmwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM4ID0gImF2Z2VtYy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzkgPSAiYXZnbnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQwID0gImF2Z3JzeC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDEgPSAiYXZnc2Vydi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDIgPSAiYXZnc2VydjkuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQzID0gL2F2KGd1aXxndWFyZHxjZW50ZXJ8Z3RyYXl8Z2lkc2FnZW50fGd3ZHN2Y3xncnNhfGdjc3J2YXxnY3NydngpLmV4ZS8gbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NCA9ICJhdmd3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NSA9ICJhdmtwb3AuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ2ID0gImF2a3NlcnYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ3ID0gImF2a3NlcnZpY2UuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4ID0gImF2a3djdGw5LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0OSA9ICJhdmx0bWFpbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTAgPSAiYXZudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTEgPSAiYXZwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MiA9ICJhdnAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUzID0gImF2cDMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1NCA9ICJhdnBjYy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTUgPSAiYXZwZG9zMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU2ID0gImF2cG0uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU3ID0gImF2cHRjMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU4ID0gImF2cHVwZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTkgPSAiYXZzY2hlZDMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE2MCA9ICJhdnN5bm1nci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNjEgPSAiYXZ3aW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTYyID0gImF2d2luOTUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTYzID0gImF2d2lubnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTY0ID0gImF2d3VwZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNjUgPSAiYXZ3dXBkMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTY2ID0gImF2d3Vwc3J2LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE2NyA9ICJhdnhtb25pdG9yOXguZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTY4ID0gImF2eG1vbml0b3JudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNjkgPSAiYXZ4cXVhci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNzMgPSAiYmVhZ2xlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE3NCA9ICJiZWx0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE3NSA9ICJiaWRlZi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNzYgPSAiYmlkc2VydmVyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE3NyA9ICJiaXBjcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNzkgPSAiYmlzcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhODAgPSAiYmxhY2tkLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE4MSA9ICJibGFja2ljZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhODIgPSAiYmxpbmsuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTgzID0gImJsc3MuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTg0ID0gImJvb3Rjb25mLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE4NSA9ICJib290d2Fybi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhODYgPSAiYm9yZzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTg3ID0gImJwYy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhODkgPSAiYnMxMjAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTkwID0gImJ1bmRsZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhOTEgPSAiYnZ0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE5MiA9ICJjY2FwcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhOTMgPSAiY2NldnRtZ3IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTk0ID0gImNjcHh5c3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE5NSA9ICJjZHAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTk2ID0gImNmZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhOTcgPSAiY2Znd2l6LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE5OCA9ICJjZmlhZG1pbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhOTkgPSAiY2ZpYXVkaXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEwMCA9ICJjZmluZXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEwMSA9ICJjZmluZXQzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTAyID0gImNsYXc5NS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTAzID0gImNsYXc5NWNmLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMDQgPSAiY2xlYW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEwNSA9ICJjbGVhbmVyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMDYgPSAiY2xlYW5lcjMuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEwNyA9ICJjbGVhbnBjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMDggPSAiY2xpY2suZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTExMSA9ICJjbWVzeXMuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTExMiA9ICJjbWdyZGlhbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTEzID0gImNtb24wMTYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTExNCA9ICJjb25uZWN0aW9ubW9uaXRvci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTE1ID0gImNwZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTE2ID0gImNwZjl4MjA2LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMTcgPSAiY3BmbnQyMDYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTExOCA9ICJjdHJsLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkgZnVsbHdvcmQNCiAgICAgICAgJGExMTkgPSAiY3YuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEyMCA9ICJjd25iMTgxLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMjEgPSAiY3dudGR3bW8uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEyMyA9ICJkY29teC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTI0ID0gImRlZmFsZXJ0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMjUgPSAiZGVmc2Nhbmd1aS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTI2ID0gImRlZndhdGNoLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMjcgPSAiZGVwdXR5LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMjkgPSAiZGxsY2FjaGUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEzMCA9ICJkbGxyZWcuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEzMiA9ICJkcGYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEzNCA9ICJkcHBzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTM1ID0gImRyd2F0c29uLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMzYgPSAiZHJ3ZWIzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTM3ID0gImRyd2VidXB3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExMzggPSAiZHNzYWdlbnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEzOSA9ICJkdnA5NS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTQwID0gImR2cDk1XzAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE0MSA9ICJlY2VuZ2luZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTQyID0gImVmcGVhZG0uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE0MyA9ICJlbXN3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNDUgPSAiZXNhZmUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE0NiA9ICJlc2NhbmhudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTQ3ID0gImVzY2Fudjk1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNDggPSAiZXNwd2F0Y2guZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE1MCA9ICJldHJ1c3RjaXBlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNTEgPSAiZXZwbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTUyID0gImV4YW50aXZpcnVzLWNuZXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE1MyA9ICJleGUuYXZ4dy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTU0ID0gImV4cGVydC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTU2ID0gImYtYWdudDk1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNTcgPSAiZi1wcm90LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNTggPSAiZi1wcm90OTUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE1OSA9ICJmLXN0b3B3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNjAgPSAiZmFtZWgzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTYxID0gImZhc3QuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE2MiA9ICJmY2gzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTYzID0gImZpaDMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNjQgPSAiZmluZHZpcnUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE2NSA9ICJmaXJld2FsbC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTY2ID0gImZucmIzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTY3ID0gImZwLXdpbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTY5ID0gImZwcm90LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNzAgPSAiZnJ3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExNzEgPSAiZnNhYS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTcyID0gImZzYXYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE3MyA9ICJmc2F2MzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE3NiA9ICJmc2F2OTUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE3NyA9ICJmc2drMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE3OCA9ICJmc20zMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTc5ID0gImZzbWEzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTgwID0gImZzbWIzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTgxID0gImdhdG9yLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExODIgPSAiZ2JtZW51LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExODMgPSAiZ2Jwb2xsLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExODQgPSAiZ2VuZXJpY3MuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE4NSA9ICJnbXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE4NiA9ICJndWFyZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTg3ID0gImd1YXJkZG9nLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExODkgPSAiaGJpbnN0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExOTAgPSAiaGJzcnYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE5MSA9ICJob3RhY3Rpby5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTkyID0gImhvdHBhdGNoLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExOTMgPSAiaHRsb2cuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE5NCA9ICJodHBhdGNoLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGExOTUgPSAiaHdwZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTk2ID0gImh4ZGwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTE5NyA9ICJoeGl1bC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTk4ID0gImlhbWFwcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMTk5ID0gImlhbXNlcnYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIwMCA9ICJpYW1zdGF0cy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjAxID0gImlibWFzbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjAyID0gImlibWF2c3AuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIwMyA9ICJpY2xvYWQ5NS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjA0ID0gImljbG9hZG50LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMDUgPSAiaWNtb24uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIwNiA9ICJpY3N1cHA5NS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjA3ID0gImljc3VwcG50LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMDkgPSAiaWVkbGwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIxMCA9ICJpZWRyaXZlci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjEyID0gImlmYWNlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMTMgPSAiaWZ3MjAwMC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjE0ID0gImluZXRsbmZvLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMTUgPSAiaW5mdXMuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIxNiA9ICJpbmZ3aW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIxOCA9ICJpbnRkZWwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIxOSA9ICJpbnRyZW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIyMCA9ICJpb21vbjk4LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMjEgPSAiaXN0c3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMjIgPSAiamFtbWVyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMjQgPSAiamVkaS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjI3ID0gImthdnBmLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMjggPSAia2F6emEuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIyOSA9ICJrZWVudmFsdWUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIzNiA9ICJsZG5ldG1vbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjM3ID0gImxkcHJvLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMzggPSAibGRwcm9tZW51LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyMzkgPSAibGRzY2FuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNDAgPSAibG5ldGluZm8uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI0MiA9ICJsb2NhbG5ldC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjQzID0gImxvY2tkb3duLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNDQgPSAibG9ja2Rvd24yMDAwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNDUgPSAibG9va291dC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjQ4ID0gImx1YWxsLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNDkgPSAibHVhdS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjUwID0gImx1Y29tc2VydmVyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNTEgPSAibHVpbml0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNTIgPSAibHVzcHQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI1MyA9ICJtYXBpc3ZjMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI1NCA9ICJtY2FnZW50LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNTUgPSAibWNtbmhkbHIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI1NiA9ICJtY3NoaWVsZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjU3ID0gIm1jdG9vbC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjU4ID0gIm1jdXBkYXRlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNTkgPSAibWN2c3J0ZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjYwID0gIm1jdnNzaGxkLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNjIgPSAibWZpbjMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNjMgPSAibWZ3MmVuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNjUgPSAibWdhdnJ0Y2wuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI2NiA9ICJtZ2F2cnRlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNjcgPSAibWdodG1sLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNjggPSAibWd1aS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjY5ID0gIm1pbmlsb2cuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3MCA9ICJtbW9kLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNzEgPSAibW9uaXRvci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjcyID0gIm1vb2xpdmUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3MyA9ICJtb3N0YXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3NCA9ICJtcGZhZ2VudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjc1ID0gIm1wZnNlcnZpY2UuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3NiA9ICJtcGZ0cmF5LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNzcgPSAibXJmbHV4LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyNzggPSAibXNhcHAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI3OSA9ICJtc2JiLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyODAgPSAibXNibGFzdC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjgxID0gIm1zY2FjaGUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI4MiA9ICJtc2NjbjMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyODMgPSAibXNjbWFuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyODUgPSAibXNkbS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjg2ID0gIm1zZG9zLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyODcgPSAibXNpZXhlYzE2LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyODggPSAibXNpbmZvMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI4OSA9ICJtc2xhdWdoLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyOTAgPSAibXNtZ3QuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI5MSA9ICJtc21zZ3JpMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI5MiA9ICJtc3NtbWMzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjkzID0gIm1zc3lzLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyOTQgPSAibXN2eGQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTI5NSA9ICJtdTAzMTFhZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjk2ID0gIm13YXRjaC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMjk3ID0gIm4zMnNjYW53LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEyOTggPSAibmF2LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMDAgPSAibmF2YXBzdmMuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMwMSA9ICJuYXZhcHczMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzAyID0gIm5hdmR4LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMDMgPSAibmF2bHUzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzA0ID0gIm5hdm50LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMDUgPSAibmF2c3R1Yi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzA2ID0gIm5hdnczMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzA3ID0gIm5hdndudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzA4ID0gIm5jMjAwMC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzA5ID0gIm5jaW5zdDQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMxMCA9ICJuZGQzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzExID0gIm5lb21vbml0b3IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMxMiA9ICJuZW93YXRjaGxvZy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzEzID0gIm5ldGFybW9yLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMTQgPSAibmV0ZDMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMTUgPSAibmV0aW5mby5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzE3ID0gIm5ldHNjYW5wcm8uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMyMCA9ICJuZXR1dGlscy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzIxID0gIm5pc3NlcnYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMyMiA9ICJuaXN1bS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzIzID0gIm5tYWluLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMjQgPSAibm9kMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMyNSA9ICJub3JtaXN0LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMjcgPSAibm90c3RhcnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMyOSA9ICJucGZtZXNzZW5nZXIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMzMCA9ICJucHJvdGVjdC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzMxID0gIm5wc2NoZWNrLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMzIgPSAibnBzc3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMzMgPSAibnNjaGVkMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMzNCA9ICJuc3N5czMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzMzUgPSAibnN0YXNrMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTMzNiA9ICJuc3VwZGF0ZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzM4ID0gIm50cnRzY2FuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNDAgPSAibnR4Y29uZmlnLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNDEgPSAibnVpLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNDIgPSAibnVwZ3JhZGUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM0MyA9ICJudmFyY2gxNi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzQ0ID0gIm52Yzk1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNDUgPSAibnZzdmMzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzQ2ID0gIm53aW5zdDQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM0NyA9ICJud3NlcnZpY2UuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM0OCA9ICJud3Rvb2wxNi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzUwID0gIm9uc3J2ci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzUxID0gIm9wdGltaXplLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNTIgPSAib3N0cm9uZXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM1MyA9ICJvdGZpeC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzU0ID0gIm91dHBvc3QuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM2MCA9ICJwYXZjbC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzYxID0gInBhdnByb3h5LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNjIgPSAicGF2c2NoZWQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM2MyA9ICJwYXZ3LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNjQgPSAicGNjd2luOTguZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM2NSA9ICJwY2Z3YWxsaWNvbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzY3ID0gInBjc2Nhbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzY5ID0gInBlcmlzY29wZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzcwID0gInBlcnNmdy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzcxID0gInBlcnN3Zi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzcyID0gInBmMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzczID0gInBmd2FkbWluLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNzQgPSAicGdtb25pdHIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM3NSA9ICJwaW5nc2Nhbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzc2ID0gInBsYXRpbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzc3ID0gInBvcDN0cmFwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzNzggPSAicG9wcm94eS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzc5ID0gInBvcHNjYW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM4MCA9ICJwb3J0ZGV0ZWN0aXZlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzODEgPSAicG9ydG1vbml0b3IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM4MiA9ICJwb3dlcnNjYW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM4MyA9ICJwcGludXBkdC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzg0ID0gInBwdGJjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzODUgPSAicHB2c3RvcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzg3ID0gInBybXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM4OCA9ICJwcm12ci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzg5ID0gInByb2NkdW1wLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzOTAgPSAicHJvY2Vzc21vbml0b3IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM5MiA9ICJwcm9ncmFtYXVkaXRvci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzkzID0gInByb3BvcnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM5NCA9ICJwcm90ZWN0eC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzk1ID0gInBzcGYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTM5NiA9ICJwdXJnZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzk3ID0gInFjb25zb2xlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGEzOTggPSAicXNlcnZlci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMzk5ID0gInJhcGFwcC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDAwID0gInJhdjcuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQwMSA9ICJyYXY3d2luLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0MDQgPSAicmIzMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDA1ID0gInJjc3luYy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDA2ID0gInJlYWxtb24uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQwNyA9ICJyZWdlZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDEwID0gInJlc2N1ZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDEyID0gInJyZ3VhcmQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQxMyA9ICJyc2hlbGwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQxNCA9ICJydHZzY2FuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0MTUgPSAicnR2c2NuOTUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQxNiA9ICJydWxhdW5jaC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDIxID0gInNhZmV3ZWIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQyMiA9ICJzYWhhZ2VudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDI0ID0gInNhdmVub3cuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQyNSA9ICJzYnNlcnYuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQyOCA9ICJzY2FuMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQzMCA9ICJzY2FucG0uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQzMSA9ICJzY3JzY2FuLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0MzUgPSAic2ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0MzYgPSAic2dzc2Z3MzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQzOSA9ICJzaG4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ0MCA9ICJzaG93YmVoaW5kLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NDEgPSAic21jLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NDIgPSAic21zLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NDMgPSAic21zczMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NDUgPSAic29maS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDQ3ID0gInNwZi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDQ5ID0gInNwb2xlci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDUwID0gInNwb29sY3YuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ1MSA9ICJzcG9vbHN2MzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ1MiA9ICJzcHl4eC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDUzID0gInNyZXhlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NTQgPSAic3JuZy5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDU1ID0gInNzM2VkaXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ1NyA9ICJzc2dyYXRlLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NTggPSAic3QyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkgZnVsbHdvcmQNCiAgICAgICAgJGE0NjEgPSAic3VwZnRybC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDcwID0gInN5bXByb3h5c3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0NzEgPSAic3ltdHJheS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDcyID0gInN5c2VkaXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4MCA9ICJ0YXVtb24uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4MSA9ICJ0YnNjYW4uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4MyA9ICJ0Y2EuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4NCA9ICJ0Y20uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ4OCA9ICJ0ZWVraWRzLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0ODkgPSAidGZhay5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNDkwID0gInRmYWs1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0OTEgPSAidGdib2IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTQ5MiA9ICJ0aXRhbmluLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0OTMgPSAidGl0YW5pbnhwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE0OTYgPSAidHJqc2Nhbi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTAwID0gInR2bWQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUwMSA9ICJ0dnRtZC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTEzID0gInZldDMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MTQgPSAidmV0OTUuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUxNSA9ICJ2ZXR0cmF5LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MTcgPSAidmlyLWhlbHAuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUxOSA9ICJ2bmxhbjMwMC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTIwID0gInZucGMzMDAwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MjEgPSAidnBjMzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUyMiA9ICJ2cGM0Mi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTIzID0gInZwZnczMHMuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUyNCA9ICJ2cHRyYXkuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUyNSA9ICJ2c2NhbjQwLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MjcgPSAidnNjaGVkLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MjggPSAidnNlY29tci5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTI5ID0gInZzaHdpbjMyLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MzEgPSAidnNtYWluLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1MzIgPSAidnNtb24uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUzMyA9ICJ2c3N0YXQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUzNCA9ICJ2c3dpbjl4ZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTM1ID0gInZzd2lubnRzZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTM2ID0gInZzd2lucGVyc2UuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTUzNyA9ICJ3MzJkc204OS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTM4ID0gInc5eC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTQxID0gIndlYnNjYW54LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1NDMgPSAid2ZpbmR2MzIuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU0NSA9ICJ3aW1tdW4zMi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTY2ID0gInduYWQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU2NyA9ICJ3bnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU2OCA9ICJ3cmFkbWluLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1NjkgPSAid3JjdHJsLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJGE1NzAgPSAid3NiZ2F0ZS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTczID0gInd5dmVybndvcmtzZmlyZXdhbGwuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU3NSA9ICJ6YXByby5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNTc3ID0gInphdHV0b3IuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTU3OSA9ICJ6b25lYWxhcm0uZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KCQkvLyBTdHJpbmdzIGZyb20gRHVibml1bSBiZWxvdw0KCQkkYTU4MCA9ICJRUVBDUlRQLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODEgPSAiUVFQQ1RyYXkuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KCQkkYTU4MiA9ICJaaHVEb25nRmFuZ1l1LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODMgPSAvMzYwKHRyYXl8c2R8cnApLmV4ZS8gbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODQgPSAvcWgoc2FmZXRyYXl8d2F0Y2hkb2d8YWN0aXZlZGVmZW5zZSkuZXhlLyBub2Nhc2Ugd2lkZSBhc2NpaQ0KCQkkYTU4NSA9ICJNY05BU3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODYgPSAiTXBmU3J2LmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODcgPSAiTWNQcm94eS5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQoJCSRhNTg4ID0gIm1jbXNjc3ZjLmV4ZSIgbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1ODkgPSAiTWNVSUNudC5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQoJCSRhNTkwID0gL3VpKFdhdGNoRG9nfHNlYWdudHx3aW5tZ3IpLmV4ZS8gbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1OTEgPSAidWZzZWFnbnQuZXhlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KCQkkYTU5MiA9IC9jb3JlKHNlcnZpY2VzaGVsbHxmcmFtZXdvcmtob3N0KS5leGUvIG5vY2FzZSB3aWRlIGFzY2lpDQoJCSRhNTkzID0gL2F5KGFnZW50fHJ0c3J2fHVwZHNydikuYXllLyBub2Nhc2Ugd2lkZSBhc2NpaQ0KCQkkYTU5NCA9IC9hdmFzdCh1aXxzdmMpLmV4ZS8gbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1OTUgPSAvbXMoc2VjZXN8bXBlbmcpLmV4ZS8gbm9jYXNlIHdpZGUgYXNjaWkNCgkJJGE1OTYgPSAiYWZ3c2Vydi5leGUiIG5vY2FzZSB3aWRlIGFzY2lpDQoJCSRhNTk3ID0gIkZpZGRsZXJVc2VyIg0KDQogICAgY29uZGl0aW9uOg0KICAgICAgICBhbnkgb2YgdGhlbQ0KfQ0KcnVsZSBWaXJ0dWFsQm94X0RldGVjdGlvbiA6IEFudGlWTQ0Kew0KICAgIG1ldGE6DQogICAgICAgIGRlc2NyaXB0aW9uID0gIkxvb2tzIGZvciBWaXJ0dWFsQm94IHByZXNlbmNlIg0KICAgICAgICBhdXRob3IgPSAiQ3Vja29vIHByb2plY3QiDQogICAgc3RyaW5nczoNCiAgICAgICAgJHZpcnR1YWxib3gxID0gIlZCb3hIb29rLmRsbCIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJHZpcnR1YWxib3gyID0gIlZCb3hTZXJ2aWNlIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkdmlydHVhbGJveDMgPSAiVkJveFRyYXkiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94NCA9ICJWQm94TW91c2UiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94NSA9ICJWQm94R3Vlc3QiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94NiA9ICJWQm94U0YiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94NyA9ICJWQm94R3Vlc3RBZGRpdGlvbnMiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94OCA9ICJWQk9YIEhBUkRESVNLIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkdmlydHVhbGJveDkgPSAidmJveHNlcnZpY2UiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94MTAgPSAidmJveHRyYXkiIG5vY2FzZSB3aWRlIGFzY2lpDQoNCiAgICAgICAgLy8gTUFDIGFkZHJlc3Nlcw0KICAgICAgICAkdmlydHVhbGJveF9tYWNfMWEgPSAiMDgtMDAtMjciDQogICAgICAgICR2aXJ0dWFsYm94X21hY18xYiA9ICIwODowMDoyNyINCiAgICAgICAgJHZpcnR1YWxib3hfbWFjXzFjID0gIjA4MDAyNyINCg0KICAgICAgICAvLyBQQ0kgVmVuZG9yIElEcywgZnJvbSBIYWNraW5nIFRlYW0ncyBsZWFrDQogICAgICAgICR2aXJ0dWFsYm94X3ZpZF8xID0gIlZFTl84MEVFIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KDQogICAgICAgIC8vIFJlZ2lzdHJ5IGtleXMNCiAgICAgICAgJHZpcnR1YWxib3hfcmVnXzEgPSAiU09GVFdBUkVcXE9yYWNsZVxcVmlydHVhbEJveCBHdWVzdCBBZGRpdGlvbnMiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94X3JlZ18yID0gL0hBUkRXQVJFXFxBQ1BJXFwoRFNEVHxGQURUfFJTRFQpXFxWQk9YX18vIG5vY2FzZSB3aWRlIGFzY2lpDQoNCiAgICAgICAgLy8gT3RoZXINCiAgICAgICAgJHZpcnR1YWxib3hfZmlsZXMgPSAvQzpcXFdpbmRvd3NcXFN5c3RlbTMyXFxkcml2ZXJzXFx2Ym94LnsxNX1cLihzeXN8ZGxsKS8gbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJHZpcnR1YWxib3hfc2VydmljZXMgPSAiU3lzdGVtXFxDb250cm9sU2V0MDAxXFxTZXJ2aWNlc1xcVkJveFtBLVphLXpdKyIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICAgICAgJHZpcnR1YWxib3hfcGlwZSA9IC9cXFxcLlxccGlwZVxcKFZCb3hUcmF5SVBDfFZCb3hNaW5pUmRETikvIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICR2aXJ0dWFsYm94X3dpbmRvdyA9IC9WQm94VHJheVRvb2xXbmQoQ2xhc3MpPy8gbm9jYXNlIHdpZGUgYXNjaWkNCiAgICBjb25kaXRpb246DQogICAgICAgIGFueSBvZiB0aGVtDQp9DQoNCnJ1bGUgRHJvcHBlcl9TdHJpbmdzDQp7DQogICAgbWV0YToNCiAgICAgICAgZGVzY3JpcHRpb24gPSAiTWF5IGhhdmUgZHJvcHBlciBjYXBhYmlsaXRpZXMiDQogICAgICAgIGF1dGhvciA9ICJJdmFuIEt3aWF0a293c2tpIChASnVzdGljZVJhZ2UpIg0KICAgIHN0cmluZ3M6DQogICAgICAgICRhMCA9ICJDdXJyZW50VmVyc2lvblxcUnVuIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTEgPSAiQ3VycmVudENvbnRyb2xTZXRcXFNlcnZpY2VzIiBub2Nhc2Ugd2lkZSBhc2NpaQ0KICAgICAgICAkYTIgPSAiUHJvZ3JhbXNcXFN0YXJ0dXAiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhMyA9ICIldGVtcCUiIG5vY2FzZSB3aWRlIGFzY2lpDQogICAgICAgICRhNCA9ICIlYWxsdXNlcnNwcm9maWxlJSIgbm9jYXNlIHdpZGUgYXNjaWkNCiAgICBjb25kaXRpb246DQogICAgICAgIGFueSBvZiB0aGVtDQp9DQoNCnJ1bGUgbmV0d29ya19keW5kbnMgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJ4MHIiDQogICAgICAgIGRlc2NyaXB0aW9uID0gIkNvbW11bmljYXRpb25zIGR5bmRucyBuZXR3b3JrIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQoJJHMxID0iLm5vLWlwLm9yZyINCiAgICAgICAgJHMyID0iLnB1YmxpY3ZtLmNvbSINCiAgICAgICAgJHMzID0iLmxpbmtwYy5uZXQiDQogICAgICAgICRzNCA9Ii5keW51LmNvbSINCiAgICAgICAgJHM1ID0iLmR5bnUubmV0Ig0KICAgICAgICAkczYgPSIuYWZyYWlkLm9yZyINCiAgICAgICAgJHM3ID0iLmNoaWNrZW5raWxsZXIuY29tIg0KICAgICAgICAkczggPSIuY3JhYmRhbmNlLmNvbSINCiAgICAgICAgJHM5ID0iLmlnbm9yZWxpc3QuY29tIg0KICAgICAgICAkczEwID0iLmp1bXBpbmdjcmFiLmNvbSINCiAgICAgICAgJHMxMSA9Ii5tb28uY29tIg0KICAgICAgICAkczEyID0iLnN0cmFuZ2xlZC5jb20iDQogICAgICAgICRzMTMgPSIudHdpbGxpZ2h0cGFyYWRveC5jb20iDQogICAgICAgICRzMTQgPSIudXMudG8iDQogICAgICAgICRzMTUgPSIuc3RyYW5nbGVkLm5ldCINCiAgICAgICAgJHMxNiA9Ii5pbmZvLnRtIg0KICAgICAgICAkczE3ID0iLmhvbWVuZXQub3JnIg0KICAgICAgICAkczE4ID0iLmJpei50bSINCiAgICAgICAgJHMxOSA9Ii5jb250aW5lbnQua3oiDQogICAgICAgICRzMjAgPSIuYXgubHQiDQogICAgICAgICRzMjEgPSIuc3lzdGVtLW5zLmNvbSINCiAgICAgICAgJHMyMiA9Ii5hZHVsdGRucy5jb20iDQogICAgICAgICRzMjMgPSIuY3JhZnR4LmJpeiINCiAgICAgICAgJHMyNCA9Ii5kZG5zMDEuY29tIg0KICAgICAgICAkczI1ID0iLmRuczUzLmJpeiINCiAgICAgICAgJHMyNiA9Ii5kbnNhcGkuaW5mbyINCiAgICAgICAgJHMyNyA9Ii5kbnNkLmluZm8iDQogICAgICAgICRzMjggPSIuZG5zZHluYW1pYy5jb20iDQogICAgICAgICRzMjkgPSIuZG5zZHluYW1pYy5uZXQiDQogICAgICAgICRzMzAgPSIuZG5zZ2V0Lm9yZyINCiAgICAgICAgJHMzMSA9Ii5mZTEwMC5uZXQiDQogICAgICAgICRzMzIgPSIuZmxhc2hzZXJ2Lm5ldCINCiAgICAgICAgJHMzMyA9Ii5mdHAyMS5uZXQiDQogICAgY29uZGl0aW9uOg0KICAgICAgICBhbnkgb2YgdGhlbQ0KfQ0KDQpydWxlIG5ldHdvcmtfdG9yIHsNCiAgICBtZXRhOg0KICAgICAgICBhdXRob3IgPSAieDByIg0KICAgICAgICBkZXNjcmlwdGlvbiA9ICJDb21tdW5pY2F0aW9ucyBvdmVyIFRPUiBuZXR3b3JrIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQogICAgICAgICRwMSA9ICJ0b3JcXGhpZGRlbl9zZXJ2aWNlXFxwcml2YXRlX2tleSIgbm9jYXNlDQogICAgICAgICRwMiA9ICJ0b3JcXGhpZGRlbl9zZXJ2aWNlXFxob3N0bmFtZSIgbm9jYXNlDQogICAgICAgICRwMyA9ICJ0b3JcXGxvY2siIG5vY2FzZQ0KICAgICAgICAkcDQgPSAidG9yXFxzdGF0ZSIgbm9jYXNlDQogICAgY29uZGl0aW9uOg0KICAgICAgICBhbnkgb2YgdGhlbQ0KfQ0KDQpydWxlIGNlcnRpZmljYXRlIHsNCiAgICBtZXRhOg0KICAgICAgICBhdXRob3IgPSAieDByIg0KICAgICAgICBkZXNjcmlwdGlvbiA9ICJJbmplY3QgY2VydGlmaWNhdGUgaW4gc3RvcmUiDQoJdmVyc2lvbiA9ICIwLjEiDQogICAgc3RyaW5nczoNCiAgICAgICAgJGYxID0gIkNyeXB0MzIuZGxsIiBub2Nhc2UNCiAgICAgICAgJHIxID0gInNvZnR3YXJlXFxtaWNyb3NvZnRcXHN5c3RlbWNlcnRpZmljYXRlc1xcc3BjXFxjZXJ0aWZpY2F0ZXMiIG5vY2FzZQ0KICAgICAgICAkYzEgPSAiQ2VydE9wZW5TeXN0ZW1TdG9yZSINCiAgICBjb25kaXRpb246DQoJYWxsIG9mIHRoZW0NCn0NCg0KcnVsZSBsb29rdXBpcCB7DQogICAgbWV0YToNCiAgICAgICAgYXV0aG9yID0gIngwciINCiAgICAgICAgZGVzY3JpcHRpb24gPSAiTG9va3VwIGV4dGVybmFsIElQIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQogICAgICAgICRuMSA9ICJjaGVja2lwLmR5bmRucy5vcmciIG5vY2FzZQ0KICAgICAgICAkbjIgPSAid2hhdGlzbXlpcC5vcmciIG5vY2FzZQ0KICAgICAgICAkbjMgPSAid2hhdHNteWlwYWRkcmVzcy5jb20iIG5vY2FzZQ0KICAgICAgICAkbjQgPSAiZ2V0bXlpcC5vcmciIG5vY2FzZQ0KICAgICAgICAkbjUgPSAiZ2V0bXlpcC5jby51ayIgbm9jYXNlDQogICAgY29uZGl0aW9uOg0KICAgICAgICBhbnkgb2YgdGhlbQ0KfQ0KDQpydWxlIGNyZWRfbG9jYWwgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJ4MHIiDQogICAgICAgIGRlc2NyaXB0aW9uID0gIlN0ZWFsIGNyZWRlbnRpYWwiDQoJdmVyc2lvbiA9ICIwLjEiDQogICAgc3RyaW5nczoNCiAgICAgICAgJGMxID0gIkxzYUVudW1lcmF0ZUxvZ29uU2Vzc2lvbnMiDQogICAgICAgICRjMiA9ICJTYW1JQ29ubmVjdCINCiAgICAgICAgJGMzID0gIlNhbUlHZXRQcml2YXRlRGF0YSINCiAgICAgICAgJGM0ID0gIlNhbVF1ZXJ5SW5mb3JtYXRpb25Vc2UiDQogICAgICAgICRjNSA9ICJDcmVkRW51bWVyYXRlQSINCiAgICAgICAgJGM2ID0gIkNyZWRFbnVtZXJhdGVXIg0KICAgICAgICAkcjEgPSAic29mdHdhcmVcXG1pY3Jvc29mdFxcaW50ZXJuZXQgYWNjb3VudCBtYW5hZ2VyIiBub2Nhc2UNCiAgICAgICAgJHIyID0gInNvZnR3YXJlXFxtaWNyb3NvZnRcXGlkZW50aXR5Y3JsXFxjcmVkcyIgbm9jYXNlDQogICAgICAgICRyMyA9ICJTZWN1cml0eVxcUG9saWN5XFxTZWNyZXRzIg0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgYW55IG9mIHRoZW0NCn0NCl09PV0NCi0tICNlbmRyZWdpb24NCg0KLS0gI3JlZ2lvbiBpbmZvX3J1bGVzDQppbmZvX3J1bGVzID0gWz09Ww0KcnVsZSBrZXlsb2dnZXJfc3RyaW5ncyB7DQogICAgbWV0YToNCiAgICAgICAgYXV0aG9yID0gIngwciINCiAgICAgICAgZGVzY3JpcHRpb24gPSAiU3RyaW5ncyBjb21tb24gdG8ga2V5bG9nZ2Vycy4gSGlnaCBGUCINCgl2ZXJzaW9uID0gIjAuMSINCiAgICBzdHJpbmdzOg0KCSAgICAkZjEgPSAiVXNlcjMyLmRsbCIgbm9jYXNlDQogICAgICAgICRjMSA9ICJHZXRBc3luY0tleVN0YXRlIg0KICAgICAgICAkYzIgPSAiR2V0S2V5U3RhdGUiDQogICAgICAgICRjMyA9ICJNYXBWaXJ0dWFsS2V5Ig0KICAgICAgICAkYzQgPSAiR2V0S2V5Ym9hcmRUeXBlIg0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgJGYxIGFuZCAxIG9mICgkYyopDQp9DQoNCnJ1bGUgbmV0d29ya19mdHAgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJ4MHIiDQogICAgICAgIGRlc2NyaXB0aW9uID0gIkNvbW11bmljYXRpb25zIG92ZXIgRlRQIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQoJICAgJGYxID0gIldpbmluZXQuZGxsIiBub2Nhc2UNCiAgICAgICAgJGMxID0gIkZ0cEdldEN1cnJlbnREaXJlY3RvcnkiDQogICAgICAgICRjMiA9ICJGdHBHZXRGaWxlIg0KICAgICAgICAkYzMgPSAiRnRwUHV0RmlsZSINCiAgICAgICAgJGM0ID0gIkZ0cFNldEN1cnJlbnREaXJlY3RvcnkiDQogICAgICAgICRjNSA9ICJGdHBPcGVuRmlsZSINCiAgICAgICAgJGM2ID0gIkZ0cEdldEZpbGVTaXplIg0KICAgICAgICAkYzcgPSAiRnRwRGVsZXRlRmlsZSINCiAgICAgICAgJGM4ID0gIkZ0cENyZWF0ZURpcmVjdG9yeSINCiAgICAgICAgJGM5ID0gIkZ0cFJlbW92ZURpcmVjdG9yeSINCiAgICAgICAgJGMxMCA9ICJGdHBSZW5hbWVGaWxlIg0KICAgICAgICAkYzExID0gIkZ0cERvd25sb2FkIg0KICAgICAgICAkYzEyID0gIkZ0cFVwbG9hZCINCiAgICAgICAgJGMxMyA9ICJGdHBHZXREaXJlY3RvcnkiDQogICAgY29uZGl0aW9uOg0KICAgICAgICAkZjEgYW5kICg0IG9mICgkYyopKQ0KfQ0KcnVsZSBuZXR3b3JrX2Ryb3BwZXIgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJ4MHIiDQogICAgICAgIGRlc2NyaXB0aW9uID0gIkZpbGUgZG93bmxvYWRlci9kcm9wcGVyIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQogICAgICAgICRmMSA9ICJ1cmxtb24uZGxsIiBub2Nhc2UNCiAgICAgICAgJGMxID0gIlVSTERvd25sb2FkVG9GaWxlIg0KICAgICAgICAkYzIgPSAiVVJMRG93bmxvYWRUb0NhY2hlRmlsZSINCiAgICAgICAgJGMzID0gIlVSTE9wZW5TdHJlYW0iDQogICAgICAgICRjNCA9ICJVUkxPcGVuUHVsbFN0cmVhbSINCiAgICBjb25kaXRpb246DQogICAgICAgICRmMSBhbmQgMSBvZiAoJGMqKQ0KfQ0KcnVsZSBjcmVhdGVfc2VydmljZSB7DQogICAgbWV0YToNCiAgICAgICAgYXV0aG9yID0gIngwciINCiAgICAgICAgZGVzY3JpcHRpb24gPSAiQ3JlYXRlIGEgd2luZG93cyBzZXJ2aWNlIg0KCXZlcnNpb24gPSAiMC4yIg0KICAgIHN0cmluZ3M6DQoJJGYxID0gIkFkdmFwaTMyLmRsbCIgbm9jYXNlDQogICAgICAgICRjMSA9ICJDcmVhdGVTZXJ2aWNlIg0KICAgICAgICAkYzIgPSAiQ29udHJvbFNlcnZpY2UiDQogICAgICAgICRjMyA9ICJTdGFydFNlcnZpY2UiDQogICAgICAgICRjNCA9ICJRdWVyeVNlcnZpY2VTdGF0dXMiDQogICAgY29uZGl0aW9uOg0KICAgICAgICBhbGwgb2YgdGhlbQ0KfQ0KcnVsZSBuZXR3b3JrX3RjcF9zb2NrZXQgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJ4MHIiDQogICAgICAgIGRlc2NyaXB0aW9uID0gIkNvbW11bmljYXRpb25zIG92ZXIgUkFXIHNvY2tldCINCgl2ZXJzaW9uID0gIjAuMSINCiAgICBzdHJpbmdzOg0KCSRmMSA9ICJXczJfMzIuZGxsIiBub2Nhc2UNCiAgICAgICAgJGYyID0gIndzb2NrMzIuZGxsIiBub2Nhc2UNCiAgICAgICAgJGMxID0gIldTQVNvY2tldCINCiAgICAgICAgJGMyID0gInNvY2tldCINCiAgICAgICAgJGMzID0gInNlbmQiDQogICAgICAgICRjNCA9ICJXU0FTZW5kIg0KICAgICAgICAkYzUgPSAiV1NBQ29ubmVjdCINCiAgICAgICAgJGM2ID0gImNvbm5lY3QiDQogICAgICAgICRjNyA9ICJXU0FTdGFydHVwIg0KICAgICAgICAkYzggPSAiY2xvc2Vzb2NrZXQiDQogICAgICAgICRjOSA9ICJXU0FDbGVhbnVwIg0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgMSBvZiAoJGYqKSBhbmQgMiBvZiAoJGMqKQ0KfQ0KDQpydWxlIG5ldHdvcmtfZG5zIHsNCiAgICBtZXRhOg0KICAgICAgICBhdXRob3IgPSAieDByIg0KICAgICAgICBkZXNjcmlwdGlvbiA9ICJDb21tdW5pY2F0aW9ucyB1c2UgRE5TIg0KCXZlcnNpb24gPSAiMC4xIg0KICAgIHN0cmluZ3M6DQogICAgICAgICRmMSA9ICJTeXN0ZW0uTmV0Ig0KICAgICAgICAkZjIgPSAiV3MyXzMyLmRsbCIgbm9jYXNlDQogICAgICAgICRmMyA9ICJEbnNhcGkuZGxsIiBub2Nhc2UNCiAgICAgICAgJGY0ID0gIndzb2NrMzIuZGxsIiBub2Nhc2UNCiAgICAgICAgJGMyID0gIkdldEhvc3RFbnRyeSINCgkgICAgJGMzID0gImdldGFkZHJpbmZvIg0KCSAgICAkYzQgPSAiZ2V0aG9zdGJ5bmFtZSINCgkgICAgJGM1ID0gIldTQUFzeW5jR2V0SG9zdEJ5TmFtZSINCgkgICAgJGM2ID0gIkRuc1F1ZXJ5Ig0KICAgIGNvbmRpdGlvbjoNCiAgICAgICAgMSBvZiAoJGYqKSBhbmQgIDEgb2YgKCRjKikNCn0NCg0KcnVsZSBlbWJlZGRlZF91cmwgew0KICAgIG1ldGE6DQogICAgICAgIGF1dGhvciA9ICJBbnRvbmlvIFMuIDxhc2FuY2hlekBwbHV0ZWMubmV0PiINCiAgICBzdHJpbmdzOg0KICAgICAgICAkdXJsX3JlZ2V4ID0gL2h0dHBzPzpcL1wvKFtcd1wuLV0rKShbXC9cdyBcLi1dKikvIHdpZGUgYXNjaWkNCiAgICBjb25kaXRpb246DQogICAgICAgICR1cmxfcmVnZXgNCn0NCl09PV0NCi0tICNlbmRyZWdpb24NCg0KDQotLVtbIFNFQ1RJT04gMjogRnVuY3Rpb25zIC0tXV0NCg0KDQpmdW5jdGlvbiBpc19leGVjdXRhYmxlKHBhdGgpDQogICAgLS1bWw0KICAgICAgICBDaGVjayBpZiBhIGZpbGUgaXMgYW4gZXhlY3V0YWJsZSAoUEUgb3IgRUxGKSBieSBtYWdpYyBudW1iZXIuIA0KICAgICAgICBJbnB1dDogIFtzdHJpbmddcGF0aA0KICAgICAgICBPdXRwdXQ6IFtib29sXSBJcyBFeGVjdXRhYmxlDQogICAgXV0gDQogICAgbWFnaWNudW1iZXJzID0gew0KICAgICAgICAiTVoiLA0KICAgICAgICAiLkVMRiINCiAgICB9DQogICAgbG9jYWwgZixtc2cgPSBpby5vcGVuKHBhdGgsICJyYiIpDQogICAgaWYgbm90IGYgdGhlbg0KICAgICAgICBodW50LmRlYnVnKG1zZykNCiAgICAgICAgcmV0dXJuIG5pbA0KICAgIGVuZA0KICAgIGxvY2FsIGJ5dGVzID0gZjpyZWFkKDQpDQogICAgaWYgYnl0ZXMgdGhlbg0KICAgICAgICAtLSBwcmludChieXRlcykNCiAgICAgICAgZm9yIF8sbiBpbiBwYWlycyhtYWdpY251bWJlcnMpIGRvDQogICAgICAgICAgICBtYWdpY2hlYWRlciA9IHN0cmluZy5maW5kKGJ5dGVzLCBuKQ0KICAgICAgICAgICAgaWYgbWFnaWNoZWFkZXIgdGhlbg0KICAgICAgICAgICAgICAgIC0tIHByaW50KHN0cmluZy5ieXRlKG1hZ2ljaGVhZGVyKSkNCiAgICAgICAgICAgICAgICBmOmNsb3NlKCkNCiAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZQ0KICAgICAgICAgICAgZW5kDQogICAgICAgIGVuZA0KICAgICAgICBmOmNsb3NlKCkNCiAgICAgICAgcmV0dXJuIGZhbHNlDQogICAgZW5kDQplbmQNCg0KDQotLVtbIFNFQ1RJT04gMzogQ29sbGVjdGlvbiAtLV1dDQoNCmhvc3RfaW5mbyA9IGh1bnQuZW52Lmhvc3RfaW5mbygpDQpvc3ZlcnNpb24gPSBob3N0X2luZm86b3MoKQ0KaHVudC5kZWJ1ZygiU3RhcnRpbmcgRXh0ZW50aW9uLiBIb3N0bmFtZTogIiAuLiBob3N0X2luZm86aG9zdG5hbWUoKSAuLiAiLCBEb21haW46ICIgLi4gaG9zdF9pbmZvOmRvbWFpbigpIC4uICIsIE9TOiAiIC4uIGhvc3RfaW5mbzpvcygpIC4uICIsIEFyY2hpdGVjdHVyZTogIiAuLiBob3N0X2luZm86YXJjaCgpKQ0KDQoNCi0tIExvYWQgWWFyYSBydWxlcw0KeWFyYV9iYWQgPSBodW50LnlhcmEubmV3KCkNCnlhcmFfYmFkOmFkZF9ydWxlKGJhZF9ydWxlcykNCg0KeWFyYV9zdXNwaWNpb3VzID0gaHVudC55YXJhLm5ldygpDQp5YXJhX3N1c3BpY2lvdXM6YWRkX3J1bGUoc3VzcGljaW91c19ydWxlcykNCg0KeWFyYV9pbmZvID0gaHVudC55YXJhLm5ldygpDQp5YXJhX2luZm86YWRkX3J1bGUoaW5mb19ydWxlcykNCg0KDQotLSBBZGQgYWN0aXZlIHByb2Nlc3Nlcw0KcGF0aHMgPSB7fSAtLSBhZGQgdG8ga2V5cyBvZiBsaXN0IHRvIGVhc2lseSB1bmlxdWUgcGF0aHMNCmlmIHNjYW5hY3RpdmVwcm9jZXNzZXMgdGhlbg0KICAgIHByb2NzID0gaHVudC5wcm9jZXNzLmxpc3QoKQ0KICAgIGZvciBpLCBwcm9jIGluIHBhaXJzKHByb2NzKSBkbw0KICAgICAgICAtLWh1bnQuZGVidWcoIkFkZGluZyBwcm9jZXNzcGF0aFsiLi5pLi4iXTogIiAuLiBwcm9jOnBhdGgoKSkNCiAgICAgICAgcGF0aHNbcHJvYzpwYXRoKCldID0gdHJ1ZSAtLSBhZGQgdG8ga2V5cyBvZiBsaXN0IHRvIHVuaXF1ZSBwYXRocw0KICAgIGVuZA0KZW5kDQoNCi0tIEFkZCBhcHBkYXRhIHBhdGhzDQppZiBzY2FuYXBwZGF0YSB0aGVuDQogICAgZm9yIF8sIHVzZXJmb2xkZXIgaW4gcGFpcnMoaHVudC5mcy5scygiQzpcXFVzZXJzIiwgeyJkaXJzIn0pKSBkbw0KICAgICAgICBmb3IgXywgcGF0aCBpbiBwYWlycyhodW50LmZzLmxzKHVzZXJmb2xkZXI6cGF0aCgpLi4iXFxhcHBkYXRhXFxyb2FtaW5nIiwgYXBwZGF0YV9vcHRzKSkgZG8NCiAgICAgICAgICAgIGlmIGlzX2V4ZWN1dGFibGUocGF0aDpwYXRoKCkpIHRoZW4NCiAgICAgICAgICAgICAgICBwYXRoc1twYXRoOnBhdGgoKV0gPSB0cnVlDQogICAgICAgICAgICBlbmQNCiAgICAgICAgZW5kDQogICAgZW5kDQplbmQNCg0KLS0gQWRkIGFkZGl0aW9uYWwgcGF0aHMNCmZvciBpLCBwYXRoIGluIHBhaXJzKGFkZGl0aW9uYWxwYXRocykgZG8NCiAgICBmaWxlcyA9IGh1bnQuZnMubHMocGF0aCwgYWRkX29wdHMpDQogICAgZm9yIF8scGF0aCBpbiBwYWlycyhmaWxlcykgZG8NCiAgICAgICAgaWYgaXNfZXhlY3V0YWJsZShwYXRoOnBhdGgoKSkgdGhlbg0KICAgICAgICAgICAgcGF0aHNbcGF0aDpwYXRoKCldID0gdHJ1ZQ0KICAgICAgICBlbmQNCiAgICBlbmQNCmVuZA0KDQptYXRjaGVkcGF0aHMgPSB7fQ0KDQotLSBTY2FuIGFsbCBwYXRocyB3aXRoIFlhcmEgc2lnbmF0dXJlcw0Kbj0xDQpmb3IgcGF0aCwgaSBpbiBwYWlycyhwYXRocykgZG8NCiAgICBwcmludCgnWycuLm4uLiddIFNjYW5uaW5nICcgLi4gcGF0aCkNCiAgICBuPW4rMQ0KICAgIGh1bnQudmVyYm9zZSgiU2Nhbm5pbmcgd2l0aCBiYWRfcnVsZXMiKQ0KICAgIGZvciBfLCBzaWduYXR1cmUgaW4gcGFpcnMoeWFyYV9iYWQ6c2NhbihwYXRoKSkgZG8NCiAgICAgICAgaWYgbm90IGhhc2ggdGhlbg0KICAgICAgICAgICAgaGFzaCA9IGh1bnQuaGFzaC5zaGExKHBhdGgpDQogICAgICAgIGVuZA0KICAgICAgICBodW50LmxvZygnW0JBRF0gWWFyYSBtYXRjaGVkIFsnIC4uIHNpZ25hdHVyZSAuLiAnXSBpbiBmaWxlOiAnIC4uIHBhdGggLi4gIiA8Ii4uaGFzaC4uIj4iKQ0KICAgICAgICBiYWQgPSB0cnVlDQoJCW1hdGNoZWRwYXRoc1twYXRoXSA9IHRydWUNCiAgICBlbmQNCiAgICBodW50LnZlcmJvc2UoIlNjYW5uaW5nIHdpdGggc3VzcGljaW91c19ydWxlcyIpDQogICAgZm9yIF8sIHNpZ25hdHVyZSBpbiBwYWlycyh5YXJhX3N1c3BpY2lvdXM6c2NhbihwYXRoKSkgZG8NCiAgICAgICAgaWYgbm90IGhhc2ggdGhlbg0KICAgICAgICAgICAgaGFzaCA9IGh1bnQuaGFzaC5zaGExKHBhdGgpDQogICAgICAgIGVuZA0KICAgICAgICBodW50LmxvZygnW1NVU1BJQ0lPVVNdIFlhcmEgbWF0Y2hlZCBbJyAuLiBzaWduYXR1cmUgLi4gJ10gaW4gZmlsZTogJyAuLiBwYXRoIC4uICIgPCIuLmhhc2guLiI+IikNCiAgICAgICAgc3VzcGljaW91cyA9IHRydWUNCgkJbWF0Y2hlZHBhdGhzW3BhdGhdID0gdHJ1ZQ0KICAgIGVuZA0KICAgIGh1bnQudmVyYm9zZSgiU2Nhbm5pbmcgd2l0aCBpbmZvX3J1bGVzIikNCiAgICBmb3IgXywgc2lnbmF0dXJlIGluIHBhaXJzKHlhcmFfaW5mbzpzY2FuKHBhdGgpKSBkbw0KICAgICAgICBpZiBub3QgaGFzaCB0aGVuDQogICAgICAgICAgICBoYXNoID0gaHVudC5oYXNoLnNoYTEocGF0aCkNCiAgICAgICAgZW5kDQogICAgICAgIGh1bnQubG9nKCdbSU5GT10gWWFyYSBtYXRjaGVkIFsnIC4uIHNpZ25hdHVyZSAuLiAnXSBpbiBmaWxlOiAnIC4uIHBhdGggLi4gIiA8Ii4uaGFzaC4uIj4iKQ0KICAgICAgICBsb3dyaXNrID0gdHJ1ZQ0KICAgIGVuZA0KICAgIGhhc2ggPSBuaWwNCmVuZA0KDQotLSBBZGQgYmFkIGFuZCBzdXNwaWNpb3VzIGZpbGVzIHRvIEFydGlmYWN0cyBsaXN0IGZvciBhbmFseXNpcw0KbiA9IDANCmZvciBwYXRoLGkgaW4gcGFpcnMobWF0Y2hlZHBhdGhzKSBkbw0KCS0tIENyZWF0ZSBhIG5ldyBhcnRpZmFjdA0KCWFydGlmYWN0ID0gaHVudC5zdXJ2ZXkuYXJ0aWZhY3QoKQ0KCWFydGlmYWN0OmV4ZShwYXRoKQ0KCWFydGlmYWN0OnR5cGUoIllhcmEgTWF0Y2giKQ0KICAgIGh1bnQuc3VydmV5LmFkZChhcnRpZmFjdCkNCiAgICBuID0gbiArIDENCmVuZA0KDQotLSBTZXQgdGhyZWF0IHN0YXR1cw0KaWYgYmFkIHRoZW4NCiAgICBodW50LnN0YXR1cy5iYWQoKQ0KZWxzZWlmIHN1c3BpY2lvdXMgdGhlbg0KICAgIGh1bnQuc3RhdHVzLnN1c3BpY2lvdXMoKQ0KZWxzZWlmIGxvd3Jpc2sgdGhlbg0KICAgIGh1bnQuc3RhdHVzLmxvd3Jpc2soKQ0KZWxzZQ0KICAgIGh1bnQuc3RhdHVzLmdvb2QoKQ0KZW5kDQoNCmh1bnQubG9nKCJZYXJhIHNjYW4gY29tcGxldGVkLiBBZGRlZCAiLi5uLi4iIHBhdGhzIChhbGwgYmFkIGFuZCBzdXNwaWNpb3VzIG1hdGNoZXMpIHRvIEFydGlmYWN0cyBmb3IgcHJvY2Vzc2luZyBhbmQgcmV0cmlldmFsLiIpDQoNCg0K",
+      "hash": "0dc865becbd038916b7c5eb06ca72094327483659cdfaa95e8ae777e0b2a342e",
+      "name": null,
+      "type": null,
+      "output": [
+        {
+          "timestamp": "2020-06-24T23:22:43.469468400Z",
+          "entry": "[DEBUG]: Starting Extention. Hostname: pegasusactual, Domain: , OS: Windows 10 Pro 2004 Professional 64-bit, Architecture: 64-bit"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:43.853471300Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\common files\\adobe\\adobe desktop common\\elevationmanager\\adobeupdateservice.exe <dd74ac6b7dd808940cfe2b266cdbf7a19f290d42>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.011468500Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\steam\\bin\\cef\\cef.win7x64\\steamwebhelper.exe <5245709b4792e6276cc5acd36732d299216d65c5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.029473700Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\steam\\bin\\cef\\cef.win7x64\\steamwebhelper.exe <5245709b4792e6276cc5acd36732d299216d65c5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.030471500Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\steam\\bin\\cef\\cef.win7x64\\steamwebhelper.exe <5245709b4792e6276cc5acd36732d299216d65c5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.030471500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\steam\\bin\\cef\\cef.win7x64\\steamwebhelper.exe <5245709b4792e6276cc5acd36732d299216d65c5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.075494800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\systemapps\\microsoftwindows.client.cbs_cw5n1h2txyewy\\textinputhost.exe <48b4b142ae0c5637a6efe854dd255f9570bea036>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.126500700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\adobenotificationclient_1.0.1.22_x86__enpm4xejd91yc\\adobenotificationclient.exe <fd1b977e933586f9ddef1f2b294a406b2c9448c8>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.226500900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\nvidia corporation\\display.nvcontainer\\nvdisplay.container.exe <b88502a19714bcb7ccda7a6ab4c86aec37341f0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.231500700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\nvidia corporation\\display.nvcontainer\\nvdisplay.container.exe <b88502a19714bcb7ccda7a6ab4c86aec37341f0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.277504500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\dropbox\\update\\dropboxupdate.exe <d3a77e94d08f2eb9a8276f32ca16f65d1ce8b524>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.381473Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\explorer.exe <57aa8b662f9fb163cdc035a7f759ea9ba8916f13>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.396468200Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\windows\\explorer.exe <57aa8b662f9fb163cdc035a7f759ea9ba8916f13>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.396468200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\explorer.exe <57aa8b662f9fb163cdc035a7f759ea9ba8916f13>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.549504300Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\windows\\system32\\vmcompute.exe <aba99452a8b3f68db152b8eaaf218733e227554a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.550261800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\vmcompute.exe <aba99452a8b3f68db152b8eaaf218733e227554a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.645268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\searchprotocolhost.exe <4e6fae8d2ae3fce4482dcc192a8c7be65cf46999>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.700268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files\\windowsapps\\microsoft.windowsterminal_1.0.1401.0_x64__8wekyb3d8bbwe\\openconsole.exe <b302ea6d99c5741c250ed76c972b4fa9364cdcd1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.704268100Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\windowsapps\\microsoft.windowsterminal_1.0.1401.0_x64__8wekyb3d8bbwe\\openconsole.exe <b302ea6d99c5741c250ed76c972b4fa9364cdcd1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.705268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\microsoft.windowsterminal_1.0.1401.0_x64__8wekyb3d8bbwe\\openconsole.exe <b302ea6d99c5741c250ed76c972b4fa9364cdcd1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:44.762268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\systemapps\\microsoft.windows.startmenuexperiencehost_cw5n1h2txyewy\\startmenuexperiencehost.exe <bd03819541f4a84ceae5f0334a31c09ce6406a8b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.465268Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.466268100Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.466268100Z",
+          "entry": "[SUSPICIOUS] Yara matched [cred_local] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.618268900Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.618268900Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.618268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\googledrivefs.exe <b8af2d8371a0ee3d7c15a52c5f6fc100d20b0e7d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.683268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\cylance\\desktop\\cylancesvc.exe <5694d19d91079aaacba8e4de6450dd1161a56431>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.690268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\cylance\\desktop\\cylancesvc.exe <5694d19d91079aaacba8e4de6450dd1161a56431>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.787269100Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\nvidia corporation\\nvidia geforce experience\\nvidia share.exe <9f3bc3624e251b27182a47b4509caa29d3d89b18>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.787269100Z",
+          "entry": "[INFO] Yara matched [network_dropper] in file: c:\\program files\\nvidia corporation\\nvidia geforce experience\\nvidia share.exe <9f3bc3624e251b27182a47b4509caa29d3d89b18>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.787269100Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\nvidia corporation\\nvidia geforce experience\\nvidia share.exe <9f3bc3624e251b27182a47b4509caa29d3d89b18>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.788268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\nvidia corporation\\nvidia geforce experience\\nvidia share.exe <9f3bc3624e251b27182a47b4509caa29d3d89b18>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.832268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\calc.exe <5307f5b6e59312d1d23ec18ecabf62449c021de4>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.921268Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe <f91a035f595666f0e0c3daefad86401120eaa9ca>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.934268400Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe <f91a035f595666f0e0c3daefad86401120eaa9ca>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.934268400Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe <f91a035f595666f0e0c3daefad86401120eaa9ca>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.935268700Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe <f91a035f595666f0e0c3daefad86401120eaa9ca>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:45.935268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agmservice.exe <f91a035f595666f0e0c3daefad86401120eaa9ca>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.043268800Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\notepad++\\notepad++.exe <b8fd3dfee4b5e074318cbac22e75815275982e08>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.043268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\notepad++\\notepad++.exe <b8fd3dfee4b5e074318cbac22e75815275982e08>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.101268700Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: C:\\Windows\\System32\\securityhealthservice.exe <7697ad9125870a316f513a3e24b4a04ee576c023>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.110269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\securityhealthservice.exe <7697ad9125870a316f513a3e24b4a04ee576c023>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.532269100Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe <9c1b373532cc18afd952a1057cbb7a4385b20732>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.626268200Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe <9c1b373532cc18afd952a1057cbb7a4385b20732>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.626268200Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe <9c1b373532cc18afd952a1057cbb7a4385b20732>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.627269Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe <9c1b373532cc18afd952a1057cbb7a4385b20732>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.627269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\nvidia corporation\\nvnode\\nvidia web helper.exe <9c1b373532cc18afd952a1057cbb7a4385b20732>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.726268400Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\windows\\system32\\winlogon.exe <576e968271f80b90c6b17bd2988f91b5d0508644>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.727268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\system32\\winlogon.exe <576e968271f80b90c6b17bd2988f91b5d0508644>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.731268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\winlogon.exe <576e968271f80b90c6b17bd2988f91b5d0508644>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.782268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\viscosity\\viscosityservice.exe <68b8b7bd5d27be7d08565c88c3dd0aa8573dee8d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.785268100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\viscosity\\viscosityservice.exe <68b8b7bd5d27be7d08565c88c3dd0aa8573dee8d>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.899268500Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\docker\\docker\\resources\\vpnkit-bridge.exe <354c9dca1960e08f75e5b78b450f6731aa6d6f75>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.900268900Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\docker\\docker\\resources\\vpnkit-bridge.exe <354c9dca1960e08f75e5b78b450f6731aa6d6f75>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.900268900Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\docker\\docker\\resources\\vpnkit-bridge.exe <354c9dca1960e08f75e5b78b450f6731aa6d6f75>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:46.900268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\resources\\vpnkit-bridge.exe <354c9dca1960e08f75e5b78b450f6731aa6d6f75>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.196270100Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\docker\\docker\\resources\\com.docker.backend.exe <89706b4e0160da4fd85d9de9d8916f5ebb8fd823>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.197268600Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\docker\\docker\\resources\\com.docker.backend.exe <89706b4e0160da4fd85d9de9d8916f5ebb8fd823>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.197268600Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\docker\\docker\\resources\\com.docker.backend.exe <89706b4e0160da4fd85d9de9d8916f5ebb8fd823>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.197268600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\resources\\com.docker.backend.exe <89706b4e0160da4fd85d9de9d8916f5ebb8fd823>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.245270700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\microsoft.gamingservices_2.42.5001.0_x64__8wekyb3d8bbwe\\gamingservices.exe <34c66d5552879e74df5bb661003b66ae66245797>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.369268700Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\qemu-ga\\qemu-ga.exe <a3fab37c97fed4ced3329a5d8ac133d1a899e8b0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.370268400Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\qemu-ga\\qemu-ga.exe <a3fab37c97fed4ced3329a5d8ac133d1a899e8b0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.370268400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\qemu-ga\\qemu-ga.exe <a3fab37c97fed4ced3329a5d8ac133d1a899e8b0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.429268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\searchindexer.exe <49a544544912404d4e1078e1fbeeab253410d103>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.526268100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\microsoft.gamingservices_2.42.5001.0_x64__8wekyb3d8bbwe\\gamingservicesnet.exe <34c66d5552879e74df5bb661003b66ae66245797>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.571268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\dropbox\\client\\99.4.501\\qtwebengineprocess.exe <bb5fb061c40d9177d994dbc2639fc0e77335b778>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.619268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe <f7cea64de711e036f6f19ae23fd89a56c6559c09>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.622268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe <f7cea64de711e036f6f19ae23fd89a56c6559c09>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.680269Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\teamviewer\\tv_w32.exe <b8179c35d4e889d5800f9012b11089aa859d1dcc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.685268Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files (x86)\\teamviewer\\tv_w32.exe <b8179c35d4e889d5800f9012b11089aa859d1dcc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.686269200Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\teamviewer\\tv_w32.exe <b8179c35d4e889d5800f9012b11089aa859d1dcc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.686269200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\teamviewer\\tv_w32.exe <b8179c35d4e889d5800f9012b11089aa859d1dcc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.804268100Z",
+          "entry": "[SUSPICIOUS] Yara matched [cred_local] in file: c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\acrotray.exe <8b7584125cd06a2c850b908197d516cbae565f80>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.824268600Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\acrotray.exe <8b7584125cd06a2c850b908197d516cbae565f80>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.824268600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\acrotray.exe <8b7584125cd06a2c850b908197d516cbae565f80>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.873269200Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\bonjour\\mdnsresponder.exe <31070ef84c5355b082873ffc19ff60659637995f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.877268900Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\bonjour\\mdnsresponder.exe <31070ef84c5355b082873ffc19ff60659637995f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.877268900Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\bonjour\\mdnsresponder.exe <31070ef84c5355b082873ffc19ff60659637995f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.877268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\bonjour\\mdnsresponder.exe <31070ef84c5355b082873ffc19ff60659637995f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.943268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\docker desktop.exe <cede30c7d80303f629e9ab8fcee91ce50fe2972c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:47.988268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\taskhostw.exe <316f166f45969f22a3a31b6f443fa6bc21a9ff50>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.087268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\systemapps\\microsoft.windows.search_cw5n1h2txyewy\\searchapp.exe <53c57b2c8df0d558c9deeb05f4b24849a9970a31>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.361268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\system32\\vmms.exe <700ed66695392882f301f94475e9f68382e42747>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.408268900Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\windows\\system32\\vmms.exe <700ed66695392882f301f94475e9f68382e42747>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.408268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\vmms.exe <700ed66695392882f301f94475e9f68382e42747>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.455267900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\microsoft.windowsterminal_1.0.1401.0_x64__8wekyb3d8bbwe\\windowsterminal.exe <909d363f1f9ea6aa2eb98cf32a74ae135fe2ee51>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.666267900Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\realtek\\audio\\hda\\rtkngui64.exe <3238deb025794c124819adde02c38cafa5a7b720>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.667268500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\realtek\\audio\\hda\\rtkngui64.exe <3238deb025794c124819adde02c38cafa5a7b720>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.711268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\com.docker.service <0a71f0f1e7d221e779b3d6bf1731a94a73ea84c3>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.757269100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\smss.exe <45bab8663e3c2ebbc07072168b406ccf621e6746>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.851269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\lsaiso.exe <4c65d3361628135e025a1c35343a20cd0a41b326>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.936268500Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe <5f1a8c21adc03e99d14fc4787b258908bcfebffc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.948268800Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe <5f1a8c21adc03e99d14fc4787b258908bcfebffc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.949269600Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe <5f1a8c21adc03e99d14fc4787b258908bcfebffc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.949269600Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe <5f1a8c21adc03e99d14fc4787b258908bcfebffc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:48.950269400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\common files\\adobe\\adobegcclient\\agsservice.exe <5f1a8c21adc03e99d14fc4787b258908bcfebffc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.080268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.080268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [cred_local] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.101270200Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.101270200Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.102270Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:49.102270Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\infocyte\\dev\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.113274700Z",
+          "entry": "[BAD] Yara matched [webshell_jscript_eval] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.624268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.955268300Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.955268300Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.956268800Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:50.956268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\users\\cgerr\\appdata\\local\\githubdesktop\\app-2.5.3\\githubdesktop.exe <9d85c4c34b35264ebb85ef5d40bb0500bcc174ba>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.021268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\common files\\steam\\steamservice.exe <ba8a8ac047ba15a0aef16278fca3a110e0815a0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.029268500Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files (x86)\\common files\\steam\\steamservice.exe <ba8a8ac047ba15a0aef16278fca3a110e0815a0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.029268500Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\common files\\steam\\steamservice.exe <ba8a8ac047ba15a0aef16278fca3a110e0815a0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.029268500Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\common files\\steam\\steamservice.exe <ba8a8ac047ba15a0aef16278fca3a110e0815a0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.030268300Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\common files\\steam\\steamservice.exe <ba8a8ac047ba15a0aef16278fca3a110e0815a0c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.075269100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\dllhost.exe <e884805640677bc93ae76bf9b809a224aadc336c>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.178268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\nvidia corporation\\nvcontainer\\nvcontainer.exe <db6833820105ede64ca4d727df97303cd6849ebe>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.183269100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\nvidia corporation\\nvcontainer\\nvcontainer.exe <db6833820105ede64ca4d727df97303cd6849ebe>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.304268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\google\\chrome\\application\\chrome.exe <613360f21aba1cad62c43daeab78207683211ec4>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.394268800Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\windows\\system32\\vmwp.exe <f81303ca1e77a1482acdf4c85f4c2c2c209e9407>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:51.394268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\vmwp.exe <f81303ca1e77a1482acdf4c85f4c2c2c209e9407>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.257267800Z",
+          "entry": "[BAD] Yara matched [webshell_jscript_eval] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.685268300Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.974270800Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.974270800Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.975270400Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:52.975270400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\users\\cgerr\\appdata\\local\\discord\\app-0.0.306\\discord.exe <15c66aac622bbabe8292cd56d488864b6e48c55b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.071268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\systemapps\\microsoft.lockapp_cw5n1h2txyewy\\lockapp.exe <7ff23867a3b65c8452d5272d5898262c2483356e>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.131268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\teamviewer\\tv_x64.exe <c32457eacec40e8ff1c6622fd41c2607cf13f273>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.138268300Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\teamviewer\\tv_x64.exe <c32457eacec40e8ff1c6622fd41c2607cf13f273>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.139269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\teamviewer\\tv_x64.exe <c32457eacec40e8ff1c6622fd41c2607cf13f273>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.191268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\dwm.exe <b02892938873d1889ec85b0bb287685088128853>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.241268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\vyprvpn\\vyprvpnservice.exe <d89c3f0bd287cc07cebb505378d067be6d1c415a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.245268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\vyprvpn\\vyprvpnservice.exe <d89c3f0bd287cc07cebb505378d067be6d1c415a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.364267800Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files (x86)\\boxcryptor\\boxcryptor.exe <156e8289a0647386b767119650a7ace8608cf219>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.385269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\boxcryptor\\boxcryptor.exe <156e8289a0647386b767119650a7ace8608cf219>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.429268Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\lsass.exe <b988c8ca08e81f752329e80134f19da5d6ec6be3>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.635268100Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe <c3be60a4dd7dccf60d3180d4402c3ce7c6208784>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.672268700Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe <c3be60a4dd7dccf60d3180d4402c3ce7c6208784>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.673267900Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe <c3be60a4dd7dccf60d3180d4402c3ce7c6208784>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.673267900Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe <c3be60a4dd7dccf60d3180d4402c3ce7c6208784>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.673267900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\programdata\\docker\\cli-plugins\\docker-mutagen.exe <c3be60a4dd7dccf60d3180d4402c3ce7c6208784>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.724268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\windowsapps\\acrobatnotificationclient_1.0.4.0_x86__e1rzdqpraam7r\\acrobatnotificationclient.exe <4d11fe2f0cd15c15eed3650941bd718ace64c289>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.935267900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\teamviewer\\teamviewer_service.exe <41e78967ee0f8216ccc2778b69b218a0d890914a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.975267800Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files (x86)\\teamviewer\\teamviewer_service.exe <41e78967ee0f8216ccc2778b69b218a0d890914a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.975267800Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\teamviewer\\teamviewer_service.exe <41e78967ee0f8216ccc2778b69b218a0d890914a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.975267800Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\teamviewer\\teamviewer_service.exe <41e78967ee0f8216ccc2778b69b218a0d890914a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:53.976268300Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\teamviewer\\teamviewer_service.exe <41e78967ee0f8216ccc2778b69b218a0d890914a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:54.948268900Z",
+          "entry": "[BAD] Yara matched [webshell_jscript_eval] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.428268700Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.745268700Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.746269Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.746269Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.746269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\microsoft vs code\\code.exe <769cb9f03b0e76f041f1c1c3c2cdd8fc50bf04f0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.807269400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\cylance\\desktop\\cylanceui.exe <01e06b348912b3dd01e67e64834c9f375687a381>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.855269200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\powershell\\7\\pwsh.exe <956721d301cff3d4336f4f26dadc90721dc4d014>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.900268500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\microsoft vs code\\resources\\app\\out\\vs\\platform\\files\\node\\watcher\\win32\\codehelper.exe <b7ba748ec6a61096f74d03fac91ade7be133050a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:55.970268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\google\\drive file stream\\39.0.10.0\\crashpad_handler.exe <8143f334f4f984a406ea59f1bde58afda1372d08>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:56.014269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\csrss.exe <73e29cd14cfc5180afd1a0f96561a165702f1ff5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.020273Z",
+          "entry": "[BAD] Yara matched [webshell_jscript_eval] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.526268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.848268300Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.848268300Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.849269900Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.849269900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\users\\cgerr\\appdata\\local\\slack\\app-4.6.0\\slack.exe <16ef453f84fcb9ea09bb1ba6f9bc1928762d23a5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.903268700Z",
+          "entry": "[SUSPICIOUS] Yara matched [cred_local] in file: c:\\windows\\system32\\spoolsv.exe <193a3f25b7b1d559fd8bd3f5318e69797975cab1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.907269400Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\windows\\system32\\spoolsv.exe <193a3f25b7b1d559fd8bd3f5318e69797975cab1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:57.953268600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\intel\\intel(r) extreme tuning utility\\xtuservice.exe <75ddc6f61b38607d37dbef253d1c44dec8c5d8b0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.001269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\appvshnotify.exe <83b0e34a4aec3cbea26d1c2eb4d86b23726b6088>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.048269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\securityhealthsystray.exe <3bbcbab3045df7d0d5979b47027f16ad599d65ef>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.176273200Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\adobecollabsync.exe <fca2319e60cd723e2fedd736f9a684136fbedad3>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.176273200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\adobe\\acrobat dc\\acrobat\\adobecollabsync.exe <fca2319e60cd723e2fedd736f9a684136fbedad3>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.250269200Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\system32\\driverstore\\filerepository\\sgx_psw.inf_amd64_bff7913eb62bbf90\\aesm_service.exe <f0ee42d930ccf8c03fe40e63effa3460bf3a5773>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.261278600Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\windows\\system32\\driverstore\\filerepository\\sgx_psw.inf_amd64_bff7913eb62bbf90\\aesm_service.exe <f0ee42d930ccf8c03fe40e63effa3460bf3a5773>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.261278600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\driverstore\\filerepository\\sgx_psw.inf_amd64_bff7913eb62bbf90\\aesm_service.exe <f0ee42d930ccf8c03fe40e63effa3460bf3a5773>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.309268400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\common files\\apple\\mobile device support\\applemobiledeviceservice.exe <60fd5a3b10a8bad0638cf9996e7316d9b4a7e68a>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.383269Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\systemapps\\shellexperiencehost_cw5n1h2txyewy\\shellexperiencehost.exe <6a32fa8ce5d2ae8b9243eb3fa2c88ffb984afcb5>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.445268300Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\settingsynchost.exe <c5f10d27122eeac60c209d60a5759a39201f6bbf>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.496268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: C:\\Windows\\System32\\wininit.exe <1242346c2f1784d0ad02bde987c80648242288d0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.496268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: C:\\Windows\\System32\\wininit.exe <1242346c2f1784d0ad02bde987c80648242288d0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.500268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\wininit.exe <1242346c2f1784d0ad02bde987c80648242288d0>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.545268Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\runtimebroker.exe <a40c36b643137e3b1766fc8ac1bf11f918133067>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.632268400Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\steam\\steam.exe <d3128d9fa3d5ece9e6967cecde02a9eadc2e2c59>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.645268500Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\steam\\steam.exe <d3128d9fa3d5ece9e6967cecde02a9eadc2e2c59>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.645268500Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\steam\\steam.exe <d3128d9fa3d5ece9e6967cecde02a9eadc2e2c59>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.646268400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\steam\\steam.exe <d3128d9fa3d5ece9e6967cecde02a9eadc2e2c59>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.799268900Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\users\\cgerr\\appdata\\local\\1password\\app\\7\\1password.exe <71a118523f2468c89ab81a55fdb63ef4058c6713>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:58.800268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\users\\cgerr\\appdata\\local\\1password\\app\\7\\1password.exe <71a118523f2468c89ab81a55fdb63ef4058c6713>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.364268400Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\docker\\docker\\resources\\com.docker.proxy.exe <bf2d1473d4980673ee2f9cd0361dc97b6de6339f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.365269600Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\docker\\docker\\resources\\com.docker.proxy.exe <bf2d1473d4980673ee2f9cd0361dc97b6de6339f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.365269600Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\docker\\docker\\resources\\com.docker.proxy.exe <bf2d1473d4980673ee2f9cd0361dc97b6de6339f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.366269900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\resources\\com.docker.proxy.exe <bf2d1473d4980673ee2f9cd0361dc97b6de6339f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.409268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: C:\\Windows\\System32\\svchost.exe <295ab5ff965c5db82ae4649fb589d573657dab35>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.411268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\svchost.exe <295ab5ff965c5db82ae4649fb589d573657dab35>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.500268600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\programdata\\microsoft\\windows defender\\scans\\msmpengcp.exe <7e1a6740fb60b7a6a30a692f0d0b6e90aedd3d7b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.614268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\fontdrvhost.exe <4159ff3f63626e29d8a6e00b3e5fca3c1240c2ea>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.659268800Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\applicationframehost.exe <4dfdd43f5dff4582997b753db8bdb17266bb801b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.707268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\searchfilterhost.exe <0ea5f7024ffab71e3f5ee7bd411ccaa8c88a3e8b>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.752268600Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\common files\\adobe\\arm\\1.0\\armsvc.exe <bb1b176b9bfc4f29c53f1584fde5b18114f4c210>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.808268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\nvidia corporation\\shadowplay\\nvsphelper64.exe <b49caeeba172ec00273eff9763ed315f908f1ec6>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.921268Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\microsoft office\\root\\office16\\winword.exe <af65c99abf125b84c885ebf535d67be7e4c13d73>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.973268700Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: C:\\Windows\\System32\\services.exe <5c6fe68acee4e754bbc8e5d704a909557414d506>"
+        },
+        {
+          "timestamp": "2020-06-24T23:22:59.977268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\services.exe <5c6fe68acee4e754bbc8e5d704a909557414d506>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.128269700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\dropbox\\client\\dropbox.exe <07c9c32975cc18b7434a530cf81b98dae282bfa7>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.493269Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files\\docker\\docker\\resources\\vpnkit.exe <58d5a7d61457b8bc3ff159a3edda397049e9d3bc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.569268800Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files\\docker\\docker\\resources\\vpnkit.exe <58d5a7d61457b8bc3ff159a3edda397049e9d3bc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.569268800Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\docker\\docker\\resources\\vpnkit.exe <58d5a7d61457b8bc3ff159a3edda397049e9d3bc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.569268800Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\docker\\docker\\resources\\vpnkit.exe <58d5a7d61457b8bc3ff159a3edda397049e9d3bc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.570268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\resources\\vpnkit.exe <58d5a7d61457b8bc3ff159a3edda397049e9d3bc>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.769272900Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe <de20a75fc507655c336ac19e3cdc9055cab17751>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.770269300Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe <de20a75fc507655c336ac19e3cdc9055cab17751>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.803268500Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe <de20a75fc507655c336ac19e3cdc9055cab17751>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.803268500Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe <de20a75fc507655c336ac19e3cdc9055cab17751>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:00.803268500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\common files\\microsoft shared\\clicktorun\\officeclicktorun.exe <de20a75fc507655c336ac19e3cdc9055cab17751>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.521268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [AntivirusReferences] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.521268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [VirtualBox_Detection] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.521268600Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.676270Z",
+          "entry": "[INFO] Yara matched [keylogger_strings] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.677269600Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.677269600Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.678270500Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.678270500Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files (x86)\\teamviewer\\teamviewer.exe <60a4d0d7ee8432efc788f749f1ef670ea6f40bf1>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.722268800Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\system32\\svchost.exe <295ab5ff965c5db82ae4649fb589d573657dab35>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.725269100Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\svchost.exe <295ab5ff965c5db82ae4649fb589d573657dab35>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.772268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\immersivecontrolpanel\\systemsettings.exe <10eca91978c11f545cd6db213c42587259dd78c9>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.819268100Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\windows\\system32\\dbxsvc.exe <212b691ad14a88306d64ab51c9d579f2822eb1fb>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:01.821268200Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\windows\\system32\\dbxsvc.exe <212b691ad14a88306d64ab51c9d579f2822eb1fb>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.314268100Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\docker\\docker\\resources\\com.docker.wsl-distro-proxy.exe <7bc323a794cfaca0ba08f7eed948d84c6a531474>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.314268100Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\docker\\docker\\resources\\com.docker.wsl-distro-proxy.exe <7bc323a794cfaca0ba08f7eed948d84c6a531474>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.315269400Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\docker\\docker\\resources\\com.docker.wsl-distro-proxy.exe <7bc323a794cfaca0ba08f7eed948d84c6a531474>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.315269400Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\docker\\docker\\resources\\com.docker.wsl-distro-proxy.exe <7bc323a794cfaca0ba08f7eed948d84c6a531474>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.449268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [Dropper_Strings] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.449268900Z",
+          "entry": "[SUSPICIOUS] Yara matched [cred_local] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.470268700Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.470268700Z",
+          "entry": "[INFO] Yara matched [network_tcp_socket] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.470268700Z",
+          "entry": "[INFO] Yara matched [network_dns] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.471268900Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\program files\\infocyte\\agent\\agent.exe <3e0971ddea4862343e37067cb5390aa65ac4fb0f>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.520268700Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: C:\\Windows\\System32\\sgrmbroker.exe <af6c8e945f86dcd6a22562e3bf52791c44cc4768>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.570268300Z",
+          "entry": "[INFO] Yara matched [create_service] in file: c:\\programdata\\chocolatey\\lib\\virtio-drivers\\tools\\blnsvr.exe <9dc58b1cca4caad5f36e7748414e0a29c826edda>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.570268300Z",
+          "entry": "[INFO] Yara matched [embedded_url] in file: c:\\programdata\\chocolatey\\lib\\virtio-drivers\\tools\\blnsvr.exe <9dc58b1cca4caad5f36e7748414e0a29c826edda>"
+        },
+        {
+          "timestamp": "2020-06-24T23:23:02.571268300Z",
+          "entry": "Yara scan completed. Added 41 paths (all bad and suspicious matches) to Artifacts for processing and retrieval."
+        }
+      ],
+      "threatStatus": "Bad",
+      "success": true,
+      "startedOn": "2020-06-24T23:22:43.468000400Z",
+      "endedOn": "2020-06-24T23:23:02.571268300Z"
+    }
+  ],
+  "events": []
+}

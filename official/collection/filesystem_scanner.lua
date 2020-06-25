@@ -78,7 +78,9 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
 hunt.status.good()
 
 
@@ -87,9 +89,9 @@ for _, path in pairs(searchpaths) do
         cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..m.."' } | Select FullName -ExpandProperty FullName"
         out, err = hunt.env.run_powershell(cmd)
         if out then 
-            for line in results:gmatch"[^\n]+" do
+            for line in out:gmatch"[^\n]+" do
                 hunt.status.suspicious() -- Set Threat to Suspicious on finding
-                hunt.log(line) -- Send to Infocyte Extension Output
+                hunt.log("'"..m.."': "..line) -- Send to Infocyte Extension Output
             end
         else 
             hunt.error("Error running powershell: "..err)

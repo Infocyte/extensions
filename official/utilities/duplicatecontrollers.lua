@@ -20,8 +20,8 @@ controllers = 4 -- Additional Controllers to install
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-osversion = host_info:os()
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if not hunt.env.is_windows() then return end
@@ -56,25 +56,7 @@ for ($i=1; $i -le $TotalControllers; $i++) {
 out, err = hunt.env.run_powershell(script)
 if out then
     hunt.log("New Controllers deployed on " .. host_info:hostname()..": "..out)
+    hunt.status.good()
 else
     hunt.error("Failure: "..err)
 end
---[[
--- Create powershell process and feed script/commands to its stin
-local logfile = "C:\\windows\\temp\\icextlog.log"
-hunt.debug("Executing Powershell script and logging to: "..logfile)
-hunt.debug("Executing:\n"..script)
-pipe = io.popen("powershell.exe -noexit -nologo -nop -command - > "..logfile, "w")
-pipe:write(script) -- load up powershell functions and vars
-r = pipe:close()
-local file,err = io.open(logfile, "r")
-if file then
-    
-    file:close()
-    
-else
-    hunt.error(err)
-end
-]]
-
-hunt.status.good()

@@ -190,7 +190,9 @@ end
 --[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
-hunt.verbose("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
 
 -- Check required inputs
 if upload_to_s3 and (not s3_region or not s3_bucket) then
@@ -442,7 +444,7 @@ if all_office_docs then
             if path_exists(path:path()) then 
                 if findByFileHeader then 
                     magic = get_magicnumber(path)
-                    print(magic)
+                    hunt.verbose(magic)
                     for _, m in ipairs(magic_numbers) do 
                         paths:add(path)
                     end
@@ -455,7 +457,7 @@ if all_office_docs then
                     end
                 end
             else
-                print('File does not exist')
+                hunt.error('File does not exist')
             end
         end
     end
@@ -502,55 +504,57 @@ if all_office_docs then
     end
 else
     if hunt.env.has_powershell() then
-    	-- Insert your Windows Code
+        -- Insert your Windows Code
         tempfile = [[c:\windows\temp\icext.csv]]
 
-    	-- Run powershell
-        cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. list_to_pslist(strings) .. ' -filetypes '.. list_to_pslist(extensions)
-        hunt.verbose("Executing Powershell Command: "..cmd)
-        script = script..'\n'..cmd
-        out, err = hunt.env.run_powershell(script)
-        if out then
-            hunt.debug("Powershell Returned: "..out)
-        else 
-            hunt.error("Powershell command errored: "..err)
-        end
+        for _, searchpath in pairs(searchpaths) do
+            -- Run powershell
+            cmd = 'Get-StringsMatch -Path "' .. searchpath .. '" -Temppath "' .. tempfile .. '" -Strings ' .. list_to_pslist(strings) .. ' -filetypes '.. list_to_pslist(extensions)
+            hunt.verbose("Executing Powershell Command: "..cmd)
+            script = script..'\n'..cmd
+            out, err = hunt.env.run_powershell(script)
+            if out then
+                hunt.debug("Powershell Returned: "..out)
+            else 
+                hunt.error("Powershell command errored: "..err)
+            end
 
-        -- Parse CSV output from Powershell
-        csv = parse_csv(tempfile, '|')
-        if not csv then
-            hunt.error("Could not parse CSV.")
-            return
-        end
-        for _, item in pairs(csv) do
-            if item then
-                output = true
-                if upload_to_s3 then
-                    if (string.len(item["SHA1"])) == 40 then
-                        ext = GetFileExtension(item["File"])
-                        s3path = s3path_preamble.."/"..item["SHA1"]..ext
-                        link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-                        s3:upload_file(item["File"], s3path)
-                        hunt.log("Uploaded "..item["File"].." (size= "..item["FilesizeKB"].."KB, sha1=".. item["SHA1"] .. ") to S3 bucket: " .. link)
+            -- Parse CSV output from Powershell
+            csv = parse_csv(tempfile, '|')
+            if not csv then
+                hunt.error("Could not parse CSV.")
+                return
+            end
+            for _, item in pairs(csv) do
+                if item then
+                    output = true
+                    if upload_to_s3 then
+                        if (string.len(item["SHA1"])) == 40 then
+                            ext = GetFileExtension(item["File"])
+                            s3path = s3path_preamble.."/"..item["SHA1"]..ext
+                            link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+                            s3:upload_file(item["File"], s3path)
+                            hunt.log("Uploaded "..item["File"].." (size= "..item["FilesizeKB"].."KB, sha1=".. item["SHA1"] .. ") to S3 bucket: " .. link)
+                        else
+                            hunt.error("Could not upload: "..item["File"].." ("..item["SHA1"]..")")
+                        end
                     else
-                        hunt.error("Could not upload: "..item["File"].." ("..item["SHA1"]..")")
+                        hunt.log(item["File"].." (size= "..item["FilesizeKB"].."KB, sha1=".. item["SHA1"] .. ") matched on keyword '"..item["Match"].."' ("..item["TextAround"]..")")
                     end
-                else
-                    hunt.log(item["File"].." (size= "..item["FilesizeKB"].."KB, sha1=".. item["SHA1"] .. ") matched on keyword '"..item["Match"].."' ("..item["TextAround"]..")")
                 end
             end
-        end
 
-        if upload_to_s3 then
-            -- Upload Index
-            s3path = s3path_preamble.."/index.csv"
-            link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-            s3:upload_file(tempfile, s3path)
-            hunt.log("Uploaded Index to S3 bucket " .. link)
-        end
+            if upload_to_s3 then
+                -- Upload Index
+                s3path = s3path_preamble.."/index.csv"
+                link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+                s3:upload_file(tempfile, s3path)
+                hunt.log("Uploaded Index to S3 bucket " .. link)
+            end
 
-        --Cleanup
-        os.remove(tempfile)
+            --Cleanup
+            os.remove(tempfile)
+        end
     end
 end
 

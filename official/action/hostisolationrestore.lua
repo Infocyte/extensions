@@ -32,8 +32,8 @@ end
 --[[ SECTION 3: Actions --]]
 
 host_info = hunt.env.host_info()
-osversion = host_info:os()
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 
 if string.find(osversion, "windows xp") then
