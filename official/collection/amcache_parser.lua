@@ -11,7 +11,7 @@
 --]]
 
 --[[ SECTION 1: Inputs --]]
-debug = true
+debug = false
 differential = true -- Will save last scan locally and only add new items on subsequent scans.
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
@@ -103,7 +103,8 @@ end
 --[[ SECTION 3: Collection --]]
 
 host_info = hunt.env.host_info()
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. host_info:domain() .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = host_info:domain() or "N/A"
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
@@ -159,7 +160,7 @@ if differential and path_exists(outpath) then
         elseif ts < t then
             print("Newest AmCache timestamp: "..os.date("%c", t))
             ts = t
-        end
+        end 
         oldhashlist[v["SHA1"]] = true
     end
     hunt.debug("Last AmCache Entry Timestamp from previous scan: "..os.date("%c", ts))
