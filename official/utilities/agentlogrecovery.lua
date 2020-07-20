@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Template
     Type: Action
@@ -8,9 +8,9 @@
     Guid: 5eb5d2ef-7409-475c-a821-c7b29b17492f
     Created: 20190919
     Updated: 20191204 (Gerritz)
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 -- S3 Bucket (mandatory)
 s3_keyid = nil
@@ -23,7 +23,7 @@ s3path_modifier = "agentlogs" -- /filename will be appended
 -- Proxy (optional)
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 
 function path_exists(path)
@@ -40,7 +40,7 @@ function path_exists(path)
 end
 
 
---[[ SECTION 3: Actions --]]
+--[=[ SECTION 3: Actions ]=]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()

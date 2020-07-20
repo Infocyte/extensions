@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Template
     Type: Action
@@ -8,15 +8,15 @@
     Guid: fcc078a5-06a8-4f53-b077-94c97d4162d8
     Created: 20190919
     Updated: 20191204 (Gerritz)
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 controllers = 4 -- Additional Controllers to install
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 
---[[ SECTION 3: Actions --]]
+--[=[ SECTION 3: Actions ]=]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
@@ -26,7 +26,7 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 
 if not hunt.env.is_windows() then return end
 local script = '$TotalControllers = '..controllers
-script = script..[[
+script = script..[=[
 Write-Host "Installing $TotalControllers additional controllers"
 for ($i=1; $i -le $TotalControllers; $i++) {
     $ServiceName = "huntControllerSvc$i"
@@ -51,7 +51,7 @@ for ($i=1; $i -le $TotalControllers; $i++) {
     }
 }
 
-]]
+]=]
 
 out, err = hunt.env.run_powershell(script)
 if out then
