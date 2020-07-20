@@ -1,25 +1,27 @@
---[[
+--[=[
     Infocyte Extension
     Name: Amcache Parser
     Type: Collection
     Description: | Uses Zimmerman's Amcache parser to parse Amcache and
         adds those entries to artifacts for analysis |
+    Globals: proxy
+    Arguments: debug, differential
     Author: Infocyte
     Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
     Created: 20191121
     Updated: 20200318 (Gerritz)
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
-debug = false
-differential = true -- Will save last scan locally and only add new items on subsequent scans.
-proxy = nil -- "myuser:password@10.11.12.88:8888"
+--[=[ SECTION 1: Inputs ]=]
+debug = hunt.arg('debug') or false
+differential = hunt.arg('differential') or true -- Will save last scan locally and only add new items on subsequent scans.
+proxy = hunt.arg('proxy') or nil -- "myuser:password@10.11.12.88:8888"
 
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 function is_executable(path)
     magicnumbers = {
@@ -100,11 +102,48 @@ function make_timestamp(dateString)
     return convertedTimestamp
 end
 
---[[ SECTION 3: Collection --]]
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+domain = 
+hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. (host_info:domain() or "N/A") .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
 if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
@@ -185,7 +224,7 @@ end
 
 -- Parse output using powershell
 script = '$temp = "'..tmppath..'"\n'
-script = script..[==[
+script = script..[=[
 $outpath = "$temp\amcache.csv"
 Get-ChildItem "$temp\temp" -filter *Amcache*.csv | Foreach-Object { 
     $a += gc $_.fullname | convertfrom-csv | where { 
@@ -199,7 +238,7 @@ $a | Foreach-Object {
 $a = $a | Sort-object FileKeyLastWriteTimestamp,sha1,fullpath -unique -Descending
 $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 Remove-item "$temp\temp" -Force -Recurse
-]==]
+]=]
 hunt.debug("Initiatializing Powershell to parse output")
 out, err = hunt.env.run_powershell(script)
 if out then

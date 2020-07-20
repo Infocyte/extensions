@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Host Isolation Restore
     Description: | Reverses the local network isolation of a Windows, Linux, and OSX
@@ -8,13 +8,13 @@
     Created: 9-16-2019
     Updated: 9-16-2019 (Gerritz)
 
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 backup_location = "C:\\fwbackup.wfw"
 iptables_bkup = "/opt/iptables-bkup"
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
@@ -29,7 +29,44 @@ function path_exists(path)
    return ok, err
 end
 
---[[ SECTION 3: Actions --]]
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"

@@ -1,4 +1,4 @@
---[[
+--[=[
 	Infocyte Extension
 	Name: E-Discovery
 	Type: Collection
@@ -13,24 +13,25 @@
     Guid: 5a0e3b34-4692-4f3c-afff-c84102785756
 	Created: 20190919
 	Updated: 2020406 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 searchpaths = {
-    'C:/Users/'
+    'C:/Users/cgerr'
 }
 strings = {
-    'test',
-    'Gerritz'
+    'MAZE',
+    'TOR'
 }
 
 all_office_docs = false -- set to true to bypass string search
 --Options for all_office_docs:
 opts = {
     "files",
-    "size<3000kb",
-    "recurse=2"
+    "size<1000kb",
+    "size>1b",
+    "recurse=1"
 }
 
 findByFileHeader = false -- SLOW! False [Default] will search by file path extensions:
@@ -40,13 +41,7 @@ magic_numbers = { -- HEX
     'D0CF11E0A1B11AE1' -- Legacy Office Document (doc, xls, ppt, msg)
 }
 extensions = {
-    "doc",
-    "docx",
-    "xls",
-    "xlsx",
-    "ppt",
-    "pptx",
-    "pdf"
+    "txt"
 }
 
 -- S3 Bucket
@@ -62,16 +57,16 @@ s3path_modifier = 'ediscovery'
 proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 -- FileSystem Functions --
 function path_exists(path)
-    --[[
+    --[=[
         Check if a file or directory exists in this path. 
         Input:  [string]path -- Add '/' on end of the path to test if it is a folder
         Output: [bool] Exists
                 [string] Error message -- only if failed
-    ]] 
+    ]=] 
    local ok, err = os.rename(path, path)
    if not ok then
       if err == 13 then
@@ -93,11 +88,11 @@ function get_fileextension(path)
 end
 
 function get_magicnumber(path)
-    --[[
+    --[=[
         Get file magic number (first 8 bytes) from header. 
         Input:  [string]path
         Output: [string]headerinhex
-    ]] 
+    ]=] 
     local f,err = io.open(path, "rb")
     if not f then
         hunt.error('Could not open file: '..err)
@@ -118,10 +113,10 @@ end
 
 
 function userfolders()
-    --[[
+    --[=[
         Returns a list of userfolders to iterate through
         Output: [list]ret -- List of userfolders (_, path)
-    ]]
+    ]=]
     local paths = {}
     local u = {}
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
@@ -171,11 +166,11 @@ end
 
 
 function list_to_pslist(list)
-    --[[
+    --[=[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
         Output: [string] -- Example = '@("Value1","Value2","Value3")'
-    ]] 
+    ]=] 
     psarray = "@("
     for _,value in ipairs(list) do
         -- print("Param: " .. tostring(value))
@@ -186,8 +181,43 @@ function list_to_pslist(list)
 end
 
 
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
 
---[[ SECTION 3: Collection --]]
+--[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"
@@ -221,7 +251,7 @@ else
 end
 
 -- #region initscript
-script = [==[
+script = [=[
 function Get-FileSignature {
     [CmdletBinding()]
     Param(
@@ -430,7 +460,7 @@ Function Get-StringsMatch {
         return $results
     }
 }
-]==]
+]=]
 -- #endregion
 
 
@@ -452,8 +482,6 @@ if all_office_docs then
             else
                 hunt.error('File does not exist')
             end
-        else
-            print('File does not exist')
         end
     end
     --end

@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Yara Scanner
     Type: Collection
@@ -7,9 +7,9 @@
     Guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
     Created: 20191018
     Updated: 20200318 (Gerritz)
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 -- This extension will yara scan files below
 scanactiveprocesses = true
@@ -45,7 +45,7 @@ add_opts = {
 }
 
 -- #region bad_rules
-bad_rules = [==[
+bad_rules = [=[
 rule Base64d_PE
 {
 	meta:
@@ -622,12 +622,12 @@ rule shrug2_ransomware {
    condition:
       ( uint16(0) == 0x5a4d and filesize < 2000KB ) and all of them
 }
-]==]
+]=]
 -- #endregion
 
 
 -- #region suspicious_rules
-suspicious_rules = [==[
+suspicious_rules = [=[
 /*
     These rules are the GNU General Public License. See <http://www.gnu.org/licenses/>.
 */
@@ -1267,11 +1267,11 @@ rule cred_local {
     condition:
         any of them
 }
-]==]
+]=]
 -- #endregion
 
 -- #region info_rules
-info_rules = [==[
+info_rules = [=[
 rule keylogger_strings {
     meta:
         author = "x0r"
@@ -1386,19 +1386,19 @@ rule embedded_url {
     condition:
         $url_regex
 }
-]==]
+]=]
 -- #endregion
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 
 function is_executable(path)
-    --[[
+    --[=[
         Check if a file is an executable (PE or ELF) by magic number. 
         Input:  [string]path
         Output: [bool] Is Executable
-    ]] 
+    ]=] 
     magicnumbers = {
         "MZ",
         ".ELF"
@@ -1425,7 +1425,43 @@ function is_executable(path)
 end
 
 
---[[ SECTION 3: Collection --]]
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"

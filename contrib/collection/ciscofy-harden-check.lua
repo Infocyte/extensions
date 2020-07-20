@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Ciscofy Hardening Check
     Type: Collection
@@ -18,7 +18,7 @@
     Guid: 36e9e84e-efd3-481c-8c2b-9a9b0e419419
     Created: 20191120
     Updated: 20200221
---]]
+]=]
 
 if not hunt.env.is_linux() then return end
 hunt.log("Running Hardening Check")

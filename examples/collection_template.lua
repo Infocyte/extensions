@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Template
     Type: Collection
@@ -8,16 +8,16 @@
     Guid: f8e44229-4d8d-4909-b148-58130b660077
     Created: 20190919
     Updated: 20191204 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 
---[[ SECTION 3: Collection --]]
+--[=[ SECTION 3: Collection ]=]
 
 
 -- All Lua and hunt.* functions are cross-platform.

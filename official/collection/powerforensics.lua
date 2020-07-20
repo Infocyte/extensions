@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: PowerForensics MFT
     Type: Collection
@@ -9,10 +9,10 @@
     Guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
     Created: 20190919
     Updated: 20200318 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 -- Upload Options. S3 Bucket (Mandatory)
 s3_keyid = nil -- Optional for authenticated uploads
@@ -24,14 +24,14 @@ s3_bucket = 'test-extensions'
 s3path_modifier = "evidence"
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 -- PowerForensics (optional)
 function install_powerforensics()
-    --[[
+    --[=[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
-    ]]
+    ]=]
 
     script = [==[
         # Download/Install PowerForensics
@@ -71,7 +71,44 @@ function path_exists(path)
    return ok, err
 end
 
---[[ SECTION 3: Collection --]]
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Collection ]=]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then

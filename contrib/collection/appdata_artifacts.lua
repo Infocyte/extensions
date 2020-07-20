@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: AppData Artifact Triage
     Type: Collection
@@ -8,9 +8,9 @@
     Guid: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
     Created: 20191121
     Updated: 20191121 (Gerritz)
---]]
+]=]
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 opts = {
     "files",
@@ -18,14 +18,14 @@ opts = {
     "recurse=1" --depth of recursion into the folder
 }
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 function is_executable(path)
-    --[[
+    --[=[
         Check if a file is an executable (PE or ELF) by magic number. 
         Input:  [string]path
         Output: [bool] Is Executable
-    ]] 
+    ]=] 
     magicnumbers = {
         "MZ",
         ".ELF"
@@ -52,10 +52,10 @@ function is_executable(path)
 end
 
 function userfolders()
-    --[[
+    --[=[
         Returns a list of userfolders to iterate through
         Output: [list]ret -- List of userfolders (_, path)
-    ]]
+    ]=]
     local paths = {}
     local u = {}
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
@@ -71,7 +71,43 @@ function userfolders()
 end
 
 
---[[ SECTION 3: Collection --]]
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Collection ]=]
 
 
 host_info = hunt.env.host_info()

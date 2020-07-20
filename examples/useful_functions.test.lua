@@ -1,6 +1,6 @@
 dofile("C:\\Users\\cgerr\\Documents\\GitHub\\extensions\\examples\\useful_functions.lua")
 
---[[ TESTS ]]
+--[=[ TESTS ]=]
 -- Test lua functions
 
 r = false
@@ -13,10 +13,10 @@ print("path_exists: "..tostring(r))
 print("======= Testing useful lua functions ==========")
 -- Test powershell
 r = false
-script = [==[
+script = [=[
 $a = Get-Process | where { $_.name -eq 'svchost' }
 $a | export-csv 'c:\\windows\\temp\\test.csv'
-]==]
+]=]
 proc, err = hunt.env.run_powershell('Get-Process -name winlogon | select -expand name')
 if (proc == 'winlogon') then 
     r = true

@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Evidence Collector
     Type: Collection
@@ -9,10 +9,10 @@
     Guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
     Created: 20191018
     Updated: 20200318 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 -- S3 Bucket (mandatory)
 s3_keyid = nil
@@ -41,7 +41,7 @@ USBHistory = true
 debug = false
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 function reg_usersids()
     local output = {}
@@ -83,11 +83,11 @@ end
 
 -- PowerForensics (optional)
 function install_powerforensics()
-    --[[
+    --[=[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
-    ]]
-    script = [==[
+    ]=]
+    script = [=[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
         if ($n.version.major -lt 2) {
@@ -101,7 +101,7 @@ function install_powerforensics()
         } else {
             Write-Host "Powerforensics Already Installed. Continuing."
         }
-    ]==]
+    ]=]
     out, err = hunt.env.run_powershell(script)
     if out then 
         hunt.debug("[install_powerforensics] Succeeded:\n"..out)
@@ -113,7 +113,43 @@ function install_powerforensics()
 end
 
 
---[[ SECTION 3: Collection --]]
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Collection ]=]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then
@@ -327,7 +363,7 @@ os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")
 hunt.status.good()
 
 
---[[
+--[=[
 Win2k3/XP: \%SystemRoot%\System32\Config\*.evt
 Win2k8/Vista+: \%SystemRoot%\System32\winevt\Logs\*.evtx
 Get-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\eventlog\Security | select File
@@ -339,4 +375,4 @@ Get-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\eventlog\System | selec
     7045 [System] - Service Creation
     4688 [Security] - A new process has been created (Win2012R2+ has CLI)
     4014 [Powershell] - Script Block Logging
---]]
+]=]

@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Recover Files
     Type: Action
@@ -7,10 +7,10 @@
     Guid: 55f3d0f0-476a-44fe-a583-21e110c74541
     Created: 20191123
     Updated: 20191123 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 -- S3 Bucket (mandatory)
 s3_keyid = nil
@@ -45,7 +45,7 @@ else
 end
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 function path_exists(path)
     -- Check if a file or directory exists in this path
@@ -60,14 +60,51 @@ function path_exists(path)
    return ok, err
 end
 
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
 -- Infocyte Powershell Functions --
 
 -- PowerForensics (optional)
 function install_powerforensics()
-    --[[
+    --[=[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
-    ]]
+    ]=]
     if not powershell then 
         hunt.error("Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions.")
         throw "Error"
@@ -95,7 +132,7 @@ function install_powerforensics()
     end
 end
 
---[[ SECTION 3: Collection --]]
+--[=[ SECTION 3: Collection ]=]
 
 -- Check required inputs
 if not s3_region or not s3_bucket then

@@ -1,5 +1,5 @@
 
---[[
+--[=[
     Infocyte Extension
     Name: Deploy MSDaRT Toolset
     Type: Action
@@ -8,10 +8,10 @@
     Guid: 2d34e7d7-86c4-42cd-9fa6-d50605e70bf0
     Created: 20200515
     Updated: 20200515
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 s3path = nil
 --OR
@@ -22,16 +22,16 @@ zippath = tmp.."\\DeployIRTK.zip"
 cmdpath = tmp.."\\ScannerSource\\DeployIRTK.cmd"
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 -- FileSystem Functions --
 function path_exists(path)
-    --[[
+    --[=[
         Check if a file or directory exists in this path. 
         Input:  [string]path -- Add '/' on end of the path to test if it is a folder
         Output: [bool] Exists
                 [string] Error message -- only if failed
-    ]] 
+    ]=] 
    local ok, err = os.rename(path, path)
    if not ok then
       if err == 13 then
@@ -42,7 +42,44 @@ function path_exists(path)
    return ok, err
 end
 
---[[ SECTION 3: Actions --]]
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
+--[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
 hostname = host_info:hostname()

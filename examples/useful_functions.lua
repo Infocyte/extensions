@@ -1,15 +1,15 @@
---[[
+--[=[
     Useful functions you may want to include in your scripts:
 
-]]
+]=]
 
 -- PowerForensics (optional)
 function install_powerforensics()
-    --[[
+    --[=[
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
-    ]]
-    script = [==[
+    ]=]
+    script = [=[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
         if ($n.version.major -lt 2) {
@@ -23,7 +23,7 @@ function install_powerforensics()
         } else {
             Write-Host "Powerforensics Already Installed. Continuing."
         }
-    ]==]
+    ]=]
     out, err = hunt.env.run_powershell(script)
     if out then 
         hunt.log("[install_powerforensics] Succeeded:\n"..out)
@@ -35,11 +35,11 @@ function install_powerforensics()
 end
 
 function list_to_pslist(list)
-    --[[
+    --[=[
         Converts a lua list (table) into a stringified powershell array that can be passed to Powershell
         Input:  [list]list -- Any list with (_, val) format
         Output: [string] -- Example = '@("Value1","Value2","Value3")'
-    ]] 
+    ]=] 
     psarray = "@("
     for _,value in ipairs(list) do
         -- print("Param: " .. tostring(value))
@@ -52,21 +52,21 @@ end
 -- Python functions --
 py = {}
 function py.run_command(command)
-    --[[
+    --[=[
         Execute a python command
         Input:  [string] python command
         Output: [bool] Success    
                 [string] Results
-    ]]
+    ]=]
     os.execute("python -q -u -c \"" .. command.. "\"" )
 end
 function py.run_script(pyscript)
-    --[[
+    --[=[
         Execute a python command
         Input:  [string] python script
         Output: [bool] Success
                 [string] Results
-    ]]
+    ]=]
     
     tempfile = os.getenv("tmp").."/icpython_"..os.tmpname()..".log"
 
@@ -89,12 +89,12 @@ end
 
 -- FileSystem functions --
 function path_exists(path)
-    --[[
+    --[=[
         Check if a file or directory exists in this path. 
         Input:  [string]path -- Add '/' on end of the path to test if it is a folder
         Output: [bool] Exists
                 [string] Error message -- only if failed
-    ]] 
+    ]=] 
    ok, err = os.rename(path, path)
    if not ok then
       if err == 13 then
@@ -106,11 +106,11 @@ function path_exists(path)
 end
 
 function is_executable(path)
-    --[[
+    --[=[
         Check if a file is an executable (PE or ELF) by magic number. 
         Input:  [string]path
         Output: [bool] Is Executable
-    ]] 
+    ]=] 
     magicnumbers = {
         "MZ",
         ".ELF"
@@ -147,10 +147,10 @@ function get_fileextension(path)
 end
 
 function userfolders()
-    --[[
+    --[=[
         Returns a list of userfolders to iterate through
         Output: [list]ret -- List of userfolders (_, path)
-    ]]
+    ]=]
     paths = {}
     u = {}
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
@@ -169,10 +169,10 @@ end
 -- Registry functions --
 reg = {}
 function reg.usersids()
-    --[[
+    --[=[
         Returns all the userSIDs in the registry to aid in iterating through registry user profiles
         Output: [list] Usersid strings -- A list of usersids in format: (_, '\\registry\user\<usersid>')
-    ]] 
+    ]=] 
     output = {}
     -- Iterate through each user profile's and list their keyboards
     user_sids = hunt.registry.list_keys("\\Registry\\User")
@@ -183,12 +183,12 @@ function reg.usersids()
 end
 
 function reg.search(path, indent)
-    --[[
+    --[=[
         Returns all the userSIDs in the registry to aid in iterating through registry user profiles
         Input:  [string] Registry path -- \\registry\machine\key
                 [int] (do not use manually) indent spaces for recursive printing of sub keys
         Output: [list]  -- A list of keys that the string was found in. format = (key, string)
-    ]] 
+    ]=] 
     indent = indent or 0
     output = {}
     values = hunt.registry.list_values(path)
@@ -213,12 +213,12 @@ end
 -- Lua Debug Helpers --
 
 function print_table(tbl, indent)
-    --[[
+    --[=[
         Prints a table -- used for debugging table contents
         Input:  [list] table/list
                 [int] (do not use manually) indent spaces for recursive printing of sub lists
         Output: [string]  -- stringified version of the table
-    ]] 
+    ]=] 
     indent = indent or 0
     toprint = ""
     if not tbl then return toprint end
@@ -242,10 +242,10 @@ end
 
 -- Infocyte Agent functions --
 function is_agent_installed()
-    --[[
+    --[=[
     Determines if infocyte agent is installed
     Output: [bool]ret -- true or false
-    ]]
+    ]=]
 	if hunt.env.is_windows() then
 		key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
 		if hunt.registry.list_values(key) then
@@ -277,7 +277,7 @@ end
 -- FTP Recovery Option --
 ftp = {}
 function ftp.upload(path, address, username, password)
-    --[[
+    --[=[
         Upload a file to FTP address
         Input:  [string]path -- Path to file (i.e. "C:\\windows\\temp\\asdf.zip")
                 [string]address -- FTP Address (i.e. "ftp://ftp.infocyte.com/folder/asdf.zip")
@@ -285,13 +285,13 @@ function ftp.upload(path, address, username, password)
                 [string]password -- ftp pass
         Output: [bool]ret -- Success bool
                 [string]output -- Output message
-    ]]
+    ]=]
     if hunt.env.has_powershell() then 
         script = '$Path = "'..path..'"\n'
         script = script..'$address = "'..address..'"\n' -- "ftp://localhost/me.png"
         script = script..'$username = "'..username..'"\n' -- "anonymous"
         script = script..'$password = "'..password..'"\n' -- "joe@bob.com"
-        script = script..[==[
+        script = script..[=[
             # create the FtpWebRequest and configure it
             $ftp = [System.Net.FtpWebRequest]::Create($address)
             $ftp = [System.Net.FtpWebRequest]$FTP
@@ -317,7 +317,7 @@ function ftp.upload(path, address, username, password)
                 $Run.Close()
                 $Run.Dispose()
             }
-        ]==]
+        ]=]
         out, err = hunt.env.run_powershell(script)
         if not out then 
             hunt.error("Failure: "..err)
@@ -328,7 +328,7 @@ function ftp.upload(path, address, username, password)
 end
 
 function ftp.download(path, address, username, password)
-    --[[
+    --[=[
         Download a file to FTP address
         Input:  [string]path -- save path (i.e. "C:\\windows\\temp\\asdf.zip")
                 [string]address -- FTP Address of file (i.e. "ftp://ftp.infocyte.com/folder/asdf.zip")
@@ -336,13 +336,13 @@ function ftp.download(path, address, username, password)
                 [string]password -- ftp pass
         Output: [bool]ret -- Success bool
                 [string]output -- Output message
-    ]]
+    ]=]
     if hunt.env.has_powershell() then 
         script = '$Path = "'..path..'"\n'
         script = script..'$address = "'..address..'"\n' -- "ftp://localhost/me.png"
         script = script..'$username = "'..username..'"\n' -- "anonymous"
         script = script..'$password = "'..password..'"\n' -- "joe@bob.com"
-        script = script..[==[
+        script = script..[=[
             # create the FtpWebRequest and configure it
             $ftp = [System.Net.FtpWebRequest]::Create($address)
             $ftp = [System.Net.FtpWebRequest]$FTP
@@ -372,7 +372,7 @@ function ftp.download(path, address, username, password)
             }
             while ($ReadLength -ne 0)
             return true
-        ]==]
+        ]=]
         out, err = hunt.env.run_powershell(script)
         if not out then 
             hunt.error("Failure: "..err)
@@ -385,13 +385,50 @@ end
 
 -- Misc Helpers
 
+
+function f(string)
+    -- String format (Interprolation). 
+    -- Example: i = 1; table1 = { field1 = "Hello!"}
+    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
+    local outer_env = _ENV
+    return (string:gsub("%b{}", function(block)
+        local code = block:match("{(.*)}")
+        local exp_env = {}
+        setmetatable(exp_env, { __index = function(_, k)
+            local stack_level = 5
+            while debug.getinfo(stack_level, "") ~= nil do
+                local i = 1
+                repeat
+                local name, value = debug.getlocal(stack_level, i)
+                if name == k then
+                    return value
+                end
+                i = i + 1
+                until name == nil
+                stack_level = stack_level + 1
+            end
+            return rawget(outer_env, k)
+        end })
+        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
+        if fn then
+            r = tostring(fn())
+            if r == 'nil' then
+                return ''
+            end
+            return r
+        else
+            error(err, 0)
+        end
+    end))
+end
+
 function parse_csv(path, sep)
-    --[[
+    --[=[
         Parses a CSV on disk into a lua list.
         Input:  [string]path -- Path to csv on disk
                 [string]sep -- CSV seperator to use. defaults to ','
         Output: [list]
-    ]] 
+    ]=] 
     sep = sep or ','
     csvFile = {}
     file,msg = io.open(path, "r")

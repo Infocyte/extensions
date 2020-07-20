@@ -1,4 +1,4 @@
---[[
+--[=[
     Infocyte Extension
     Name: Template
     Type: Action
@@ -8,16 +8,16 @@
     Guid: b5f18032-6749-4bef-80d3-8094dca66798
     Created: 20190919
     Updated: 20191204 (Gerritz)
---]]
+]=]
 
 
---[[ SECTION 1: Inputs --]]
+--[=[ SECTION 1: Inputs ]=]
 
 
---[[ SECTION 2: Functions --]]
+--[=[ SECTION 2: Functions ]=]
 
 
---[[ SECTION 3: Actions --]]
+--[=[ SECTION 3: Actions ]=]
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
