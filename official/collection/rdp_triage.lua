@@ -1,31 +1,91 @@
---[[
-    Infocyte Extension
-    Name: RDP Triage
-    Type: Collection
-    Description: | RDP Lateral Movement
-        https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
-        Gathers and combines 4624,4778,4648 logon events, rdp session 
-        events 21,24,25, and 1149 with processes started (4688) by those sessions |
-    Author: Infocyte
-    Guid: f606ff51-4e99-4687-90a7-43aaabae8634
-    Created: 20200301
-    Updated: 20200326
---]]
+--[=[
+filetype = "Infocyte Extension"
+
+[info]
+name = "RDP Triage"
+type = "Collection"
+description = """RDP Lateral Movement
+    https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
+    Gathers and combines 4624,4778,4648 logon events, rdp session 
+    events 21,24,25, and 1149 with processes started (4688) by those sessions"""
+author = "Infocyte"
+guid = "f606ff51-4e99-4687-90a7-43aaabae8634"
+created = 2020-03-01
+updated = 2020-07-20
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[Globals]]
+name = "trailing_days"
+type = "int"
+default = 60
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[Args]]
+
+]=]
 
 
---[[ SECTION 1: Inputs --]]
-trailing_days = 60
-debug = false
+--[=[ SECTION 1: Inputs ]=]
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
---[[ SECTION 2: Functions --]]
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
+
+trailing_days = get_arg("trailing_days", "int", 60, true)
+debug = get_arg("debug", "boolean", false, true)
+
+if(get_arg("disable_powershell", "boolean", false, true, false)) then
+    hunt.error("disable_powershell global is set. Cannot run extension without powershell")
+    return
+end
+
+--[=[ SECTION 2: Functions ]=]
 
 function parse_csv(path, sep)
-    --[[
+    --[=[
         Parses a CSV on disk into a lua list.
         Input:  [string]path -- Path to csv on disk
                 [string]sep -- CSV seperator to use. defaults to ','
         Output: [list]
-    ]] 
+    ]=] 
     sep = sep or ','
     local csvFile = {}
     local file,msg = io.open(path, "r")
@@ -64,7 +124,7 @@ function parse_csv(path, sep)
 end
 
 
---[[ SECTION 3: Collection --]]
+--[=[ SECTION 3: Collection ]=]
 
 
 -- All Lua and hunt.* functions are cross-platform.
@@ -274,7 +334,8 @@ if rdp_processes then
         artifact:executed(v['TimeCreated'])
         hunt.survey.add(artifact)
         n = n + 1
-        hunt.log("RDP Process ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid=".. v['SecurityId']..", pid=".. v['ProcessId']..", path=".. v['ProcessPath'] ..", commandline=".. v['Commandline']..", ppid=".. v['ParentProcessId']..", pppath=".. v['ParentProcessPath']..", logontime=".. v['SessionLogonTime'])
+        
+        hunt.log("RDP Process ["..(v['EventId'] or '').."]"..": eventtime="..(v['TimeCreated'] or '')..", ip=".. (v['IP'] or '')..", username=".. (v['domain'] or '').."\\"..(v['Username'] or '')..", sid=".. (v['SecurityId'] or '')..", pid=".. (v['ProcessId'] or '')..", path=".. (v['ProcessPath'] or '') ..", commandline=".. (v['Commandline'] or '')..", ppid=".. (v['ParentProcessId'] or '')..", pppath=".. (v['ParentProcessPath'] or '')..", logontime=".. (v['SessionLogonTime'] or ''))
     end
 else
     hunt.warn("No processes found associated with RDP sessions. Logging may not be enabled for EventId 4688 or 4624")
@@ -282,7 +343,7 @@ end
 
 if rdp_localSessionManager then 
     for i,v in pairs(rdp_localSessionManager) do 
-        hunt.log("RDP Session ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip=".. v['IP']..", username=".. v['domain'].."\\"..v['Username']..", message="..v['Action'])
+        hunt.log("RDP Session ["..(v['EventId'] or '').."]"..": eventtime="..(v['TimeCreated'] or '')..", ip=".. (v['IP'] or '')..", username=".. (v['domain'] or '').."\\"..(v['Username'] or '')..", message="..(v['Action'] or ''))
     end
 else 
     hunt.warn("No remote RDP sessions found. Logging may not be enabled for EventId 21 or 24")
@@ -290,7 +351,7 @@ end
 
 if rdp_remoteConnectionManager then
     for i,v in pairs(rdp_remoteConnectionManager) do 
-        hunt.log("RDP Connection Attempt ["..v['EventId'].."]"..", eventtime="..v['TimeCreated']..", ip="..v['IP']..", username="..v['domain'].."\\"..v['Username'])
+        hunt.log("RDP Connection Attempt ["..(v['EventId'] or '').."]"..", eventtime="..(v['TimeCreated'] or '')..", ip="..(v['IP'] or '')..", username="..(v['domain'] or '').."\\"..(v['Username'] or ''))
     end
 else 
     hunt.warn("No remote RDP connection attempts found. Logging may not be enabled for EventId 1149")
@@ -298,7 +359,7 @@ end
 
 if rdp_logons then
     for i,v in pairs(rdp_logons) do 
-        hunt.log("RDP Logon ["..v['EventId'].."]"..": eventtime="..v['TimeCreated']..", ip="..v['IP']..", username=".. v['domain'].."\\"..v['Username']..", sid="..v['SecurityId']..", logontype="..v['LogonType'])
+        hunt.log("RDP Logon ["..(v['EventId'] or '').."]"..": eventtime="..(v['TimeCreated'] or '')..", ip="..(v['IP'] or '')..", username=".. (v['domain'] or '').."\\"..(v['Username'] or '')..", sid="..(v['SecurityId'] or '')..", logontype="..(v['LogonType'] or ''))
     end
 else
     hunt.warn("No remote RDP logon events found. Logging may not be enabled for EventId 4624")

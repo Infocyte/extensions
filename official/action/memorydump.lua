@@ -1,8 +1,10 @@
 --[=[
-    Infocyte Extension
-    Name: Memory Extraction
-    Type: Action
-    Description: | Uses winpmem/linpmem to dump full physical memory and
+filetype = "Infocyte Extension"
+
+[info]
+name = "Memory Extraction"
+type = "Action"
+description = """Uses winpmem/linpmem to dump full physical memory and
        stream it to an S3 bucket, ftp server, or smb share. If output path not
        specified, will dump to local temp folder.
        Source:
@@ -10,27 +12,70 @@
        http://releases.rekall-forensic.com/v1.5.1/linpmem-2.1.post4
        http://releases.rekall-forensic.com/v1.5.1/osxpmem-2.1.post4.zip
        Instructions:
-       https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/ |
-    Author: Infocyte
-    Guid: 89abebc6-d0db-4eba-b771-6a2652033581
-    Created: 9-19-2019
-    Updated: 9-19-2019 (Gerritz)
+       https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/"""
+author = "Infocyte"
+guid = "89abebc6-d0db-4eba-b771-6a2652033581"
+created = 2019-9-19
+updated = 2020-07-27
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[globals]]
+name = "s3_keyid"
+description = "S3 Bucket key Id for uploading"
+type = "string"
+
+[[globals]]
+name = "s3_secret"
+description = "S3 Bucket key Secret for uploading"
+type = "secret"
+
+[[globals]]
+name = "s3_region"
+description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
+type = "string"
+required = true
+
+[[globals]]
+name = "s3_bucket"
+description = "S3 Bucket name for uploading"
+type = "string"
+required = true
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
+
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
 
--- S3 Bucket (Destination)
-s3_keyid = nil
-s3_secret = nil
-s3_region = 'us-east-2' -- US East (Ohio)
-s3_bucket = 'test-extensions'
-s3path_modifier = "memory" -- /filename will be appended
---S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-
-proxy = nil -- "myuser:password@10.11.12.88:8888"
-
 hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
+
+debug = get_arg("debug", "boolean", false, true, false)
+proxy = get_arg("proxy", "string", nil, true, false)
+s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
+s3_secret = get_arg("s3_secret", "string", nil, true, false)
+s3_region = get_arg("s3_secret", "string", nil, true, true)
+s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3path_modifier = "memory"
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -51,49 +96,7 @@ function tempfolder()
 end
 
 
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
-
 --[=[ SECTION 3: Actions ]=]
-
--- Check required inputs
-if not s3_region or not s3_bucket then
-    hunt.error("s3_region and s3_bucket not set")
-    return
-end
 
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"

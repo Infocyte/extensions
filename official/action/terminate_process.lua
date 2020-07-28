@@ -1,67 +1,108 @@
---[=[
-    Infocyte Extension
-    Name: Terminate Process
-    Type: Action
-    Description: Kills a process by name, pid, or path
-    Author: Infocyte
-    Guid: 5a2e94d9-fa88-4ffe-8aa9-ef53660b3a53
-    Created: 20200123
-    Updated: 20200316 (Gerritz)
+--[=[ 
+filetype = "Infocyte Extension"
+
+[info]
+name = "Terminate Process"
+type = "Action"
+description = """Kills a process by path and/or deletes the associated file"""
+author = "Infocyte"
+guid = "f0565351-1dc3-4a94-90b3-34a5765b33bc"
+created = 2020-01-23
+updated = 2020-07-22
+
+###########
+# GLOBALS #
+###########
+# Global variables accessed within extensions via hunt.global('name')
+
+[[globals]]
+
+#############
+# ARGUMENTS #
+#############
+# Runtime arguments are accessed within extensions via hunt.arg('name')
+
+
+[[args]]
+name = "path"
+description = "path(s) to kill/delete (comma seperated for multiple)"
+type = "string"
+required = true
+
+[[args]]
+name = "kill_process"
+description = "kills processes with the provided path"
+type = "boolean"
+default = true
+
+[[args]]
+name = "delete_file"
+description = "deletes the provided path"
+type = "boolean"
+default = true
+
 ]=]
 
+
 --[=[ SECTION 1: Inputs ]=]
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
--- array of process names, pids, or paths to kill
-processes_to_kill = {
-    "C:\\windows\\system32\\calc.exe",
-    17604,
-    "calculator"
-}
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
 
+path = get_arg("path", "string", nil, false, true)
+paths = {}
+if path ~= nil then
+	for val in string.gmatch(path, '[^,%s]+') do
+		table.insert(paths, val)
+	end
+end
+
+delete_file = get_arg("delete_file", "boolean", true)
+kill_process = get_arg("kill_process", "boolean", true) 
+
+if hunt.global('TerminateProcess_path') == nil then
+    hunt.error("No path to kill/delete")
+end
+path = hunt.global('TerminateProcess_path')
+
+delete_file = hunt.global('TerminateProcess_delete_file')
+if delete_file == nil then
+    delete_file = true
+end
+
+kill_process = hunt.global('TerminateProcess_kill_process') 
+if kill_process == nil then 
+    kill_process = true
+end
 
 --[=[ SECTION 2: Functions ]=]
-
-function get_filename(path)
-    match = path:match("^.+[\\/](.+)$")
-    return match
-end
-
-
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
 
 --[=[ SECTION 3: Actions ]=]
 
@@ -69,62 +110,53 @@ host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
 
-s = ''
-for i, v in ipairs(processes_to_kill) do
-    s = s.."\nTerm["..i.."]: "..v -- concatenate key/value pairs
-end
-hunt.log("Finding and killing processes that match the following search terms (name, path, or pid):"..s)
 
-kill_list = {}
-
--- List running processes
-e = {}
-procs = hunt.process.list()
-for _, proc in pairs(procs) do
-    procpath = string.lower(proc:path())
-    procname = get_filename(procpath) or 'error'
-    if procname == 'error' then
-        table.insert(e, proc:pid())
-        hunt.verbose("Could not access pid "..proc:pid()..": "..proc:path()..". Normal for a system process.") 
-        goto continue
-    end   
-
-    -- Search procs for your list of kill keywords (name, pid, path)
-    for _, item in ipairs(processes_to_kill) do
-        if (type(item) == 'number') and (proc:pid() == item) then 
-            hunt.verbose("Found PID: "..item)
-            kill_list[proc:pid()] = proc
-        elseif (type(item) == 'string') then
-            if string.find(procname, item:lower()) or (procpath == item:lower()) then 
-                hunt.verbose("Found name/path: "..item)
-                kill_list[proc:pid()] = proc
+if kill_process then 
+    hunt.log("Finding and killing processes that match the path:"..path)
+    -- List running processes
+    found = false
+    for _, proc in pairs(hunt.process.list()) do
+        if string.lower(proc:path()) == string.lower(path) then 
+            found = true
+            hunt.log("Process found! Killing pid "..proc:pid())
+            out, err = hunt.process.kill_pid(proc:pid())
+            if out then
+                hunt.log("SUCCESS: Killed "..proc:path().." [pid: "..proc:pid().."]")
+                hunt.status.good()
+            else 
+                hunt.error("FAILED: Could not kill "..proc:path().." [pid: "..proc:pid().."]: "..err)
+                hunt.status.bad()
             end
         end
     end
-    ::continue::
+    if not found then 
+        hunt.log("NOT FOUND: Process with path "..path)
+        hunt.status.low_risk()
+    end 
 end
 
-
--- Kill processes
-n = 0
-for pid, proc in pairs(kill_list) do
-    out, err = hunt.process.kill_pid(pid)
-    if out then
-        n = n + 1
-        hunt.log("Killed "..get_filename(proc:path()).." [pid: "..proc:pid().."] with image path: "..proc:path())
-    else 
-        hunt.error("Could not kill "..get_filename(proc:path()).." [pid: "..proc:pid().."] with image path "..proc:path()..": "..err)
+if delete_file then 
+    hunt.log("Finding and deleting "..path)
+    found = false
+    for _,file in pairs(hunt.fs.ls(path, {"files"})) do
+        found = true
+        hunt.log("Found file "..path.." [Size="..tostring(file:size()).."] -- Attempting to remove...")
     end
-end
 
-hunt.log("Killed "..n.." processes. "..(#kill_list-n).." failed.")
-
-s = nil
-for _, v in ipairs(e) do
-    if not s then 
-        s = v
-    else 
-        s = s..","..v -- concatenate key/value pairs
-    end
+    ok, err = os.remove(path)
+    if ok then 
+        hunt.log("SUCCESS: "..path.." was deleted.")
+        hunt.status.good()
+    else
+        if found and err:match("No such file") then 
+            hunt.error("FAILED: Could not delete "..path..": OS could not see file, you may need raw drive access to delete this file (this extension currently does not support this)")
+            hunt.status.bad()
+        elseif not found then
+            hunt.log("NOT FOUND: "..path)
+            hunt.status.low_risk()
+        else
+            hunt.error("FAILED: "..err)
+            hunt.status.suspicious()
+        end
+    end    
 end
-hunt.verbose("Could not retrieve info for "..#e.." locked system processes with pids: {"..s.."}")

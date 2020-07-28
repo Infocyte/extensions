@@ -1,33 +1,99 @@
 --[=[
-    Infocyte Extension
-    Name: Filesystem Scanner
-    Type: Collection
-    Description: | Scans system for files matching a set of regexes against filenames|
-    Author: Chris Gerritz
-    Guid: 1775f23f-34a6-4f83-91e6-49c48faa66bb
-    Created: 20200406
-    Updated: 20200514
+filetype = "Infocyte Extension"
+
+[info]
+name = "Filesystem Scanner"
+type = "Collection"
+description = """Scans system for filenames matching a set of regex patterns (like ransomware notes)"""
+author = "Infocyte"
+guid = "1775f23f-34a6-4f83-91e6-49c48faa66bb"
+created = 2020-04-06
+updated = 2020-07-27
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[globals]]
+
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+name = "regex_bad"
+description = "Levels below the folder to search through"
+type = "string"
+default = "(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT"
+
+[[args]]
+name = "regex_suspicious"
+description = "Levels below the folder to search through"
+type = "string"
+default = "readme.*\.txt$"
+
+[[args]]
+name = "path"
+description = "Path or comma-seperated list of paths to search"
+type = "string"
+default = "C:\\users"
+
+[[args]]
+name = "recurse_depth"
+description = "Levels below the folder to search through"
+type = "int"
+default = 3
+
+
 ]=]
 
-
 --[=[ SECTION 1: Inputs ]=]
-searchpaths = {
-    'C:\\Users\\'
-}
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
---Search Options:
-startdate = '06-25-2020'
-recurse_depth = 3
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
 
-filename_regex_suspicious = {
-    [[readme.*\.txt$]]
-}
+regex_suspicious = get_arg("regex_suspicious", "string", [[readme.*\.txt$]])
+regex_bad = get_arg("regex_bad", "string", [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]])
+path = get_arg("path", "string", "C:\\Users")
+paths = {}
+if path ~= nil then
+	for val in string.gmatch(paths, '[^,%s]+') do
+		table.insert(paths, val)
+	end
+end
 
-filename_regex_bad = {
-    [[^[0-9,A-Z,a-z]{4,6}-Readme\.txt$]],
-    'DECRYPT'
-}
+recurse_depth = get_arg("recurse_depth", "number", 3)
 
+--experimental (not in use)
+powershell = ~get_arg("disable_powershell", "boolean", false, true, false)
+default_date = os.date("%x", os.time()-60*60*24*30)
+startdate = get_arg("startdate", "string", default_date)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -78,7 +144,6 @@ function userfolders()
     return paths
 end
 
-
 function parse_csv(path, sep)
     --[=[
         Parses a CSV on disk into a lua list.
@@ -125,42 +190,6 @@ function parse_csv(path, sep)
 end
 
 
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
-
 --[=[ SECTION 3: Collection ]=]
 
 
@@ -171,37 +200,50 @@ hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain
 
 hunt.status.good()
 
-for _, path in pairs(searchpaths) do 
-    if filename_regex_bad then 
-        for _,m in pairs(filename_regex_bad) do 
-            cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..m.."' } | Select FullName -ExpandProperty FullName"
-            out, err = hunt.env.run_powershell(cmd)
-            if out then 
-                for line in out:gmatch"[^\n]+" do
-                    hunt.status.bad() -- Set Threat to Suspicious on finding
-                    hunt.log("[BAD]'"..m.."': "..line) -- Send to Infocyte Extension Output
-                end
-            else 
-                hunt.error("Error running powershell: "..err)
+for _, path in pairs(paths) do 
+    opts = {
+        "files",
+        "recurse="..recurse_depth
+    }
+    for _, file in pairs(hunt.fs.ls(path, opts)) do 
+        fn = get_filename(file:path())
+        if regex_bad and string.find(fn, regex_bad) do
+            hunt.status.bad()
+            hunt.log("[BAD]'"..regex_bad.."': "..file:path())
+        end
+        if regex_suspicious and string.find(fn, regex_suspicious) then 
+            hunt.status.bad()
+            hunt.log("[BAD]'"..regex_suspicious.."': "..file:path())
+        end
+    end
+end
+
+if powershell then
+    for _, path in pairs(paths) do 
+        cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..regex_bad.."' } | Select FullName -ExpandProperty FullName"
+        out, err = hunt.env.run_powershell(cmd)
+        if out then
+            for line in out:gmatch"[^\n]+" do
+                hunt.status.bad() -- Set Threat to Suspicious on finding
+                hunt.log("[BAD]'"..regex_bad.."': "..line) -- Send to Infocyte Extension Output
             end
+        else
+            hunt.error("Error running powershell: "..err)
         end
     end
 
-    if filename_regex_suspicious then 
-        for _,m in pairs(filename_regex_suspicious) do 
-            cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..m.."' } | Select FullName -ExpandProperty FullName"
-            out, err = hunt.env.run_powershell(cmd)
-            if out then 
-                for line in out:gmatch"[^\n]+" do
-                    hunt.status.suspicious() -- Set Threat to Suspicious on finding
-                    hunt.log("[SUSPICIOUS]'"..m.."': "..line) -- Send to Infocyte Extension Output
-                end
-            else 
-                hunt.error("Error running powershell: "..err)
+    if regex_suspicious then 
+        cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..regex_suspicious.."' } | Select FullName -ExpandProperty FullName"
+        out, err = hunt.env.run_powershell(cmd)
+        if out then
+            for line in out:gmatch"[^\n]+" do
+                hunt.status.suspicious() -- Set Threat to Suspicious on finding
+                hunt.log("[SUSPICIOUS]'"..regex_suspicious.."': "..line) -- Send to Infocyte Extension Output
             end
+        else 
+            hunt.error("Error running powershell: "..err)
         end
     end
-
 end
 
 hunt.log("Result: Extension successfully executed")

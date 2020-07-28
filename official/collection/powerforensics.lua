@@ -1,28 +1,78 @@
 --[=[
-    Infocyte Extension
-    Name: PowerForensics MFT
-    Type: Collection
-    Description: | Deploy PowerForensics and gathers forensic data to Recovery
-        Location. This extension requires definition of a Recovery Location 
-        (S3, SMB Share, or FTP) |
-    Author: Infocyte
-    Guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
-    Created: 20190919
-    Updated: 20200318 (Gerritz)
-]=]
+filetype = "Infocyte Extension"
 
+[info]
+name = "PowerForensics MFT"
+type = "Collection"
+description = """Deploy PowerForensics and gathers forensic data to Recovery
+        Location. This extension requires definition of a Recovery Location 
+        (S3)"""
+author = "Infocyte"
+guid = "0989cd2f-a781-4cea-8f43-fcc3092144a1"
+created = 2019-10-18
+updated = 2020-07-20
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+
+[[globals]]
+name = "s3_keyid"
+description = "S3 Bucket key Id for uploading"
+type = "string"
+
+[[globals]]
+name = "s3_secret"
+description = "S3 Bucket key Secret for uploading"
+type = "secret"
+
+[[globals]]
+name = "s3_region"
+description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
+type = "string"
+required = true
+
+[[globals]]
+name = "s3_bucket"
+description = "S3 Bucket name for uploading"
+type = "string"
+required = true
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
+]=]
 
 --[=[ SECTION 1: Inputs ]=]
 
--- Upload Options. S3 Bucket (Mandatory)
-s3_keyid = nil -- Optional for authenticated uploads
-s3_secret = nil -- Optional for authenticated uploads
-s3_region = 'us-east-2' -- US East (Ohio)
-s3_bucket = 'test-extensions'
-
---S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+debug = get_arg("debug", "boolean", false, true, false)
+proxy = get_arg("proxy", "string", nil, true, false)
+s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
+s3_secret = get_arg("s3_secret", "string", nil, true, false)
+s3_region = get_arg("s3_secret", "string", nil, true, true)
+s3_bucket = get_arg("s3_secret", "string", nil, true, true)
 s3path_modifier = "evidence"
 
+if(get_arg("disable_powershell", "boolean", false, true, false)) then
+    hunt.error("disable_powershell global is set. Cannot run extension without powershell")
+    return
+end
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -72,49 +122,7 @@ function path_exists(path)
 end
 
 
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
-
 --[=[ SECTION 3: Collection ]=]
-
--- Check required inputs
-if not s3_region or not s3_bucket then
-    hunt.error("s3_region and s3_bucket not set. Cannot upload MFT.")
-    return
-end
 
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"

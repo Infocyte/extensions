@@ -1,25 +1,85 @@
---[=[
-    Infocyte Extension
-    Name: Amcache Parser
-    Type: Collection
-    Description: | Uses Zimmerman's Amcache parser to parse Amcache and
-        adds those entries to artifacts for analysis |
-    Globals: proxy
-    Arguments: debug, differential
-    Author: Infocyte
-    Guid: 09660065-7f58-4d51-9e0b-1427d0e42eb3
-    Created: 20191121
-    Updated: 20200318 (Gerritz)
+--[=[ 
+filetype = "Infocyte Extension"
+
+[info]
+name = "Amcache Parser"
+type = "Collection"
+description = """Uses Zimmerman's Amcache parser to parse Amcache and
+        adds those entries to artifacts for analysis"""
+author = "Infocyte"
+guid = "09660065-7f58-4d51-9e0b-1427d0e42eb3"
+created = 2019-11-21
+updated = 2020-07-27
+
+###########
+# GLOBALS #
+###########
+# Global variables accessed within extensions via hunt.global('name')
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+#############
+# ARGUMENTS #
+#############
+# Runtime arguments are accessed within extensions via hunt.arg('name')
+
+[[args]]
+name = "differential"
+description = "Gets new entries only. Maintains CSV on disk."
+type = "boolean"
+default = true
+
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
-debug = hunt.arg('debug') or false
-differential = hunt.arg('differential') or true -- Will save last scan locally and only add new items on subsequent scans.
-proxy = hunt.arg('proxy') or nil -- "myuser:password@10.11.12.88:8888"
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
 
+differential = get_arg("differential", "boolean", true) -- Will save last scan locally and only add new items on subsequent scans.
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
+
+debug = get_arg("debug", "boolean", false, true, false)
+proxy = get_arg("proxy", "string", nil, true, false)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -100,43 +160,6 @@ function make_timestamp(dateString)
     local xyear, xmonth, xday, xhour, xminute, xseconds, xmseconds = dateString:match(pattern)
     local convertedTimestamp = os.time({year = xyear, month = xmonth, day = xday, hour = xhour, min = xminute, sec = xseconds})
     return convertedTimestamp
-end
-
-
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
 end
 
 --[=[ SECTION 3: Collection ]=]
