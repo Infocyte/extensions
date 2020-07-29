@@ -7,21 +7,16 @@ type = "Action"
 description = """Kills a process by path and/or deletes the associated file"""
 author = "Infocyte"
 guid = "f0565351-1dc3-4a94-90b3-34a5765b33bc"
-created = 2020-01-23
-updated = 2020-07-22
+created = "2020-01-23"
+updated = "2020-07-22"
 
-###########
-# GLOBALS #
-###########
+## GLOBALS ##
 # Global variables accessed within extensions via hunt.global('name')
 
 [[globals]]
 
-#############
-# ARGUMENTS #
-#############
+## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
-
 
 [[args]]
 name = "path"

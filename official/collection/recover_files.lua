@@ -10,8 +10,8 @@ description = """Recover custom list of files and folders to your recovery point
         Loads Powerforensics to bypass file locks. Currently only works on Windows"""
 author = "Infocyte"
 guid = "55f3d0f0-476a-44fe-a583-21e110c74541"
-created = 2019-11-23
-updated = 2020-07-27
+created = "2019-11-23"
+updated = "2020-07-27"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -126,8 +126,8 @@ debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)
 s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
 s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_secret", "string", nil, true, true)
-s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "evidence"
 
 

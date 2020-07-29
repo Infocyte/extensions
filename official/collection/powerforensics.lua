@@ -9,8 +9,8 @@ description = """Deploy PowerForensics and gathers forensic data to Recovery
         (S3)"""
 author = "Infocyte"
 guid = "0989cd2f-a781-4cea-8f43-fcc3092144a1"
-created = 2019-10-18
-updated = 2020-07-20
+created = "2019-10-18"
+updated = "2020-07-20"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -65,8 +65,8 @@ debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)
 s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
 s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_secret", "string", nil, true, true)
-s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "evidence"
 
 if(get_arg("disable_powershell", "boolean", false, true, false)) then

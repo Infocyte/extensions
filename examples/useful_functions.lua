@@ -50,8 +50,8 @@ function list_to_pslist(list)
 end
 
 -- Python functions --
-py = {}
-function py.run_command(command)
+python = {}
+function python.run_command(command)
     --[=[
         Execute a python command
         Input:  [string] python command
@@ -60,7 +60,7 @@ function py.run_command(command)
     ]=]
     os.execute("python -q -u -c \"" .. command.. "\"" )
 end
-function py.run_script(pyscript)
+function python.run_script(pyscript)
     --[=[
         Execute a python command
         Input:  [string] python script

@@ -8,8 +8,8 @@ description = """Scans files on disk with YARA signatures
     categorized as either informational, suspicious, or bad"""
 author = "Infocyte"
 guid = "f0565351-1dc3-4a94-90b3-34a5765b33bc"
-created = 2019-10-18
-updated = 2020-07-20
+created = "2019-10-18"
+updated = "2020-07-20"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -83,6 +83,7 @@ scan_activeprocesses = get_arg("scan_activeprocesses", "boolean", true)
 scan_appdata = get_arg("scan_appdata", "boolean", false)
 max_size = get_arg("max_size", "number", 5000)
 additional_paths = get_arg("additional_paths", "string")
+--print("Inputs: scan_activeprocesses="..tostring(scan_activeprocesses)..", scan_appdata="..tostring(scan_appdata)..", max_size="..max_size..", additional_paths="..tostring(additional_paths))
 
 -- #region bad_rules
 bad_rules = [=[
@@ -1480,13 +1481,21 @@ yara_suspicious:add_rule(suspicious_rules)
 yara_info = hunt.yara.new()
 yara_info:add_rule(info_rules)
 
+opts = {
+    "files",
+    "size<="..max_size.."kb", -- any file below this size
+}
+
 -- Add active processes
 paths = {} -- add to keys of list to easily unique paths
 if scan_activeprocesses then
     procs = hunt.process.list()
     for i, proc in pairs(procs) do
-        --hunt.debug("Adding processpath["..i.."]: " .. proc:path())
-        paths[proc:path()] = true -- add to keys of list to unique paths
+        file = hunt.fs.ls(proc:path(), opts)
+        if #file == 1 and file[1]:size() < max_size * 1000 then
+            --hunt.debug("Adding processpath["..i.."]: " .. proc:path().." ["..file[1]:name().."] size="..file[1]:size())
+            paths[proc:path()] = true -- add to keys of list to unique paths
+        end
     end
 end
 
@@ -1507,10 +1516,6 @@ if scan_appdata then
 end
 
 -- Add additional paths
-additional_paths_opts = {
-    "files",
-    "size<"..max_size.."kb", -- any file below this size
-}
 if additional_paths then
     more_paths = {}
     if string.gmatch(additional_paths, ',') then 
@@ -1521,7 +1526,7 @@ if additional_paths then
         table.insert(more_paths, additional_paths)
     end
     for i, path in pairs(more_paths) do
-        files = hunt.fs.ls(path, additional_paths_opts)
+        files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do
             if is_executable(path2:path()) then
                 paths[path2:path()] = true

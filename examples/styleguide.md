@@ -7,31 +7,55 @@
 Extension filenames should be `<Name>.lua`
 
 #### Preamble
-All extensions should have a comment block on top using the below format.
+All extensions should have a comment block on top using the below format (TOML).
 In the future, we intend to introduce an extension filetype that includes metadata like this. You can generate from template with a new guid using the Infocyte Powershell module's New-ICExtension function.
 
 >>
---[[
-	Infocyte Extension
-	Name: Template
-	Type: Action
-    Description: | Example script show format, style, and options for commiting
-        an action or change against a host. |
-	Author: Infocyte
-	Guid: b5f18032-6749-4bef-80d3-8094dca66798
-	Created: 20190919
-	Updated: 20190919 (Gerritz)
---]]
+--[=[
+filetype = "Infocyte Extension"
+
+[info]
+name = "Response Template"
+type = "Response"
+description = """Example script show format, style, and options for commiting
+        an action or change against a host."""
+author = "Infocyte"
+guid = "b5f18032-6749-4bef-80d3-8094dca66798"
+created = "2019-09-19"
+updated = "2020-07-27"
+
+\#\# GLOBALS ##
+\# Global variables -> hunt.global('name')
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+\#\# ARGUMENTS ##
+\# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
+]=]
 
 
 #### Extension Types
-Should your extension be labelled a collection or action extension? Occasionally an extension will blur the lines so use this as a guideline:
+Should your extension be labelled a collection or response extension? Occasionally an extension will blur the lines so use this as a guideline:
 
 - Collection extensions are run at scan-time to collect data or inspect systems in a way that does not alter the system. These should be safe to run on a lot of systems ideally.
 
-- Anytime the extension performs changes to the system, it should usually be labelled an **Action** extension. If the extension would normally be run to respond to something that was found already (such as performing a memory dump), it should also probably be labelled as a **Response** extension due to the workflow difference and installation of a third party tool.
+- Anytime the extension performs changes to the system, it should usually be labelled an **Response** extension. If the extension would normally be run to respond to something that was found already (such as performing a memory dump), it should also probably be labelled as a **Response** extension due to the workflow difference and installation of a third party tool.
 
-Although these types are not going to be initially enforced anywhere in the app, the future workflow for using **Action** extensions will soon be separated from **Collection** extensions using a response workflow in the Infocyte application. This workflow will have its' own page and action steps so it will be independent of discovery and scanning (where **Collection** extensions will remain).
+Although these types are not going to be initially enforced anywhere in the app, the future workflow for using **Response** extensions will soon be separated from **Collection** extensions using a response workflow in the Infocyte application. This workflow will have its' own page and response steps so it will be independent of discovery and scanning (where **Collection** extensions will remain).
 
 
 ## Infocyte's Survey (hunt.\*) API

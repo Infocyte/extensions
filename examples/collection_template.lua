@@ -1,17 +1,73 @@
 --[=[
-    Infocyte Extension
-    Name: Template
-    Type: Collection
-    Description: | Example script show format, style, and options for gathering
-     additional data from a host. |
-    Author: Infocyte
-    Guid: f8e44229-4d8d-4909-b148-58130b660077
-    Created: 20190919
-    Updated: 20191204 (Gerritz)
+filetype = "Infocyte Extension"
+
+[info]
+name = "Collection Template"
+type = "Collection"
+description = """Example script show format, style, and options for gathering
+     additional data from a host."""
+author = "Infocyte"
+guid = "f8e44229-4d8d-4909-b148-58130b660077"
+created = "2019-09-19"
+updated = "2020-07-27"
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
 ]=]
 
-
 --[=[ SECTION 1: Inputs ]=]
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
+
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
+
+debug = get_arg("debug", "boolean", false, true, false)
+proxy = get_arg("proxy", "string", nil, true, false)
 
 
 --[=[ SECTION 2: Functions ]=]

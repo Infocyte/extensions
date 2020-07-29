@@ -10,8 +10,8 @@ description = """Collects event logs, .dat files, etc. from system and forwards
         Loads Powerforensics to bypass file locks. Currently only works on Windows"""
 author = "Infocyte"
 guid = "e07252a1-4aea-47e4-80e8-c7ea8c558aed"
-created = 2019-10-18
-updated = 2020-07-27
+created = "2019-10-18"
+updated = "2020-07-27"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -112,8 +112,8 @@ debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)
 s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
 s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_secret", "string", nil, true, true)
-s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]

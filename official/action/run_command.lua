@@ -7,12 +7,10 @@ type = "Action"
 description = """Runs a command on the shell (bash, powershell, or cmd). WARNING: This is a dangerous extension, run with caution"""
 author = "Infocyte"
 guid = "0d22ae39-bd9e-4448-a418-b4f08dea36b3"
-created = 2020-07-24
-updated = 2020-07-24
+created = "2020-07-24"
+updated = "2020-07-24"
 
-###########
-# GLOBALS #
-###########
+## GLOBALS ##
 # Global variables accessed within extensions via hunt.global('name')
 
 [[globals]]
@@ -28,9 +26,7 @@ type = "boolean"
 default = false
 required = false
 
-#############
-# ARGUMENTS #
-#############
+## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
 
 [[args]]

@@ -15,8 +15,8 @@ description = """Uses winpmem/linpmem to dump full physical memory and
        https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/"""
 author = "Infocyte"
 guid = "89abebc6-d0db-4eba-b771-6a2652033581"
-created = 2019-9-19
-updated = 2020-07-27
+created = "2019-9-19"
+updated = "2020-07-27"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -73,8 +73,8 @@ debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)
 s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
 s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_secret", "string", nil, true, true)
-s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "memory"
 
 --[=[ SECTION 2: Functions ]=]

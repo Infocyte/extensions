@@ -10,8 +10,8 @@ description = """RDP Lateral Movement
     events 21,24,25, and 1149 with processes started (4688) by those sessions"""
 author = "Infocyte"
 guid = "f606ff51-4e99-4687-90a7-43aaabae8634"
-created = 2020-03-01
-updated = 2020-07-20
+created = "2020-03-01"
+updated = "2020-07-20"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')

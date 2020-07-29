@@ -10,8 +10,8 @@ description = """Collects raw event logs from system and forwards
         Loads Powerforensics to bypass file locks. Currently only works on Windows"""
 author = "Infocyte"
 guid = "2d34e7d7-86c4-42cd-9fa6-d50605e70bf4"
-created = 2020-07-21
-updated = 2020-07-27
+created = "2020-07-21"
+updated = "2020-07-27"
 
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
@@ -94,8 +94,8 @@ debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)
 s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
 s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_secret", "string", nil, true, true)
-s3_bucket = get_arg("s3_secret", "string", nil, true, true)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
@@ -131,31 +131,46 @@ if not hunt.env.is_windows() then
     return
 end
 
-tmp = os.getenv("temp").."/ic"
+tmp = os.getenv("temp").."\\ic"
 zippath = tmp.."\\icpackage.zip"
 
 -- Make tempdir
 os.execute("mkdir "..tmp)
 
-os.execute("wevtutil.exe epl Microsoft-Windows-WinRM/Operational "..tmp.."Microsoft-Windows-WinRMOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-Bits-Client/Operational "..tmp.."Microsoft-Windows-BitsClientOperational.evtx")
-os.execute("wevtutil.exe epl security Security.evtx")
-os.execute("wevtutil.exe epl system System.evtx")
-os.execute("wevtutil.exe epl application Application.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-TerminalServices-LocalSessionManager/Operational "..tmp.."Microsoft-Windows-TerminalServicesLocalSessionOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational "..tmp.."Microsoft-Windows-TerminalServicesRemoteConnectionManagerOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-PowerShell/Operational "..tmp.."Microsoft-Windows-PowerShellOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-PowerShell/Analytic "..tmp.."Microsoft-Windows-PowerShellAnalytic.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-TaskScheduler/Operational "..tmp.."Microsoft-Windows-TaskSchedulerOperational.evtx")
-os.execute("wevtutil.exe epl 'Windows PowerShell' WindowsPowerShell.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-WinRM/Analytic "..tmp.."Microsoft-Windows-WinRMAnalytic.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-Sysmon/Operational "..tmp.."Microsoft-Windows-SysmonOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational "..tmp.."Microsoft-Windows-WMIActivityOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational "..tmp.."Microsoft-Windows-TerminalServicesRDPClientOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational "..tmp.."Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx")
-os.execute("wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' "..tmp.."Microsoft-Windows-DefenderOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational "..tmp.."Microsoft-Windows-TerminalServices-GatewayOperational.evtx")
-os.execute("wevtutil.exe epl Microsoft-Windows-SmbClient/Security "..tmp.."Microsoft-Windows-SMBClient.evtx")
+cmds = {
+    "wevtutil.exe epl Microsoft-Windows-WinRM/Operational "..tmp.."\\Microsoft-Windows-WinRMOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-Bits-Client/Operational "..tmp.."\\Microsoft-Windows-BitsClientOperational.evtx",
+    "wevtutil.exe epl security "..tmp.."\\Security.evtx",
+    "wevtutil.exe epl system "..tmp.."\\System.evtx",
+    "wevtutil.exe epl application "..tmp.."\\Application.evtx",
+    "wevtutil.exe epl Microsoft-Windows-TerminalServices-LocalSessionManager/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesLocalSessionOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesRemoteConnectionManagerOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-PowerShell/Operational "..tmp.."\\Microsoft-Windows-PowerShellOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-PowerShell/Analytic "..tmp.."\\Microsoft-Windows-PowerShellAnalytic.evtx",
+    "wevtutil.exe epl Microsoft-Windows-TaskScheduler/Operational "..tmp.."\\Microsoft-Windows-TaskSchedulerOperational.evtx",
+    "wevtutil.exe epl \"Windows PowerShell\" "..tmp.."\\WindowsPowerShell.evtx",
+    "wevtutil.exe epl Microsoft-Windows-WinRM/Analytic "..tmp.."\\Microsoft-Windows-WinRMAnalytic.evtx",
+    "wevtutil.exe epl Microsoft-Windows-Sysmon/Operational "..tmp.."\\Microsoft-Windows-SysmonOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational "..tmp.."\\Microsoft-Windows-WMIActivityOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesRDPClientOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational "..tmp.."\\Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx",
+    "wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' "..tmp.."\\Microsoft-Windows-DefenderOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational "..tmp.."\\Microsoft-Windows-TerminalServices-GatewayOperational.evtx",
+    "wevtutil.exe epl Microsoft-Windows-SmbClient/Security "..tmp.."\\Microsoft-Windows-SMBClient.evtx"
+}
+for _, cmd in ipairs(cmds) do
+    hunt.debug("Running Command: "..cmd)
+    pipe = io.popen(cmd.." 2>&1 " , "r")
+    if pipe then 
+        out = pipe:read("*all")
+        pipe:close()
+        if out:gmatch("failed|error") then
+            hunt.error(out)
+        else
+            hunt.debug(out)
+        end
+    end
+end
 
 -- Record LocalTimeZone
 regtz = hunt.registry.list_values("\\Registry\\Machine\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation")
@@ -198,21 +213,16 @@ end
 s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
 s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 
-files = hunt.fs.ls(tmp, {files})
+files = hunt.fs.ls(tmp)
 for name, path in pairs(files) do 
     -- Upload file to S3
     s3path = s3path_preamble.."/"..name.."_"..path:name()
     link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
     s3:upload_file(path:path(), s3path)
     hunt.log("Uploaded "..path:name().." - "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
-
     os.remove(outpath)
-    ::continue::
-else
-    hunt.debug(name.." failed. "..path.." does not exist.")
 end
 
 -- Cleanup
 os.execute("RMDIR /S/Q "..tmp)
-
 hunt.status.good()
