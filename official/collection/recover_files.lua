@@ -120,7 +120,7 @@ if path ~= nil then
 end
 
 -- Powerforensics can be used to bypass file locks
-use_powerforensics = ~get_arg("disable_powershell", "boolean", false, true, false)
+use_powerforensics = not get_arg("disable_powershell", "boolean", false, true, false)
 
 debug = get_arg("debug", "boolean", false, true, false)
 proxy = get_arg("proxy", "string", nil, true, false)

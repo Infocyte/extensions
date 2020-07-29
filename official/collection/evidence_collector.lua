@@ -98,7 +98,7 @@ function get_arg(arg, obj_type, default, is_global, is_required)
 end
 
 -- Evidence Collections
-use_powerforensics = ~get_arg("disable_powershell", "boolean", false, true, false)
+use_powerforensics = not get_arg("disable_powershell", "boolean", false, true, false)
 MFT = false -- this is a big job
 SecurityEvents = true
 IEHistory = true

@@ -1,16 +1,59 @@
 --[=[
-    Infocyte Extension
-    Name: AppData Artifact Triage
-    Type: Collection
-    Description: | Adds all executable binaries in user appdata folder
-        (with recursion depth of 1) to artifacts for analysis. |
-    Author: Anonymous
-    Guid: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
-    Created: 20191121
-    Updated: 20191121 (Gerritz)
+filetype = "Infocyte Extension"
+
+[info]
+name = "AppData Artifact Triage"
+type = "Collection"
+description = """Adds all executable binaries in user appdata folder
+        (with recursion depth of 1) to artifacts for analysis."""
+author = "Infocyte"
+guid = "4d5ce2fb-df0f-4186-8116-4957cd405ec8"
+created = "2019-11-21"
+updated = "2020-07-29"
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[globals]]
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
+
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
 
 opts = {
     "files",
@@ -70,42 +113,6 @@ function userfolders()
     return paths
 end
 
-
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
 
 --[=[ SECTION 3: Collection ]=]
 

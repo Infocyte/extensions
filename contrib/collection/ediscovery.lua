@@ -1,31 +1,102 @@
 --[=[
-	Infocyte Extension
-	Name: E-Discovery
-	Type: Collection
-	Description: | Proof of Concept. Searches the hard drive for office documents
+filetype = "Infocyte Extension"
+
+[info]
+name = "E-Discovery"
+type = "Collection"
+description = """Proof of Concept. Searches the hard drive for office documents
         (currently only .doc and .docx files) with specified keywords or alldocs.
         1. Find any office doc on a desktop/server
         2. Upload doc directly to S3 Bucket
         3. Upload metadata csv with filehash as key
 
-        https://asecuritysite.com/forensics/magic |
-    Author: Multiple (Maintained by Gerritz)
-    Guid: 5a0e3b34-4692-4f3c-afff-c84102785756
-	Created: 20190919
-	Updated: 2020406 (Gerritz)
+        https://asecuritysite.com/forensics/magic"""
+author = "Multiple"
+guid = "5a0e3b34-4692-4f3c-afff-c84102785756"
+created = "2019-09-19"
+updated = "2020-07-29"
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+[[globals]]
+name = "s3_keyid"
+description = "S3 Bucket key Id for uploading"
+type = "string"
+
+[[globals]]
+name = "s3_secret"
+description = "S3 Bucket key Secret for uploading"
+type = "secret"
+
+[[globals]]
+name = "s3_region"
+description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
+type = "string"
+required = true
+
+[[globals]]
+name = "s3_bucket"
+description = "S3 Bucket name for uploading"
+type = "string"
+required = true
+
+[[globals]]
+name = "proxy"
+description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
+type = "string"
+required = false
+
+[[globals]]
+name = "debug"
+description = "Print debug information"
+type = "boolean"
+default = false
+required = false
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+[[args]]
+
 ]=]
 
-
 --[=[ SECTION 1: Inputs ]=]
-searchpaths = {
-    'C:/Users/cgerr'
-}
-strings = {
-    'MAZE',
-    'TOR'
-}
+-- get_arg(arg, obj_type, default, is_global, is_required)
+function get_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
-all_office_docs = false -- set to true to bypass string search
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
+
+searchpaths = get_args("paths", "string", 'C:/Users/cgerr')
+strings = get_args("search_strings", "string", nil, false, true)
+all_office_docs = get_args("all_office_docs", "boolean") -- set to true to bypass string search
+
 --Options for all_office_docs:
 opts = {
     "files",
@@ -34,7 +105,7 @@ opts = {
     "recurse=1"
 }
 
-findByFileHeader = false -- SLOW! False [Default] will search by file path extensions:
+findByFileHeader = get_args("findByFileHeader", "boolean", false) -- SLOW! False [Default] will search by file path extensions:
 magic_numbers = { -- HEX
     '504B0304', -- [PK] Zip or office docx, xlsx, pptx, etc.
     '25504446', -- [%PDF] pdf
@@ -45,16 +116,15 @@ extensions = {
 }
 
 -- S3 Bucket
-upload_to_s3 = false -- set this to true to upload to your S3 bucket
-s3_keyid = nil
-s3_secret = nil
-s3_region = 'us-east-2' -- US East (Ohio)
-s3_bucket = 'test-extensions'
+upload_to_s3 = get_args("upload_to_s3", "boolean", false) -- set this to true to upload to your S3 bucket
+debug = get_arg("debug", "boolean", false, true, false)
+proxy = get_arg("proxy", "string", nil, true, false)
+s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
+s3_secret = get_arg("s3_secret", "string", nil, true, false)
+s3_region = get_arg("s3_region", "string", nil, true, true)
+s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-
---Proxy
-proxy = nil -- "myuser:password@10.11.12.88:8888"
 
 
 --[=[ SECTION 2: Functions ]=]
@@ -180,42 +250,6 @@ function list_to_pslist(list)
     return psarray
 end
 
-
-function f(string)
-    -- String format (Interprolation). 
-    -- Example: i = 1; table1 = { field1 = "Hello!"}
-    -- print(f"Value({i}): {table1['field1']}") --> "Value(1): Hello!"
-    local outer_env = _ENV
-    return (string:gsub("%b{}", function(block)
-        local code = block:match("{(.*)}")
-        local exp_env = {}
-        setmetatable(exp_env, { __index = function(_, k)
-            local stack_level = 5
-            while debug.getinfo(stack_level, "") ~= nil do
-                local i = 1
-                repeat
-                local name, value = debug.getlocal(stack_level, i)
-                if name == k then
-                    return value
-                end
-                i = i + 1
-                until name == nil
-                stack_level = stack_level + 1
-            end
-            return rawget(outer_env, k)
-        end })
-        local fn, err = load("return "..code, "expression `"..code.."`", "t", exp_env)
-        if fn then
-            r = tostring(fn())
-            if r == 'nil' then
-                return ''
-            end
-            return r
-        else
-            error(err, 0)
-        end
-    end))
-end
 
 --[=[ SECTION 3: Collection ]=]
 

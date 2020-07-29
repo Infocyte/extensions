@@ -83,7 +83,7 @@ regex_bad = get_arg("regex_bad", "string", [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|
 path = get_arg("path", "string", "C:\\Users")
 paths = {}
 if path ~= nil then
-	for val in string.gmatch(paths, '[^,%s]+') do
+	for val in string.gmatch(path, '[^,%s]+') do
 		table.insert(paths, val)
 	end
 end
@@ -91,7 +91,7 @@ end
 recurse_depth = get_arg("recurse_depth", "number", 3)
 
 --experimental (not in use)
-powershell = ~get_arg("disable_powershell", "boolean", false, true, false)
+powershell = not get_arg("disable_powershell", "boolean", false, true, false)
 default_date = os.date("%x", os.time()-60*60*24*30)
 startdate = get_arg("startdate", "string", default_date)
 
@@ -207,7 +207,7 @@ for _, path in pairs(paths) do
     }
     for _, file in pairs(hunt.fs.ls(path, opts)) do 
         fn = get_filename(file:path())
-        if regex_bad and string.find(fn, regex_bad) do
+        if regex_bad and string.find(fn, regex_bad) then
             hunt.status.bad()
             hunt.log("[BAD]'"..regex_bad.."': "..file:path())
         end
