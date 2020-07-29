@@ -14,6 +14,22 @@ updated = "2020-07-22"
 # Global variables accessed within extensions via hunt.global('name')
 
 [[globals]]
+name = "TerminateProcess_path"
+description = "path(s) to kill/delete (comma seperated for multiple)"
+type = "string"
+required = true
+
+[[globals]]
+name = "TerminateProcess_kill_process"
+description = "kills processes with the provided path"
+type = "boolean"
+default = true
+
+[[globals]]
+name = "TerminateProcess_delete_file"
+description = "deletes the provided path"
+type = "boolean"
+default = true
 
 ## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
@@ -71,30 +87,22 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-path = get_arg("path", "string", nil, false, true)
 paths = {}
-if path ~= nil then
-	for val in string.gmatch(path, '[^,%s]+') do
-		table.insert(paths, val)
-	end
+path = get_arg("path", "string", nil, false, false)
+if path == nil then
+    path = get_arg("path", "string", nil, true, true)
+end
+for val in string.gmatch(path, '[^,%s]+') do
+	table.insert(paths, val)
 end
 
-delete_file = get_arg("delete_file", "boolean", true)
+delete_file = get_arg("delete_file", "boolean")
+if not delete_file then
+    delete_file = get_arg("delete_file", "boolean", true, true)
+end
 kill_process = get_arg("kill_process", "boolean", true) 
-
-if hunt.global('TerminateProcess_path') == nil then
-    hunt.error("No path to kill/delete")
-end
-path = hunt.global('TerminateProcess_path')
-
-delete_file = hunt.global('TerminateProcess_delete_file')
-if delete_file == nil then
-    delete_file = true
-end
-
-kill_process = hunt.global('TerminateProcess_kill_process') 
-if kill_process == nil then 
-    kill_process = true
+if not kill_process then
+    kill_process = get_arg("kill_process", "boolean", true, true) 
 end
 
 --[=[ SECTION 2: Functions ]=]

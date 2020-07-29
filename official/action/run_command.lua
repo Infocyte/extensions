@@ -70,16 +70,10 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-c = hunt.arg('command')
-cg = hunt.global('RunCommand_command')
-if c == nil and cg == nil then
-    hunt.error("No command provided")
-    error("No command provided")
-end
-if c ~= nil then
+if hunt.arg('command') then
     command = get_arg('command', "string", nil, false, true)
 else 
-    command = get_arg('RunCommand_command', nil, false, true)
+    command = get_arg('RunCommand_command', nil, true, true)
 end
 
 disable_powershell = hunt.global('disable_powershell', "boolean", false, true, false) 
