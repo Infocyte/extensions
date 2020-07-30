@@ -13,35 +13,35 @@ updated = "2020-07-27"
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
 
-[[globals]]
+    [[globals]]
 
 
 ## ARGUMENTS ##
 # Runtime arguments -> hunt.arg('name')
 
-[[args]]
-name = "regex_bad"
-description = "Levels below the folder to search through"
-type = "string"
-default = "(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT"
+    [[args]]
+    name = "regex_bad"
+    description = "Levels below the folder to search through"
+    type = "string"
+    default = '(^[0-9,A-Z,a-z]{4,6}-Readme.txt$)|DECRYPT'
 
-[[args]]
-name = "regex_suspicious"
-description = "Levels below the folder to search through"
-type = "string"
-default = "readme.*\.txt$"
+    [[args]]
+    name = "regex_suspicious"
+    description = "Levels below the folder to search through"
+    type = "string"
+    default = 'readme.*.txt$'
 
-[[args]]
-name = "path"
-description = "Path or comma-seperated list of paths to search"
-type = "string"
-default = "C:\\users"
+    [[args]]
+    name = "path"
+    description = "Path or comma-seperated list of paths to search"
+    type = "string"
+    default = 'C:/users'
 
-[[args]]
-name = "recurse_depth"
-description = "Levels below the folder to search through"
-type = "int"
-default = 3
+    [[args]]
+    name = "recurse_depth"
+    description = "Levels below the folder to search through"
+    type = "int"
+    default = 3
 
 
 ]=]
@@ -78,8 +78,12 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-regex_suspicious = get_arg("regex_suspicious", "string", [[readme.*\.txt$]])
-regex_bad = get_arg("regex_bad", "string", [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]])
+regex_suspicious_default = [[readme.*\.txt$]]
+regex_suspicious = get_arg("regex_suspicious", "string", regex_suspicious_default)
+
+regex_bad_default = [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]]
+regex_bad = get_arg("regex_bad", "string", regex_bad_default)
+
 path = get_arg("path", "string", "C:\\Users")
 paths = {}
 if path ~= nil then

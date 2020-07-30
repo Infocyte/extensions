@@ -5,8 +5,7 @@ filetype = "Infocyte Extension"
 name = "Recover Files"
 type = "Collection"
 description = """Recover custom list of files and folders to your recovery point (S3). 
-        S3 Path Format: 
-        <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+        S3 Path Format= <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
         Loads Powerforensics to bypass file locks. Currently only works on Windows"""
 author = "Infocyte"
 guid = "55f3d0f0-476a-44fe-a583-21e110c74541"
@@ -63,11 +62,12 @@ required = false
 
 [[args]]
 name = "path"
-description = """Path(s) to recover. Accepts comma-seperated list of files and/or folders to recover.
-    Acceptable formats: 
-        String literal (file): [[c:\bad.exe]],
-        Escaped string (file): "c:\\users\\adama\\ntuser.dat", 
-        Escaped folder (folder): "c:\\windows\\temp\\'"""
+description = '''Path(s) to recover. Accepts comma-seperated list of files and/or folders to recover.
+    Acceptable formats (escape backslashes): 
+        String literal (file): [[c:/bad.exe]],
+        Escaped string (file): "c:/users/adama/ntuser.dat", 
+        Escaped folder (folder): "c:\\windows\\temp\\"
+    '''
 type = "string"
 required = true
 

@@ -16,7 +16,7 @@ updated = "2020-07-20"
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
 
-[[Globals]]
+[[globals]]
 name = "trailing_days"
 type = "int"
 default = 60
