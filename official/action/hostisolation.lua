@@ -5,10 +5,10 @@ filetype = "Infocyte Extension"
 name = "Host Isolation"
 type = "Action"
 description = """Performs a local network isolation of a Windows, Linux, or OSX
-	 system using windows firewall, iptables, ipfw, or pf"""
+     system using windows firewall, iptables, ipfw, or pf"""
 author = "Infocyte"
 guid = "0c18bac7-5fbf-445d-ada5-0626295a9a81"
-created = "2019-9-16"
+created = "2019-09-16"
 updated = "2020-07-27"
 
 ## GLOBALS ##
@@ -16,10 +16,9 @@ updated = "2020-07-27"
 
 [[globals]]
 name = "whitelisted_ips"
-description = "Any additional IPs you wish whitelisted for isolated hosts. Comma-seperated list"
+description = """Any additional IPs you wish whitelisted for isolated hosts. Comma-seperated list"""
 type = "string"
 required = false
-
 
 ## ARGUMENTS ##
 # Runtime arguments -> hunt.arg('name')
@@ -69,12 +68,14 @@ if add_ips ~= nil then
 end
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
-infocyte_ips = {"3.221.153.58",
-  "3.227.41.20",
-  "3.229.46.33",
-  "35.171.204.49",
-  "52.200.73.72",
-  "52.87.145.239"
+infocyte_ips = {
+	"3.221.153.58",
+	"3.227.41.20",
+	"3.229.46.33",
+	"35.171.204.49",
+	"52.200.73.72",
+	"52.87.145.239",
+	"dl.infocyte.com"
 }
 
 backup_location = "C:\\fwbackup.wfw"
@@ -150,6 +151,7 @@ if not is_agent_installed() then
 	hunt.install_agent()
 end
 
+disabled = false
 
 if string.find(osversion, "windows xp") then
 	-- TODO: XP's netsh
@@ -159,9 +161,19 @@ elseif hunt.env.is_windows() then
     if path_exists(backup_location) then
         hunt.log("System is already isolated.")
         return
-    end
+	end
+	pipe = io.popen("netsh advfirewall show all state")
+	out = pipe:read("*a")
+	if out:find("State%s+ON") then
+		hunt.log("Windows Firewall is ON")
+	else
+		hunt.warning("Windows Firewall is NOT enabled")
+		disabled = true
+	end
+	
+	if (out:gmatch("State"):gmatch("ON"))
 	os.execute("netsh advfirewall export " .. backup_location)
-
+	
 	-- Disable all rules
 	os.execute("netsh advfirewall firewall set rule all NEW enable=no")
 
@@ -172,6 +184,10 @@ elseif hunt.env.is_windows() then
 	os.execute('netsh advfirewall firewall add rule name="Infocyte Host Isolation (infocyte)" dir=out action=allow protocol=ANY remoteip="' .. list_to_string(hunt.net.api_ipv4())..'"')
 	os.execute('netsh advfirewall firewall add rule name="Infocyte Host Isolation (custom)" dir=out action=allow protocol=ANY remoteip="'..list_to_string(whitelisted_ips)..'"')
 
+	if disabled then 
+		hunt.log("Enabling Windows Firewall")
+		os.execute("Netsh advfirewall set currentprofile state on")
+	end
 elseif hunt.env.is_macos() then
 	-- TODO: ipfw (old) or pf (10.6+)
 
