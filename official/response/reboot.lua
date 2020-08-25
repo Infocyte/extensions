@@ -13,46 +13,52 @@ updated = "2020-07-27"
 ## GLOBALS ##
 # Global variables -> hunt.global('name')
 
-[[globals]]
+    [[globals]]
+    name = "eboot-reason"
+    description = "Default reason message to display to user and input in logs"
+    type = "string"
+    default = "Infocyte initiated"
 
 ## ARGUMENTS ##
 # Runtime arguments -> hunt.arg('name')
 
-[[args]]
-name = "reason"
-description = "Reason message to display to user and input in logs"
-type = "string"
-default = "Infocyte initiated"
-required = false
-
+    [[args]]
+    name = "reason"
+    description = "Reason message to display to user and input in logs"
+    type = "string"
+    required = false
 
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, default, is_global, is_required)
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -60,7 +66,10 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-reason = validate_arg("reason", "string", "Infocyte initiated")
+reason = validate_arg("reason", "string", "arg", false)
+if not reason then
+    reason = validate_arg("reboot-reason", "string", "global", false, "Infocyte initiated")
+end
 
 --[=[ SECTION 2: Functions ]=]
 

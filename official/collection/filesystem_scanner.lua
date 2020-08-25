@@ -14,13 +14,13 @@ updated = "2020-07-27"
 # Global variables -> hunt.global('name')
 
     [[globals]]
-    name = "default_regex_bad"
+    name = "filesystem_scanner-default_regex_bad"
     description = "Filesystem scanner regex to produce an alerting match against"
     type = "string"
     default = '(^[0-9,A-Z,a-z]{4,6}-Readme.txt$)|DECRYPT'
 
     [[globals]]
-    name = "default_regex_suspicious"
+    name = "filesystemscanner-default_regex_suspicious"
     description = "Filesystem scanner regex to produce a non-alerting match against"
     type = "string"
     default = '''readme.*\.txt$'''
@@ -91,19 +91,19 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-regex_suspicious = validate_arg("regex_suspicious", "string", nil)
+regex_suspicious = validate_arg("regex_suspicious", "string", "arg", false)
 if not regex_suspicious then 
     -- if no arg supplied, get global or default
-    regex_suspicious = validate_arg("regex_suspicious", "string", [[readme.*\.txt$]], true, false)
+    regex_suspicious = validate_arg("filesystemscanner-default_regex_suspicious", "string", "global", false, [[readme.*\.txt$]])
 end
 
-regex_bad = validate_arg("regex_bad", "string", default_regex_bad)
+regex_bad = validate_arg("regex_bad", "string", "arg", false)
 if not regex_bad then
     -- if no arg supplied, get global or default
-    regex_suspicious = validate_arg("regex_suspicious", "string", [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]], true, false)
+    regex_suspicious = validate_arg("filesystem_scanner-default_regex_bad", "string", "global", false, [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]])
 end
 
-path = validate_arg("path", "string", "C:\\Users")
+path = validate_arg("path", "string", "global", "C:/Users")
 paths = {}
 if path ~= nil then
     -- Split comma-seperated values
@@ -112,12 +112,11 @@ if path ~= nil then
 	end
 end
 
-recurse_depth = validate_arg("recurse_depth", "number", 3)
+recurse_depth = validate_arg("recurse_depth", "number", "arg", false, 3)
 
 --experimental (not in use)
-powershell = not validate_arg("disable_powershell", "boolean", false, true, false)
-trailing_days = validate_arg("startdate", "string", 30, true, false)
-startdate = os.date("%x", os.time()-60*60*24*trailing_days)
+powershell = not validate_arg("disable_powershell", "boolean", "global", false, false)
+trailing_days = validate_arg("trailing_days", "string", "global", false, 30)
 
 
 --[=[ SECTION 2: Functions ]=]
@@ -222,6 +221,9 @@ end
 host_info = hunt.env.host_info()
 domain = host_info:domain() or "N/A"
 hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+
+
+startdate = os.date("%x", os.time()-60*60*24*trailing_days)
 
 hunt.status.good()
 

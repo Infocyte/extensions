@@ -15,7 +15,27 @@ updated = "2020-07-20"
 # Global variables -> hunt.global('name')
 
     [[globals]]
+    name = "yarascanner-scan_activeprocesses"
+    description = "Adds running processes to list of paths to scan"
+    type = "boolean"
+    default = true
 
+    [[globals]]
+    name = "yarascanner-scan_appdata"
+    description = "Recurse through each user's appdata for binaries to scan (windows only)"
+    type = "boolean"
+    default = false
+
+    [[globals]]
+    name = "yarascanner-max_size"
+    description = "Largest size of binary in Kb"
+    type = "number"
+    default = 5000
+
+    [[globals]]
+    name = "yarascanner-additional_paths" 
+    description = "Additional paths to scan"
+    type = "string"
 
 ## ARGUMENTS ##
 # Runtime arguments -> hunt.arg('name')
@@ -42,36 +62,39 @@ updated = "2020-07-20"
     name = "additional_paths" 
     description = "Additional paths to scan"
     type = "string"
-    default = ""
 
 ]=]
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, default, is_global, is_required)
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -79,11 +102,27 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-scan_activeprocesses = validate_arg("scan_activeprocesses", "boolean", true)
-scan_appdata = validate_arg("scan_appdata", "boolean", false)
-max_size = validate_arg("max_size", "number", 5000)
-additional_paths = validate_arg("additional_paths", "string")
---print("Inputs: scan_activeprocesses="..tostring(scan_activeprocesses)..", scan_appdata="..tostring(scan_appdata)..", max_size="..max_size..", additional_paths="..tostring(additional_paths))
+scan_activeprocesses = validate_arg("scan_activeprocesses", "boolean", "arg", false)
+if not scan_activeprocesses then
+    scan_activeprocesses = validate_arg("yarascanner-scan_activeprocesses", "boolean", "global", false, true)
+end
+
+scan_appdata = validate_arg("scan_appdata", "boolean", "arg", false)
+if not scan_appdata then 
+    scan_appdata = validate_arg("yarascanner-scan_appdata", "boolean", "global", false, false)
+end
+
+max_size = validate_arg("max_size", "number", "arg", false)
+if not max_size then
+    max_size = validate_arg("yarascanner-max_size", "number", "global", false, 5000)
+end
+
+additional_paths = validate_arg("additional_paths", "string", "arg", false)
+if not additional_paths then 
+    additional_paths = validate_arg("yarascanner-additional_paths", "string", "global", false)
+end
+
+--hunt.debug("Inputs: scan_activeprocesses="..tostring(scan_activeprocesses)..", scan_appdata="..tostring(scan_appdata)..", max_size="..max_size..", additional_paths="..tostring(additional_paths))
 
 -- #region bad_rules
 bad_rules = [=[
@@ -1465,6 +1504,15 @@ function is_executable(path)
 end
 
 
+function string_to_list(str)
+    -- Converts a comma seperated list to a lua list object
+    list = {}
+    for s in string.gmatch(patterns, '([^,]+)') do
+        table.insert(s, list)
+    end
+    return list
+end
+
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
@@ -1517,14 +1565,8 @@ end
 
 -- Add additional paths
 if additional_paths then
-    more_paths = {}
-    if string.gmatch(additional_paths, ',') then 
-        for path in string.gmatch(additional_paths, '([^,]+)') do
-            table.insert(more_paths, path)
-        end
-    else 
-        table.insert(more_paths, additional_paths)
-    end
+    more_paths = string_to_list(additional_paths)
+    
     for i, path in pairs(more_paths) do
         files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do

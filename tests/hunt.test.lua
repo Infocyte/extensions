@@ -57,30 +57,34 @@ updated = "2020-08-24"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, default, is_global, is_required)
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -88,13 +92,16 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-path = validate_arg("path", "string", nil, false, false)
-arg1 = validate_arg("arg1", "string", nil, false, false)
-test = validate_arg("test", "boolean", nil, true, true)
+path = validate_arg("path", "string", "global", false)
+arg1 = validate_arg("arg1", "string", "global", false)
+test = validate_arg("test", "boolean", "global", false)
 
-debug = validate_arg("debug", "boolean", false, true, false)
-s3_region = validate_arg("s3_region", "string", nil, true, false)
-s3_bucket = validate_arg("s3_bucket", "string", nil, true, false)
+debug = validate_arg("debug", "boolean", "global", true)
+proxy = validate_arg("proxy", "string", "global", false)
+s3_keyid = validate_arg("s3_keyid", "string", "global", false)
+s3_secret = validate_arg("s3_secret", "secret", "global", false)
+s3_region = validate_arg("s3_region", "string", "global", true)
+s3_bucket = validate_arg("s3_bucket", "string", "global", true)
 
 hunt.log("Arguments: path="..tostring(path)..", arg1="..tostring(arg1))
 hunt.log("Globals: test="..tostring(test)..", s3_region="..tostring(s3_region)..", s3_bucket="..tostring(s3_bucket)..", debug="..tostring(debug))

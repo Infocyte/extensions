@@ -14,19 +14,19 @@ updated = "2020-07-22"
 # Global variables accessed within extensions via hunt.global('name')
 
     [[globals]]
-    name = "TerminateProcess_path"
+    name = "terminateprocess-default_path"
     description = "path(s) to kill/delete (comma seperated for multiple)"
     type = "string"
     required = true
 
     [[globals]]
-    name = "TerminateProcess_kill_process"
+    name = "terminateprocess-kill_process"
     description = "kills processes with the provided path"
     type = "boolean"
     default = true
 
     [[globals]]
-    name = "TerminateProcess_delete_file"
+    name = "terminateprocess-delete_file"
     description = "deletes the provided path"
     type = "boolean"
     default = true
@@ -62,30 +62,34 @@ updated = "2020-07-22"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, default, is_global, is_required)
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -93,27 +97,33 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-paths = {}
-path = validate_arg("path", "string", nil, false, false)
-if path == nil then
-    path = validate_arg("path", "string", nil, true, true)
-end
-for val in string.gmatch(path, '[^,%s]+') do
-	table.insert(paths, val)
+path = validate_arg("path", "string", "global", false)
+if not path then
+    path = validate_arg("terminateprocess-default_path", "string", "global", true)
 end
 
-delete_file = validate_arg("delete_file", "boolean")
+delete_file = validate_arg("delete_file", "boolean", "arg", false)
 if not delete_file then
-    delete_file = validate_arg("delete_file", "boolean", true, true)
-end
-kill_process = validate_arg("kill_process", "boolean", true) 
-if not kill_process then
-    kill_process = validate_arg("kill_process", "boolean", true, true) 
+    delete_file = validate_arg("delete_file", "boolean", "global", false, true)
 end
 
-debug = validate_arg("debug", "boolean", false, true, false) 
+kill_process = validate_arg("kill_process", "boolean", "arg", false) 
+if not kill_process then
+    kill_process = validate_arg("kill_process", "boolean", "global", false, true) 
+end
+
+debug = validate_arg("debug", "boolean", "global", false, false) 
 
 --[=[ SECTION 2: Functions ]=]
+
+function string_to_list(str)
+    -- Converts a comma seperated list to a lua list object
+    list = {}
+    for s in string.gmatch(patterns, '([^,]+)') do
+        table.insert(s, list)
+    end
+    return list
+end
 
 --[=[ SECTION 3: Actions ]=]
 
@@ -127,6 +137,8 @@ if debug then
     os.execute("sleep 5")
     path = [[C:\Windows\System32\notepad.exe]]
 end
+
+paths = string_to_list(path)
 
 if kill_process then 
     hunt.log("Finding and killing processes that match the path:"..path)

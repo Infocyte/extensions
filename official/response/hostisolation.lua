@@ -15,7 +15,7 @@ updated = "2020-07-27"
 # Global variables -> hunt.global('name')
 
 	[[globals]]
-	name = "whitelisted_ips"
+	name = "hostisolation-whitelisted_ips"
 	description = """Any additional IPs you wish whitelisted for isolated hosts. Comma-seperated list"""
 	type = "string"
 	required = false
@@ -28,30 +28,34 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, default, is_global, is_required)
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -59,13 +63,7 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-add_ips = validate_arg("whitelisted_ips", "string", nil, true, false)
-whitelisted_ips = {}
-if add_ips ~= nil then
-	for ip in string.gmatch(add_ips, '[^,%s]+') do
-		table.insert(whitelisted_ips, ip)
-	end
-end
+whitelisted_ips = validate_arg("hostisolation-whitelisted_ips", "string", "global", false)
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
@@ -82,6 +80,16 @@ backup_location = "C:\\fwbackup.wfw"
 iptables_bkup = "/opt/iptables-bkup"
 
 --[=[ SECTION 2: Functions ]=]
+
+
+function string_to_list(str)
+    -- Converts a comma seperated list to a lua list object
+    list = {}
+    for s in string.gmatch(patterns, '([^,]+)') do
+        table.insert(s, list)
+    end
+    return list
+end
 
 function list_to_string(tbl)
 	n = true
@@ -182,7 +190,7 @@ elseif hunt.env.is_windows() then
 	os.execute('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe" service="dnscache"')
 	os.execute('netsh advfirewall firewall add rule name="Core Networking (DHCP-Out)" dir=out action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
 	os.execute('netsh advfirewall firewall add rule name="Infocyte Host Isolation (infocyte)" dir=out action=allow protocol=ANY remoteip="' .. list_to_string(hunt.net.api_ipv4())..'"')
-	os.execute('netsh advfirewall firewall add rule name="Infocyte Host Isolation (custom)" dir=out action=allow protocol=ANY remoteip="'..list_to_string(whitelisted_ips)..'"')
+	os.execute('netsh advfirewall firewall add rule name="Infocyte Host Isolation (custom)" dir=out action=allow protocol=ANY remoteip="'..whitelisted_ips..'"')
 
 	if disabled then 
 		hunt.log("Enabling Windows Firewall")
@@ -221,14 +229,14 @@ elseif  hunt.env.has_sh() then
 	  os.execute("iptables -I INPUT -s " .. ip .. " -j ACCEPT")
 	end
 
-  if next(whitelisted_ips) == nil then
-    hunt.debug("User Defined IPs are empty")
-  else
-	 hunt.log("Allowing User Defined IPs: " .. list_to_string(whitelisted_ips))
-	  for _, zip in pairs(whitelisted_ips) do
-	     os.execute("iptables -I INPUT -s " .. zip .. " -j ACCEPT")
-    end
-  end
+  	if whitelisted_ips == nil then
+    	hunt.debug("User Defined IPs are empty")
+	  else
+		hunt.log("Allowing User Defined IPs: " .. whitelisted_ips)
+	  	for _, ip in pairs(string_to_list(whitelisted_ips)) do
+	    	os.execute("iptables -I INPUT -s " .. ip .. " -j ACCEPT")
+    	end
+  	end
 
 	hunt.log("Setting iptables to drop all other traffic")
 	os.execute("iptables -P INPUT DROP")

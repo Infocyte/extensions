@@ -65,14 +65,20 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
-function validate_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
+
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
+
     if is_required and obj == nil then
         msg = "ERROR: Required argument '"..arg.."' was not provided"
         hunt.error(msg); error(msg) 
@@ -83,9 +89,9 @@ function validate_arg(arg, obj_type, default, is_global, is_required)
     end
     
     if default ~= nil and type(default) ~= obj_type then
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
         hunt.error(msg); error(msg)
     end
-
     hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
@@ -98,12 +104,12 @@ end
 hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
-debug = validate_arg("debug", "boolean", false, true, false)
-proxy = validate_arg("proxy", "string", nil, true, false)
-s3_keyid = validate_arg("s3_keyid", "string", nil, true, false)
-s3_secret = validate_arg("s3_secret", "secret", nil, true, false)
-s3_region = validate_arg("s3_region", "string", nil, true, true)
-s3_bucket = validate_arg("s3_bucket", "string", nil, true, true)
+debug = validate_arg("debug", "boolean", "global", false, false)
+proxy = validate_arg("proxy", "string", "global", false)
+s3_keyid = validate_arg("s3_keyid", "string", "global", false)
+s3_secret = validate_arg("s3_secret", "secret", "global", false)
+s3_region = validate_arg("s3_region", "string", "global", true)
+s3_bucket = validate_arg("s3_bucket", "string", "global", true)
 s3path_modifier = "memory"
 
 --[=[ SECTION 2: Functions ]=]

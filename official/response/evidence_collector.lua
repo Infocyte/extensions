@@ -65,8 +65,8 @@ updated = "2020-07-27"
 
 ]=]
 
--- validate_arg(arg, obj_type, var_type, default, is_required)
-function validate_arg(arg, obj_type, var_type, default, is_required)
+-- validate_arg(arg, obj_type, var_type, is_required, default)
+function validate_arg(arg, obj_type, var_type, is_required, default)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -115,11 +115,11 @@ UserDat = true
 USBHistory = true
 
 debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", nil, false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", nil, false)
-s3_secret = validate_arg("s3_secret", "secret", "global", nil, false)
-s3_region = validate_arg("s3_region", "string", "global", nil, true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", nil, true)
+proxy = validate_arg("proxy", "string", "global", false)
+s3_keyid = validate_arg("s3_keyid", "string", "global", false)
+s3_secret = validate_arg("s3_secret", "secret", "global", false)
+s3_region = validate_arg("s3_region", "string", "global", true)
+s3_bucket = validate_arg("s3_bucket", "string", "global", true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
