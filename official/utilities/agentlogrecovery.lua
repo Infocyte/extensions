@@ -69,8 +69,8 @@ updated = "2020-08-12"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -101,15 +101,15 @@ function get_arg(arg, obj_type, default, is_global, is_required)
 end
 
 -- Args
-use_s3 = get_arg("use_s3", "boolean", false, false, false)
+use_s3 = validate_arg("use_s3", "boolean", false, false, false)
 
 -- Globals
-debug = get_arg("debug", "boolean", false, true, false)
-proxy = get_arg("proxy", "string", nil, true, false)
-s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
-s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_region", "string", nil, true, use_s3)
-s3_bucket = get_arg("s3_bucket", "string", nil, true, use_s3)
+debug = validate_arg("debug", "boolean", false, true, false)
+proxy = validate_arg("proxy", "string", nil, true, false)
+s3_keyid = validate_arg("s3_keyid", "string", nil, true, false)
+s3_secret = validate_arg("s3_secret", "secret", nil, true, false)
+s3_region = validate_arg("s3_region", "string", nil, true, use_s3)
+s3_bucket = validate_arg("s3_bucket", "string", nil, true, use_s3)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]

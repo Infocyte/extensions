@@ -3,7 +3,7 @@
 
 ]=]
 
-function get_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
     obj_type = obj_type or "string"
     if is_global then 

@@ -14,6 +14,22 @@ updated = "2020-07-27"
 # Global variables -> hunt.global('name')
 
     [[globals]]
+    name = "default_regex_bad"
+    description = "Filesystem scanner regex to produce an alerting match against"
+    type = "string"
+    default = '(^[0-9,A-Z,a-z]{4,6}-Readme.txt$)|DECRYPT'
+
+    [[globals]]
+    name = "default_regex_suspicious"
+    description = "Filesystem scanner regex to produce a non-alerting match against"
+    type = "string"
+    default = '''readme.*\.txt$'''
+
+    [[globals]]
+    name = "trailing_days"
+    type = "number"
+    default = 60
+    required = false
 
 
 ## ARGUMENTS ##
@@ -21,15 +37,13 @@ updated = "2020-07-27"
 
     [[args]]
     name = "regex_bad"
-    description = "Levels below the folder to search through"
+    description = "Filesystem scanner regex to produce an alerting match against"
     type = "string"
-    default = '(^[0-9,A-Z,a-z]{4,6}-Readme.txt$)|DECRYPT'
 
     [[args]]
     name = "regex_suspicious"
-    description = "Levels below the folder to search through"
+    description = "Filesystem scanner regex to produce a non-alerting match against"
     type = "string"
-    default = 'readme.*.txt$'
 
     [[args]]
     name = "path"
@@ -47,7 +61,7 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
-function get_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
     obj_type = obj_type or "string"
     if is_global then 
@@ -65,6 +79,7 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
     
     if default ~= nil and type(default) ~= obj_type then
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
         hunt.error(msg); error(msg)
     end
 
@@ -76,14 +91,19 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
+regex_suspicious = validate_arg("regex_suspicious", "string", nil)
+if not regex_suspicious then 
+    -- if no arg supplied, get global or default
+    regex_suspicious = validate_arg("regex_suspicious", "string", [[readme.*\.txt$]], true, false)
+end
 
-regex_suspicious_default = [[readme.*\.txt$]]
-regex_suspicious = get_arg("regex_suspicious", "string", regex_suspicious_default)
+regex_bad = validate_arg("regex_bad", "string", default_regex_bad)
+if not regex_bad then
+    -- if no arg supplied, get global or default
+    regex_suspicious = validate_arg("regex_suspicious", "string", [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]], true, false)
+end
 
-regex_bad_default = [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]]
-regex_bad = get_arg("regex_bad", "string", regex_bad_default)
-
-path = get_arg("path", "string", "C:\\Users")
+path = validate_arg("path", "string", "C:\\Users")
 paths = {}
 if path ~= nil then
     -- Split comma-seperated values
@@ -92,12 +112,13 @@ if path ~= nil then
 	end
 end
 
-recurse_depth = get_arg("recurse_depth", "number", 3)
+recurse_depth = validate_arg("recurse_depth", "number", 3)
 
 --experimental (not in use)
-powershell = not get_arg("disable_powershell", "boolean", false, true, false)
-default_date = os.date("%x", os.time()-60*60*24*30)
-startdate = get_arg("startdate", "string", default_date)
+powershell = not validate_arg("disable_powershell", "boolean", false, true, false)
+trailing_days = validate_arg("startdate", "string", 30, true, false)
+startdate = os.date("%x", os.time()-60*60*24*trailing_days)
+
 
 --[=[ SECTION 2: Functions ]=]
 

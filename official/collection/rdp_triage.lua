@@ -38,8 +38,8 @@ updated = "2020-07-20"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -69,10 +69,10 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-trailing_days = get_arg("trailing_days", "number", 60, true)
-debug = get_arg("debug", "boolean", false, true)
+trailing_days = validate_arg("trailing_days", "number", 60, true)
+debug = validate_arg("debug", "boolean", false, true)
 
-if(get_arg("disable_powershell", "boolean", false, true, false)) then
+if(validate_arg("disable_powershell", "boolean", false, true, false)) then
     hunt.error("disable_powershell global is set. Cannot run extension without powershell")
     return
 end

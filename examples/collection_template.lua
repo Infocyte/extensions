@@ -35,8 +35,8 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -66,8 +66,8 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-debug = get_arg("debug", "boolean", false, true, false)
-proxy = get_arg("proxy", "string", nil, true, false)
+debug = validate_arg("debug", "boolean", false, true, false)
+proxy = validate_arg("proxy", "string", nil, true, false)
 
 
 --[=[ SECTION 2: Functions ]=]

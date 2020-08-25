@@ -39,8 +39,8 @@ updated = "2020-07-24"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -71,9 +71,9 @@ function get_arg(arg, obj_type, default, is_global, is_required)
 end
 
 if hunt.arg('command') then
-    command = get_arg('command', "string", nil, false, true)
+    command = validate_arg('command', "string", nil, false, true)
 else 
-    command = get_arg('RunCommand_command', nil, true, true)
+    command = validate_arg('RunCommand_command', nil, true, true)
 end
 
 disable_powershell = hunt.global('disable_powershell', "boolean", false, true, false) 

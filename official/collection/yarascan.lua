@@ -48,8 +48,8 @@ updated = "2020-07-20"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -79,10 +79,10 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-scan_activeprocesses = get_arg("scan_activeprocesses", "boolean", true)
-scan_appdata = get_arg("scan_appdata", "boolean", false)
-max_size = get_arg("max_size", "number", 5000)
-additional_paths = get_arg("additional_paths", "string")
+scan_activeprocesses = validate_arg("scan_activeprocesses", "boolean", true)
+scan_appdata = validate_arg("scan_appdata", "boolean", false)
+max_size = validate_arg("max_size", "number", 5000)
+additional_paths = validate_arg("additional_paths", "string")
 --print("Inputs: scan_activeprocesses="..tostring(scan_activeprocesses)..", scan_appdata="..tostring(scan_appdata)..", max_size="..max_size..", additional_paths="..tostring(additional_paths))
 
 -- #region bad_rules

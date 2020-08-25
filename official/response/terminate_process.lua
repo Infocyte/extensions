@@ -62,8 +62,8 @@ updated = "2020-07-22"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -94,24 +94,24 @@ function get_arg(arg, obj_type, default, is_global, is_required)
 end
 
 paths = {}
-path = get_arg("path", "string", nil, false, false)
+path = validate_arg("path", "string", nil, false, false)
 if path == nil then
-    path = get_arg("path", "string", nil, true, true)
+    path = validate_arg("path", "string", nil, true, true)
 end
 for val in string.gmatch(path, '[^,%s]+') do
 	table.insert(paths, val)
 end
 
-delete_file = get_arg("delete_file", "boolean")
+delete_file = validate_arg("delete_file", "boolean")
 if not delete_file then
-    delete_file = get_arg("delete_file", "boolean", true, true)
+    delete_file = validate_arg("delete_file", "boolean", true, true)
 end
-kill_process = get_arg("kill_process", "boolean", true) 
+kill_process = validate_arg("kill_process", "boolean", true) 
 if not kill_process then
-    kill_process = get_arg("kill_process", "boolean", true, true) 
+    kill_process = validate_arg("kill_process", "boolean", true, true) 
 end
 
-debug = get_arg("debug", "boolean", false, true, false) 
+debug = validate_arg("debug", "boolean", false, true, false) 
 
 --[=[ SECTION 2: Functions ]=]
 

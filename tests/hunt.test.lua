@@ -1,9 +1,103 @@
+--[=[
+filetype = "Infocyte Extension"
 
---[[ SECTION 1: Inputs --]]
-aws_id = nil
-aws_secret = nil
-s3_region = 'us-east-2' -- US East (Ohio)
-s3_bucket = 'test-extensions'
+[info]
+name = "Test"
+type = "response"
+description = """Tests Infocyte Extension functions"""
+author = "Infocyte"
+guid = "09dd57ff-2ebd-4e3c-9012-1d593fecf43b"
+created = "2020-01-24"
+updated = "2020-08-24"
+
+## GLOBALS ##
+# Global variables -> hunt.global('name')
+
+    [[globals]]
+    name = "test"
+    description = "test global"
+    type = "boolean"
+    required = true
+
+    [[globals]]
+    name = "s3_region"
+    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
+    type = "string"
+    required = false
+
+    [[globals]]
+    name = "s3_bucket"
+    description = "S3 Bucket name for uploading"
+    type = "string"
+    required = false
+
+    [[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+## ARGUMENTS ##
+# Runtime arguments -> hunt.arg('name')
+
+    [[args]]
+    name = "path"
+    description = 'Test'
+    type = "string"
+    required = false
+
+    [[args]]
+    name = "arg1"
+    description = 'Test'
+    type = "string"
+    required = false
+
+]=]
+
+
+--[=[ SECTION 1: Inputs ]=]
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
+    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
+
+    obj_type = obj_type or "string"
+    if is_global then 
+        obj = hunt.global(arg)
+    else
+        obj = hunt.arg(arg)
+    end
+    if is_required and obj == nil then 
+       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
+       error("ERROR: Required argument '"..arg.."' was not provided") 
+    end
+    if obj ~= nil and type(obj) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+    end
+    
+    if default ~= nil and type(default) ~= obj_type then
+        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
+        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+    end
+    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    if obj ~= nil and obj ~= '' then
+        return obj
+    else
+        return default
+    end
+end
+
+path = validate_arg("path", "string", nil, false, false)
+arg1 = validate_arg("arg1", "string", nil, false, false)
+test = validate_arg("test", "boolean", nil, true, true)
+
+debug = validate_arg("debug", "boolean", false, true, false)
+s3_region = validate_arg("s3_region", "string", nil, true, false)
+s3_bucket = validate_arg("s3_bucket", "string", nil, true, false)
+
+hunt.log("Arguments: path="..tostring(path)..", arg1="..tostring(arg1))
+hunt.log("Globals: test="..tostring(test)..", s3_region="..tostring(s3_region)..", s3_bucket="..tostring(s3_bucket)..", debug="..tostring(debug))
 
 --[[ SECTION 2: Functions --]]
 
@@ -186,12 +280,14 @@ hunt.log('unbase64 ("test"): ' .. tostring(hunt.bytes_to_string(hunt.unbase64("d
 -- Test Recovery Upload Options
 file = 'c:\\windows\\system32\\notepad.exe'
 temppath = os.getenv("TEMP") .. '\\test1234.zip'
-hunt.log(hunt.gzip(file, temppath))
+success, err = hunt.gzip(file, temppath)
+hunt.log("gzip: "..tostring(success)..", err="..tostring(err))
 if path_exists(temppath) then hunt.log("Zip Succeeded") else hunt.log('Zip Failed') end
 
 s3 = hunt.recovery.s3(aws_id, aws_secret, s3_region, s3_bucket)
 hunt.log('Uploading ' .. temppath .. ' to S3 Bucket [' ..s3_region .. ':' .. s3_bucket .. ']' )
-hunt.log(s3:upload_file(temppath, 'snarf/evidence.bin'))
+success, err = s3:upload_file(temppath, 'snarf/evidence.bin')
+hunt.log("s3:upload_file: "..tostring(success)..", err="..tostring(err))
 
 -- Test Filesystem Functions
 opts = {

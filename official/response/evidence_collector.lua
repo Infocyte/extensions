@@ -65,31 +65,34 @@ updated = "2020-07-27"
 
 ]=]
 
---[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, var_type, default, is_required)
+function validate_arg(arg, obj_type, var_type, default, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
-    if is_global then 
+    if var_type == "global" then 
         obj = hunt.global(arg)
-    else
+    else if var_type == "arg" then
         obj = hunt.arg(arg)
+    else 
+        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
+        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
     end
-    if is_required and obj == nil then 
-       hunt.error("ERROR: Required argument '"..arg.."' was not provided")
-       error("ERROR: Required argument '"..arg.."' was not provided") 
+
+    if is_required and obj == nil then
+        msg = "ERROR: Required argument '"..arg.."' was not provided"
+        hunt.error(msg); error(msg) 
     end
     if obj ~= nil and type(obj) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
     
     if default ~= nil and type(default) ~= obj_type then
-        hunt.error("ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type)
-        error("ERROR: Invalid type ("..type(obj)..") for default to '"..arg.."', expected "..obj_type)
+        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
+        hunt.error(msg); error(msg)
     end
-    --print(arg.."[global="..tostring(is_global or false).."]: ["..obj_type.."]"..tostring(obj).." Default="..tostring(default))
+    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
     if obj ~= nil and obj ~= '' then
         return obj
     else
@@ -97,8 +100,11 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
+--[=[ SECTION 1: Inputs ]=]
+
+
 -- Evidence Collections
-use_powerforensics = not get_arg("disable_powershell", "boolean", false, true, false)
+use_powerforensics = not validate_arg("disable_powershell", "boolean", "global", false, false)
 MFT = false -- this is a big job
 SecurityEvents = true
 IEHistory = true
@@ -108,12 +114,12 @@ OutlookPSTandAttachments = true
 UserDat = true
 USBHistory = true
 
-debug = get_arg("debug", "boolean", false, true, false)
-proxy = get_arg("proxy", "string", nil, true, false)
-s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
-s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_region", "string", nil, true, true)
-s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
+debug = validate_arg("debug", "boolean", "global", false, false)
+proxy = validate_arg("proxy", "string", "global", nil, false)
+s3_keyid = validate_arg("s3_keyid", "string", "global", nil, false)
+s3_secret = validate_arg("s3_secret", "secret", "global", nil, false)
+s3_region = validate_arg("s3_region", "string", "global", nil, true)
+s3_bucket = validate_arg("s3_bucket", "string", "global", nil, true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]

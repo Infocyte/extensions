@@ -23,8 +23,8 @@ updated = "2020-05-15"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -54,9 +54,9 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-s3path = get_arg("s3_path","string", nil, true, false)
+s3path = validate_arg("s3_path","string", nil, true, false)
 --OR
-smbpath = get_arg("smb_path","string", "//10.200.10.13/scannersource/DeployIRTK.zip", true, false)
+smbpath = validate_arg("smb_path","string", "//10.200.10.13/scannersource/DeployIRTK.zip", true, false)
 
 tmp = os.getenv("temp")
 zippath = tmp.."\\DeployIRTK.zip"

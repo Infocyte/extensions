@@ -75,8 +75,8 @@ updated = "2020-07-27"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -111,7 +111,7 @@ end
 -- Format them any of the following ways
 -- NOTE: '\' needs to be escaped unless you make a explicit string like this: [[string]])
 
-path = get_arg("path", "string", nil, false, true)
+path = validate_arg("path", "string", nil, false, true)
 paths = {}
 if path ~= nil then
 	for val in string.gmatch(path, '[^,%s]+') do
@@ -120,14 +120,14 @@ if path ~= nil then
 end
 
 -- Powerforensics can be used to bypass file locks
-use_powerforensics = not get_arg("disable_powershell", "boolean", false, true, false)
+use_powerforensics = not validate_arg("disable_powershell", "boolean", false, true, false)
 
-debug = get_arg("debug", "boolean", false, true, false)
-proxy = get_arg("proxy", "string", nil, true, false)
-s3_keyid = get_arg("s3_keyid", "string", nil, true, false)
-s3_secret = get_arg("s3_secret", "string", nil, true, false)
-s3_region = get_arg("s3_region", "string", nil, true, true)
-s3_bucket = get_arg("s3_bucket", "string", nil, true, true)
+debug = validate_arg("debug", "boolean", false, true, false)
+proxy = validate_arg("proxy", "string", nil, true, false)
+s3_keyid = validate_arg("s3_keyid", "string", nil, true, false)
+s3_secret = validate_arg("s3_secret", "secret", nil, true, false)
+s3_region = validate_arg("s3_region", "string", nil, true, true)
+s3_bucket = validate_arg("s3_bucket", "string", nil, true, true)
 s3path_modifier = "evidence"
 
 

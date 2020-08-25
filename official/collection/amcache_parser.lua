@@ -39,8 +39,8 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- get_arg(arg, obj_type, default, is_global, is_required)
-function get_arg(arg, obj_type, default, is_global, is_required)
+-- validate_arg(arg, obj_type, default, is_global, is_required)
+function validate_arg(arg, obj_type, default, is_global, is_required)
     -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
     obj_type = obj_type or "string"
@@ -70,12 +70,12 @@ function get_arg(arg, obj_type, default, is_global, is_required)
     end
 end
 
-differential = get_arg("differential", "boolean", true) -- Will save last scan locally and only add new items on subsequent scans.
+differential = validate_arg("differential", "boolean", true) -- Will save last scan locally and only add new items on subsequent scans.
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
-debug = get_arg("debug", "boolean", false, true, false)
-proxy = get_arg("proxy", "string", nil, true, false)
+debug = validate_arg("debug", "boolean", false, true, false)
+proxy = validate_arg("proxy", "string", nil, true, false)
 
 --[=[ SECTION 2: Functions ]=]
 
