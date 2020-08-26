@@ -143,50 +143,76 @@ paths = string_to_list(path)
 if kill_process then 
     hunt.log("Finding and killing processes that match the path:"..path)
     -- List running processes
-    found = false
+    proc_found = false
     for _, proc in pairs(hunt.process.list()) do
         if string.lower(proc:path()) == string.lower(path) then 
-            found = true
+            proc_found = true
             hunt.log("Process found! Killing pid "..proc:pid())
             out, err = hunt.process.kill_pid(proc:pid())
             if out then
                 hunt.log("SUCCESS: Killed "..proc:path().." [pid: "..proc:pid().."]")
                 hunt.status.good()
+                killed = true
                 os.execute("sleep 5")
-            else 
+            else
+                killed = false 
                 hunt.error("FAILED: Could not kill "..proc:path().." [pid: "..proc:pid().."]: "..err)
-                hunt.status.bad()
+                hunt.status.suspicous()
             end
         end
     end
-    if not found then 
+    if not proc_found then 
         hunt.log("NOT FOUND: Process with path "..path)
         hunt.status.low_risk()
     end 
 end
 
-if delete_file then 
-    hunt.log("Finding and deleting "..path)
-    found = false
-    for _,file in pairs(hunt.fs.ls(path, {"files"})) do
-        found = true
-        hunt.log("Found file "..path.." [Size="..tostring(file:size()).."] -- Attempting to remove...")
+if delete_file then
+    if debug then
+        path = "C:/windows/temp/test/txt"
+        hunt.log("Debugging: creating "..path.." and deleting it")
+        os.execute("test > "..path)
+        os.execute("sleep 5")
     end
 
-    ok, err = os.remove(path)
-    if ok then 
-        hunt.log("SUCCESS: "..path.." was deleted.")
-        hunt.status.good()
-    else
-        if found and err:match("No such file") then 
-            hunt.error("FAILED: Could not delete "..path..": OS could not see file, you may need raw drive access to delete this file (this extension currently does not support this)")
-            hunt.status.bad()
-        elseif not found then
-            hunt.log("NOT FOUND: "..path)
-            hunt.status.low_risk()
+    hunt.log("Finding and deleting "..path)
+    file_found = false
+    for _,file in pairs(hunt.fs.ls(path, {"files"})) do
+        file_found = true
+        hunt.log("Found file "..path.." [Size="..tostring(file:size()).."] -- Attempting to remove...")
+    end
+    if file_found then
+        ok, err = os.remove(path)
+        if ok then
+            deleted = true
+            hunt.log("SUCCESS: "..path.." was deleted.")
+            hunt.status.good()
         else
-            hunt.error("FAILED: "..err)
-            hunt.status.suspicious()
+            deleted = false
+            if err:match("No such file") then 
+                hunt.error("FAILED: Could not delete "..path..": OS could not see file, you may need raw drive access to delete this file (this extension currently does not support this)")
+                hunt.status.bad()
+            else
+                hunt.error("FAILED: "..err)
+                hunt.status.suspicious()
+            end
         end
-    end    
+    else
+        hunt.log("NOT FOUND: "..path)
+        hunt.status.low_risk()
+    end
 end
+
+if killed and deleted then 
+    hunt.summary("SUCCESS: File killed and deleted")
+end
+
+summary = ""
+if kill_process and delete_file then
+    summary = "Running="..proc_found..", Killed="..killed..", Found="..file_found..", Deleted="..deleted
+elseif kill_process then
+    summary = "Running="..proc_found..", Killed="..killed
+elseif deleted then
+    summary = "Found="..file_found..", Deleted="..deleted
+end
+hunt.summary(summary)
