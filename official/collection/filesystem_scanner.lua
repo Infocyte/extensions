@@ -11,7 +11,8 @@ created = "2020-04-06"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "filesystem_scanner-default_regex_bad"
@@ -33,7 +34,8 @@ updated = "2020-07-27"
 
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
     name = "regex_bad"
@@ -61,49 +63,12 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
-function validate_arg(arg, obj_type, default, is_global, is_required)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-    obj_type = obj_type or "string"
-    if is_global then 
-        obj = hunt.global(arg)
-    else
-        obj = hunt.arg(arg)
-    end
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
 
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
+regex_suspicious = hunt.arg.string("regex_suspicious") or hunt.global.string("filesystemscanner_default_regex_suspicious", false, [[readme.*\.txt$]])
+regex_bad = hunt.arg.string("regex_bad") or 
+hunt.global.string("filesystem_scanner_default_regex_bad", false, [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]])
 
-regex_suspicious = validate_arg("regex_suspicious", "string", "arg", false)
-if not regex_suspicious then 
-    -- if no arg supplied, get global or default
-    regex_suspicious = validate_arg("filesystemscanner-default_regex_suspicious", "string", "global", false, [[readme.*\.txt$]])
-end
-
-regex_bad = validate_arg("regex_bad", "string", "arg", false)
-if not regex_bad then
-    -- if no arg supplied, get global or default
-    regex_suspicious = validate_arg("filesystem_scanner-default_regex_bad", "string", "global", false, [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]])
-end
-
-path = validate_arg("path", "string", "global", "C:/Users")
+path = hunt.global.string("path", false, "C:/Users")
 paths = {}
 if path ~= nil then
     -- Split comma-seperated values
@@ -112,11 +77,11 @@ if path ~= nil then
 	end
 end
 
-recurse_depth = validate_arg("recurse_depth", "number", "arg", false, 3)
+recurse_depth = hunt.arg.number("recurse_depth", false, 3)
 
 --experimental (not in use)
-powershell = not validate_arg("disable_powershell", "boolean", "global", false, false)
-trailing_days = validate_arg("trailing_days", "string", "global", false, 30)
+powershell = not hunt.global.boolean("disable_powershell", false, false)
+trailing_days = hunt.global.number("trailing_days", false, 30)
 
 
 --[=[ SECTION 2: Functions ]=]
@@ -180,7 +145,7 @@ function parse_csv(path, sep)
     local csvFile = {}
     local file,msg = io.open(path, "r")
     if not file then
-        hunt.error("CSV Parser failed: ".. msg)
+        hunt.error(f"CSV Parser failed: ${msg}")
         return nil
     end
     local header = {}
@@ -188,7 +153,7 @@ function parse_csv(path, sep)
         local n = 1
         local fields = {}
         if not line:match("^#TYPE") then 
-            for str in string.gmatch(line, "([^"..sep.."]+)") do
+            for str in string.gmatch(line, "([^${sep}]+)") do
                 s = str:gsub('"(.+)"', "%1")
                 if not s then 
                     hunt.debug(line)
@@ -219,9 +184,7 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 startdate = os.date("%x", os.time()-60*60*24*trailing_days)
 
@@ -230,45 +193,46 @@ hunt.status.good()
 for _, path in pairs(paths) do 
     opts = {
         "files",
-        "recurse="..recurse_depth
+        f"recurse=${recurse_depth}"
     }
-    for _, file in pairs(hunt.fs.ls(path, opts)) do 
+    for _, fi in pairs(hunt.fs.ls(path, opts)) do 
+        file = fi
         fn = get_filename(file:path())
         if regex_bad and string.find(fn, regex_bad) then
             hunt.status.bad()
-            hunt.log("[BAD]'"..regex_bad.."': "..file:path())
+            hunt.log(f"[BAD]'${regex_bad}': ${file:path()}")
         end
         if regex_suspicious and string.find(fn, regex_suspicious) then 
             hunt.status.bad()
-            hunt.log("[BAD]'"..regex_suspicious.."': "..file:path())
+            hunt.log(f"[BAD]'${regex_suspicious}': ${file:path()}")
         end
     end
 end
 
 if powershell then
     for _, path in pairs(paths) do 
-        cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..regex_bad.."' } | Select FullName -ExpandProperty FullName"
+        cmd = f"Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} -Filter *.txt | where-object { $_.Name -match '${regex_bad}' } | Select FullName -ExpandProperty FullName"
         out, err = hunt.env.run_powershell(cmd)
         if out then
             for line in out:gmatch("[^\n]+") do
                 hunt.status.bad() -- Set Threat to Suspicious on finding
-                hunt.log("[BAD]'"..regex_bad.."': "..line) -- Send to Infocyte Extension Output
+                hunt.log(f"[BAD]'${regex_bad}': ${line}") -- Send to Infocyte Extension Output
             end
         else
-            hunt.error("Error running powershell: "..err)
+            hunt.error(f"Error running powershell: ${err}")
         end
     end
 
     if regex_suspicious then 
-        cmd = "Get-ChildItem -Path '"..path.."' -Recurse -Depth "..recurse_depth.." -Filter *.txt | where-object { $_.Name -match '"..regex_suspicious.."' } | Select FullName -ExpandProperty FullName"
+        cmd = "Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} -Filter *.txt | where-object { $_.Name -match '${regex_suspicious}' } | Select FullName -ExpandProperty FullName"
         out, err = hunt.env.run_powershell(cmd)
         if out then
             for line in out:gmatch"[^\n]+" do
                 hunt.status.suspicious() -- Set Threat to Suspicious on finding
-                hunt.log("[SUSPICIOUS]'"..regex_suspicious.."': "..line) -- Send to Infocyte Extension Output
+                hunt.log(f"[SUSPICIOUS]'${regex_suspicious}': ${line}") -- Send to Infocyte Extension Output
             end
         else 
-            hunt.error("Error running powershell: "..err)
+            hunt.error(f"Error running powershell: ${err}")
         end
     end
 end

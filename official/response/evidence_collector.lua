@@ -14,7 +14,8 @@ created = "2019-10-18"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "s3_keyid"
@@ -59,67 +60,87 @@ updated = "2020-07-27"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, isRequired = boolean, default = <argType>) 
 
     [[args]]
+    name = "MFT"
+    description = "Pulls MFT using Powerforenics -- warning: this is a big job"
+    type = "boolean"
+    required = false
+    default = false
+
+    [[args]]
+    name = "SecurityEvents"
+    description = "Pulls full security event logs"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "IEHistory"
+    description = "Pulls IE History"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "FireFoxHistory"
+    description = "Pulls Firefox History"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "ChromeHistory"
+    description = "Pulls chrome history"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "OutlookPSTandAttachments"
+    description = "Pulls chrome history"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "UserDats"
+    description = "Pulls all user dat files"
+    type = "boolean"
+    required = false
+    default = true
+
+    [[args]]
+    name = "USBHistory"
+    description = "Pulls USB history"
+    type = "boolean"
+    required = false
+    default = true
 
 ]=]
 
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
-
 --[=[ SECTION 1: Inputs ]=]
 
+-- Evidence Collection Arguments
+MFT             = hunt.arg.boolean("MFT", false, false) -- this is a big job and requires powershell
+SecurityEvents  = hunt.arg.boolean("SecurityEvents", false, true)
+IEHistory       = hunt.arg.boolean("IEHistory", false, true)
+FireFoxHistory  = hunt.arg.boolean("FireFoxHistory", false, true)
+ChromeHistory   = hunt.arg.boolean("ChromeHistory", false, true)
+OutlookPSTandAttachments = hunt.arg.boolean("OutlookPSTandAttachments", false, true)
+UserDat         = hunt.arg.boolean("UserDat", false, true)
+USBHistory      = hunt.arg.boolean("USBHistory", false, true)
 
--- Evidence Collections
-use_powerforensics = not validate_arg("disable_powershell", "boolean", "global", false, false)
-MFT = false -- this is a big job
-SecurityEvents = true
-IEHistory = true
-FireFoxHistory = true
-ChromeHistory = true
-OutlookPSTandAttachments = true
-UserDat = true
-USBHistory = true
-
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+-- Global Variables
+use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
+debug           = hunt.global.boolean("debug", false, false)
+proxy           = hunt.global.string("proxy", nil, false)
+s3_keyid        = hunt.global.string("s3_keyid", nil, false)
+s3_secret       = hunt.global.string("s3_secret", nil, false)
+s3_region       = hunt.global.string("s3_region", nil, true)
+s3_bucket       = hunt.global.string("s3_bucket", nil, true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
@@ -197,15 +218,15 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+files_uploaded = 0
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
     -- Insert your Windows code
 
     -- Make tempdir
-    os.execute("mkdir "..os.getenv("temp").."\\ic")
+    os.execute(f"mkdir ${os.getenv('temp')}\\ic")
 
     if (use_powerforensics or MFT) and hunt.env.has_powershell() then
         install_powerforensics()
@@ -225,7 +246,7 @@ if hunt.env.is_windows() then
             end
         end
         tz = (name or 'Error').." ("..(bias or 'Error')..")"
-        hunt.log("Local Timezone: "..tz)
+        hunt.log(f"Local Timezone: ${tz}")
     else 
         hunt.Error("Could got get Local Timezone from registry")
     end
@@ -241,7 +262,7 @@ if hunt.env.is_windows() then
     -- IEHistory for each user
     if IEHistory then
         for _, userfolder in pairs(userfolders()) do
-            for _, path in pairs(hunt.fs.ls(userfolder:path().."\\AppData\\Local\\Microsoft\\Windows\\WebCache", {"files"})) do
+            for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\AppData\\Local\\Microsoft\\Windows\\WebCache", {"files"})) do
                 n = 1
                 if (path:name()):match("WebCacheV*.dat") then
                     paths["IEHistory_"..userfolder:name()..n] = path:path()
@@ -255,7 +276,7 @@ if hunt.env.is_windows() then
     -- AppData\Roaming\Mozilla\Firefox\Profiles\<random text>.default\places.sqlite
     if FireFoxHistory then
         for _, userfolder in pairs(userfolders()) do
-            for _, path in pairs(hunt.fs.ls(userfolder:path().."\\AppData\\Local\\Mozilla\\Firefox\\Profiles\\", {"files", "recurse"})) do
+            for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\AppData\\Local\\Mozilla\\Firefox\\Profiles\\", {"files", "recurse"})) do
                 n = 1
                 if (path:name()):match("places.sqlite") or (path:name()):match("downloads.sqlite")then
                     paths["FireFoxHistory_"..userfolder:name()..n] = path:path()
@@ -269,7 +290,7 @@ if hunt.env.is_windows() then
     --%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\History
     if ChromeHistory then
         for i, userfolder in pairs(userfolders()) do
-            for _, path in pairs(hunt.fs.ls(userfolder:path().."\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\History", {"files"})) do
+            for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\History", {"files"})) do
                 paths["ChromeHistory_"..userfolder:name()] = path:path()
             end
         end
@@ -279,7 +300,7 @@ if hunt.env.is_windows() then
     -- %USERPROFILE%\AppData\Local\Microsoft\Outlook
     if OutlookPSTandAttachments then
         for _, userfolder in pairs(userfolders()) do
-            for _, path in pairs(hunt.fs.ls(userfolder:path().."\\AppData\\Local\\Microsoft\\Outlook", {"files"})) do
+            for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\AppData\\Local\\Microsoft\\Outlook", {"files"})) do
                 paths["OutlookAttachments_"..userfolder:name()] = path:path()
             end
         end
@@ -288,8 +309,8 @@ if hunt.env.is_windows() then
     -- User Dat Files
     if UserDat then
         for _, userfolder in pairs(userfolders()) do
-            paths["NTUserDat_"..userfolder:name()] = userfolder:path().."\\ntuser.dat"
-            paths["UsrclassDat_"..userfolder:name()] = userfolder:path().."\\AppData\\Local\\Microsoft\\Windows\\usrclass.dat"
+            paths["NTUserDat_"..userfolder:name()] = f"${userfolder:path()}\\ntuser.dat"
+            paths["UsrclassDat_"..userfolder:name()] = f"${userfolder:path()}\\AppData\\Local\\Microsoft\\Windows\\usrclass.dat"
         end
     end
 
@@ -303,22 +324,22 @@ if hunt.env.is_windows() then
         outpath = os.getenv("TEMP").."\\ic\\icmft.zip"
         logfile = os.getenv("TEMP").."\\ic\\pslog.log"
 
-        cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
-        hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
-        hunt.debug("Executing Powershell command: "..cmd)
+        cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
+        hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+        hunt.debug(f"Executing Powershell command: ${cmd}")
         out, err = hunt.env.run_powershell(cmd)
         if out then 
-            hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+            hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
             return true
         else 
-            hunt.error("[install_powerforensics] Failed:\n"..err)
+            hunt.error(f"[install_powerforensics] Failed:\n${err}")
             return
         end
         
         -- Compress results
         if path_exists(temppath) then
             hash = hunt.hash.sha1(temppath)
-            hunt.log("Compressing (gzip) " .. temppath .. " (sha1=".. hash .. ") to " .. outpath)
+            hunt.log(f"Compressing (gzip) ${temppath} (sha1=${hash}) to ${outpath}")
             hunt.gzip(temppath, outpath, nil)
             os.remove(temppath)
             file = hunt.fs.ls(outpath)
@@ -341,7 +362,7 @@ if hunt.env.is_windows() then
     -- Insert your POSIX (linux) Code
 
 else
-    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
     return
 end
 
@@ -354,21 +375,21 @@ elseif instance:match("infocyte") then
     instancename = instance:match("(.+).infocyte.com")
 end
 s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
-s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
+s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
 
 for name,path in pairs(paths) do
-    f = hunt.fs.ls(path)
-    if #f > 0 then
+    fi = hunt.fs.ls(path)
+    if #fi > 0 then
         -- If file is being used or locked, this copy will get passed it (usually)
-        outpath = os.getenv("temp").."\\ic\\"..f[1]:name()
+        outpath = f"${os.getenv("temp")}\\ic\\${fi[1]:name()}"
         infile, err = io.open(path, "rb")
         if not infile and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
-            cmd = 'Copy-ForensicFile -Path '..path..' -Destination '..outpath
-            hunt.debug("File Locked ["..err.."]. Executing: "..cmd)
+            cmd = f"Copy-ForensicFile -Path '${path}' -Destination '${outpath}'"
+            hunt.debug(f"File Locked [${err}]. Executing: ${cmd}")
             out, err = hunt.env.run_powershell(cmd)
             if not out then 
-                hunt.error("Powerforensics error: "..err)
+                hunt.error(f"Powerforensics error: ${err}")
             end
         else
            -- Copy file to temp path
@@ -383,20 +404,21 @@ for name,path in pairs(paths) do
         -- hash file
         hash, err = hunt.hash.sha1(outpath)
         if not hash then
-            hunt.debug("Error hashing file: "..outpath..", error: "..err)
+            hunt.debug("Error hashing file: ${outpath}, error: "..err)
             goto continue
         end
 
         -- Upload file to S3
-        s3path = s3path_preamble.."/"..name.."_"..f[1]:name()
-        link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+        s3path = f"${s3path_preamble}/${name}_${f[1]:name()}"
+        link = "https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
         s3:upload_file(outpath, s3path)
-        hunt.log("Uploaded "..name.." - "..path.." (size= "..string.format("%.2f", (f[1]:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
-
+        size = string.format("%.2f", (f[1]:size()/1000))
+        hunt.log("Uploaded ${name} - ${path} (size= ${size}KB, sha1= ${hash}) to S3 bucket ${link}")
+        files_uploaded = files_uploaded + 1
         os.remove(outpath)
         ::continue::
     else
-        hunt.debug(name.." failed. "..path.." does not exist.")
+        hunt.debug(f"${name} failed. ${path} does not exist.")
     end
 end
 
@@ -404,6 +426,7 @@ end
 os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")
 
 hunt.status.good()
+hunt.summary(f"Uploaded ${files_uploaded} files")
 
 
 --[=[

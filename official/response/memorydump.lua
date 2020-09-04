@@ -19,7 +19,8 @@ created = "2019-9-19"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "s3_keyid"
@@ -57,7 +58,8 @@ updated = "2020-07-27"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
 
@@ -65,51 +67,17 @@ updated = "2020-07-27"
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
 
 
 hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+local debug = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", true)
+s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "memory"
 
 --[=[ SECTION 2: Functions ]=]
@@ -134,9 +102,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Download os-specific pmem
 mempath = tempfolder().."/physmem.map"
@@ -165,7 +131,7 @@ elseif hunt.env.is_macos() then
         client:proxy(proxy)
     end
     client:download_file(pmemzippath)
-    os.execute("unzip "..pmemzippath)
+    os.execute(f"unzip ${pmemzippath}")
     pmempath = "./osxpmem.app/osxpmem"
     os.execute("kextutil -t osxpmem.app/MacPmem.kext/")
     os.execute("chown -R root:wheel osxpmem.app/")
@@ -185,17 +151,17 @@ elseif hunt.env.is_linux() or hunt.env.has_sh() then
     os.execute("chmod +x "..pmempath)
 
 else
-    hunt.warn("WARNING: Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn(f"WARNING: Not a compatible operating system for this extension [${host_info:os()}]")
     return
 end
 
 
 -- Dump Memory to disk
-hunt.debug("Memory dump on "..host_info:os().." host started to local path "..mempath)
+hunt.debug(f"Memory dump on ${host_info:os()} host started to local path ${mempath}")
 -- os.execute("winpmem.exe --output - --format map | ")    --split 1000M
-result = os.execute(pmempath.." --output "..mempath.." --format map --split 500M")
+result = os.execute(f"${pmempath} --output ${mempath} --format map --split 500M")
 if not result then
-  hunt.error("Winpmem driver failed. [Error: "..result.."]")
+  hunt.error(f"Winpmem driver failed. [Error: ${result}]")
   exit()
 end
 
@@ -203,9 +169,9 @@ end
 -- Scans have 1 hour timeouts currently so we're gunna spawn a background task to
 -- upload it in case it takes a few hours.
 if s3_keyid then
-    script = 'recovery = hunt.recovery.s3("'..s3_keyid..'", "'..s3_secret..'", "'..s3_region..'","'..s3_bucket..'")\n'
+    script = f"recovery = hunt.recovery.s3('${s3_keyid}', '${s3_secret}', '${s3_region}','${s3_bucket}')\n"
 else
-    script = 'recovery = hunt.recovery.s3(nil, nil, "'..s3_region..'","'..s3_bucket..'")\n'
+    script = f"recovery = hunt.recovery.s3(nil, nil, '${s3_region}','${s3_bucket}')\n"
 end
 
 instance = hunt.net.api()
@@ -215,7 +181,7 @@ elseif instance:match("infocyte") then
     -- get instancename
     instancename = instance:match("(.+).infocyte.com")
 end
-s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
+s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
 
 for _, path in pairs(hunt.fs.ls(tempfolder())) do
     if (path:path()):match("physmem") then
@@ -225,10 +191,10 @@ for _, path in pairs(hunt.fs.ls(tempfolder())) do
             hash = 'Hashing Skipped'
         end
         s3path = s3path_preamble.."/"..path:name()
-        link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-        hunt.log("Scheduling the Upload of Memory Dump "..s3path.." (sha1=".. hash .. ") to S3 at "..link)
-        script = script .. 'recovery:upload_file([['..path:path()..']], "'..s3path..'")\n'
-        script = script .. 'os.remove([['..path:path()..']])\n'
+        link = "https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
+        hunt.log("Scheduling the Upload of Memory Dump ${s3path} (sha1=${hash}) to S3 at ${link}")
+        script = script .. f"recovery:upload_file([[${path:path()}]], '${s3path}')\n"
+        script = script .. f"os.remove([[${path:path()}]])\n"
     end
 end
 

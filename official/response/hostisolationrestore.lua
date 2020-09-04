@@ -12,12 +12,14 @@ created = "2019-9-16"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
 	[[globals]]
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
 	[[args]]
 
@@ -46,9 +48,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 osversion = host_info:os()
 if string.find(osversion, "windows xp") then
 	-- TO DO: XP's netsh firewall
@@ -56,7 +56,7 @@ if string.find(osversion, "windows xp") then
 elseif hunt.env.is_windows() then
 	if path_exists(backup_location) then
 		-- os.execute("netsh advfirewall firewall delete rule name='Infocyte Host Isolation (infocyte)'")
-		os.execute("netsh advfirewall import " .. backup_location)
+		os.execute(f"netsh advfirewall import ${backup_location}")
 		os.remove(backup_location)
 		-- os.execute("netsh advfirewall reset")
 		hunt.log("Host has been restored and is no longer isolated")
@@ -81,3 +81,4 @@ elseif  hunt.env.has_sh() then
 	end
 end
 
+hunt.summary("Firewall Restored from Backup")

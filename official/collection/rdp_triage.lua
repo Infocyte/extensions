@@ -14,10 +14,12 @@ created = "2020-03-01"
 updated = "2020-07-20"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "trailing_days"
+    description = "Number of days to go back in the logs"
     type = "number"
     default = 60
     required = false
@@ -30,53 +32,24 @@ updated = "2020-07-20"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[Args]]
+    name = "trailing_days"
+    description = "Number of days to go back in the logs"
+    type = "number"
+    required = false
 
 ]=]
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
+trailing_days = hunt.arg.number("trailing_days") or hunt.global.number("trailing_days", false, 60)
+local debug = hunt.global.boolean("debug", false, false)
 
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
-
-trailing_days = validate_arg("trailing_days", "number", "global", false, 60)
-debug = validate_arg("debug", "boolean", "global", false, false)
-
-if(validate_arg("disable_powershell", "boolean", "global", false, false)) then
+if hunt.global.boolean("disable_powershell", false, false) then
     hunt.error("disable_powershell global is set. Cannot run extension without powershell")
     return
 end
@@ -133,9 +106,7 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 if not hunt.env.is_windows() then
     hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
 end
@@ -306,7 +277,7 @@ script = script..[==[
     return $true
 ]==]
 
-
+hunt.debug("Running powershell script")
 out, err = hunt.env.run_powershell(script)
 if out then 
     hunt.verbose(out)
@@ -328,7 +299,7 @@ if not debug then
 end
 
 n = 0
-if rdp_processes then 
+if rdp_processes and #rdp_processes > 0 then 
     for i,v in pairs(rdp_processes) do 
         -- Create a new artifact
         artifact = hunt.survey.artifact()
@@ -345,7 +316,7 @@ else
     hunt.warn("No processes found associated with RDP sessions. Logging may not be enabled for EventId 4688 or 4624")
 end
 
-if rdp_localSessionManager then 
+if rdp_localSessionManager and #rdp_localSessionManager > 0 then 
     for i,v in pairs(rdp_localSessionManager) do 
         hunt.log("RDP Session ["..(v['EventId'] or '').."]"..": eventtime="..(v['TimeCreated'] or '')..", ip=".. (v['IP'] or '')..", username=".. (v['domain'] or '').."\\"..(v['Username'] or '')..", message="..(v['Action'] or ''))
     end
@@ -353,7 +324,7 @@ else
     hunt.warn("No remote RDP sessions found. Logging may not be enabled for EventId 21 or 24")
 end
 
-if rdp_remoteConnectionManager then
+if rdp_remoteConnectionManager and #rdp_remoteConnectionManager > 0 then
     for i,v in pairs(rdp_remoteConnectionManager) do 
         hunt.log("RDP Connection Attempt ["..(v['EventId'] or '').."]"..", eventtime="..(v['TimeCreated'] or '')..", ip="..(v['IP'] or '')..", username="..(v['domain'] or '').."\\"..(v['Username'] or ''))
     end
@@ -361,7 +332,7 @@ else
     hunt.warn("No remote RDP connection attempts found. Logging may not be enabled for EventId 1149")
 end
 
-if rdp_logons then
+if rdp_logons and #rdp_logons > 0 then
     for i,v in pairs(rdp_logons) do 
         hunt.log("RDP Logon ["..(v['EventId'] or '').."]"..": eventtime="..(v['TimeCreated'] or '')..", ip="..(v['IP'] or '')..", username=".. (v['domain'] or '').."\\"..(v['Username'] or '')..", sid="..(v['SecurityId'] or '')..", logontype="..(v['LogonType'] or ''))
     end

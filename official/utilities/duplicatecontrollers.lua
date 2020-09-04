@@ -20,9 +20,7 @@ controllers = 4 -- Additional Controllers to install
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() then return end
 local script = '$TotalControllers = '..controllers
@@ -55,8 +53,8 @@ for ($i=1; $i -le $TotalControllers; $i++) {
 
 out, err = hunt.env.run_powershell(script)
 if out then
-    hunt.log("New Controllers deployed on " .. host_info:hostname()..": "..out)
+    hunt.log(f"New Controllers deployed on ${host_info:hostname()}: ${out}")
     hunt.status.good()
 else
-    hunt.error("Failure: "..err)
+    hunt.error(f"Failure: ${err}")
 end

@@ -13,7 +13,8 @@ created = "2019-10-18"
 updated = "2020-07-20"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
 
     [[globals]]
@@ -53,57 +54,24 @@ updated = "2020-07-20"
 
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
 
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
-
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+local debug = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", true)
+s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "evidence"
 
-if(validate_arg("disable_powershell", "boolean", "global", false, false)) then
+if hunt.global.boolean("disable_powershell", false, false) then
     hunt.error("disable_powershell global is set. Cannot run extension without powershell")
     return
 end
@@ -134,10 +102,10 @@ function install_powerforensics()
     ]==]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+        hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
         return true
     else 
-        hunt.error("[install_powerforensics] Failed:\n"..err)
+        hunt.error(f"[install_powerforensics] Failed:\n${err}")
         return
     end
 end
@@ -159,18 +127,17 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() or not hunt.env.has_powershell() then
-    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
     return
 end
 
 -- Setup temp folder
 tmp = os.getenv("TEMP").."\\ic"
 if not path_exists(tmp) then 
-    os.execute("mkdir "..tmp)
+    os.execute(f"mkdir ${tmp}")
 end
 temppath = tmp.."\\icmft.csv"
 outpath = tmp.."\\icmft.zip"
@@ -179,19 +146,19 @@ outpath = tmp.."\\icmft.zip"
 install_powerforensics()
 
 -- Get MFT w/ Powerforensics
-cmd = 'Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '..temppath..' -Force'
-hunt.debug("Getting MFT with PowerForensics and exporting to "..temppath)
-hunt.debug("Executing Powershell command: "..cmd)
+cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
+hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+hunt.debug(f"Executing Powershell command: ${cmd}")
 out, err = hunt.env.run_powershell(cmd)
 if not out then 
-    hunt.error("Failed to run Get-ForensicFileRecord: "..err)
+    hunt.error(f"Failed to run Get-ForensicFileRecord: ${err}")
     return
 end
 
 -- Compress results
 file = hunt.fs.ls(temppath)
 if #file > 0 then
-    hunt.debug("Compressing (gzip) " .. temppath .. " to " .. outpath)
+    hunt.debug(f"Compressing (gzip) ${temppath} to ${outpath}")
     hunt.gzip(temppath, outpath, nil)
 else
     hunt.error("PowerForensics MFT Dump failed.")
@@ -216,15 +183,16 @@ elseif instance:match("infocyte") then
     instancename = instance:match("(.+).infocyte.com")
 end
 recovery = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
-s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
-s3path = s3path_preamble .. '/mft.zip'
-hunt.debug("Uploading gzipped MFT (size= "..string.format("%.2f", (file[1]:size()/1000000)).."MB, sha1=".. hash .. ") to S3 bucket " .. s3_region .. ":" .. s3_bucket .. "/" .. s3path)
+s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
+s3path = f"${s3path_preamble}/mft.zip"
+size = string.format("%.2f", (file[1]:size()/1000000))
+hunt.debug(f"Uploading gzipped MFT (size= ${size}MB, sha1=${hash}) to S3 bucket ${s3_region}:${s3_bucket}/${s3path}")
 r, err = recovery:upload_file(outpath, s3path)
 if r then 
     hunt.log("MFT successfully uploaded to S3.")
     hunt.status.good()
 else 
-    hunt.error("MFT could not be uploaded to S3: "..err)
+    hunt.error(f"MFT could not be uploaded to S3: ${err}")
 end
 
 -- Cleanup

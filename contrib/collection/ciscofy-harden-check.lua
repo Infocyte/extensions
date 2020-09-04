@@ -22,52 +22,20 @@ created = "2019-11-20"
 updated = "2020-07-29"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
 
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
 
 --[=[ SECTION 2: Functions ]=]
 

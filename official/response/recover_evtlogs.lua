@@ -14,7 +14,8 @@ created = "2020-07-21"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "s3_keyid"
@@ -52,54 +53,21 @@ updated = "2020-07-27"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
 
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
 
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
-
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+local debug = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", true)
+s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
@@ -125,46 +93,45 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hostname = host_info:hostname()
-if host_info:domain() then 
-    hostname = hostname.."."..host_info:domain()
-end
-hunt.debug("Starting Extention. Hostname: " .. hostname .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+
+files_uploaded = 0
+
 if not hunt.env.is_windows() then
-    hunt.warn("Not a compatible operating system for this extension [" .. host_info:os() .. "]")
+    hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
     return
 end
 
-tmp = os.getenv("temp").."\\ic"
-zippath = tmp.."\\icpackage.zip"
+tmp = f"${os.getenv('temp')}\\ic"
+zippath = f"${tmp}\\icpackage.zip"
 
 -- Make tempdir
-os.execute("mkdir "..tmp)
+os.execute(f"mkdir ${tmp}")
 
 cmds = {
-    "wevtutil.exe epl Microsoft-Windows-WinRM/Operational "..tmp.."\\Microsoft-Windows-WinRMOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-Bits-Client/Operational "..tmp.."\\Microsoft-Windows-BitsClientOperational.evtx",
-    "wevtutil.exe epl security "..tmp.."\\Security.evtx",
-    "wevtutil.exe epl system "..tmp.."\\System.evtx",
-    "wevtutil.exe epl application "..tmp.."\\Application.evtx",
-    "wevtutil.exe epl Microsoft-Windows-TerminalServices-LocalSessionManager/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesLocalSessionOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesRemoteConnectionManagerOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-PowerShell/Operational "..tmp.."\\Microsoft-Windows-PowerShellOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-PowerShell/Analytic "..tmp.."\\Microsoft-Windows-PowerShellAnalytic.evtx",
-    "wevtutil.exe epl Microsoft-Windows-TaskScheduler/Operational "..tmp.."\\Microsoft-Windows-TaskSchedulerOperational.evtx",
-    "wevtutil.exe epl \"Windows PowerShell\" "..tmp.."\\WindowsPowerShell.evtx",
-    "wevtutil.exe epl Microsoft-Windows-WinRM/Analytic "..tmp.."\\Microsoft-Windows-WinRMAnalytic.evtx",
-    "wevtutil.exe epl Microsoft-Windows-Sysmon/Operational "..tmp.."\\Microsoft-Windows-SysmonOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational "..tmp.."\\Microsoft-Windows-WMIActivityOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational "..tmp.."\\Microsoft-Windows-TerminalServicesRDPClientOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational "..tmp.."\\Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx",
-    "wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' "..tmp.."\\Microsoft-Windows-DefenderOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational "..tmp.."\\Microsoft-Windows-TerminalServices-GatewayOperational.evtx",
-    "wevtutil.exe epl Microsoft-Windows-SmbClient/Security "..tmp.."\\Microsoft-Windows-SMBClient.evtx"
+    f"wevtutil.exe epl Microsoft-Windows-WinRM/Operational ${tmp}\\Microsoft-Windows-WinRMOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-Bits-Client/Operational ${tmp}\\Microsoft-Windows-BitsClientOperational.evtx",
+    f"wevtutil.exe epl security ${tmp}\\Security.evtx",
+    f"wevtutil.exe epl system ${tmp}\\System.evtx",
+    f"wevtutil.exe epl application ${tmp}\\Application.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-TerminalServices-LocalSessionManager/Operational ${tmp}\\Microsoft-Windows-TerminalServicesLocalSessionOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational ${tmp}\\Microsoft-Windows-TerminalServicesRemoteConnectionManagerOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-PowerShell/Operational ${tmp}\\Microsoft-Windows-PowerShellOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-PowerShell/Analytic ${tmp}\\Microsoft-Windows-PowerShellAnalytic.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-TaskScheduler/Operational ${tmp}\\Microsoft-Windows-TaskSchedulerOperational.evtx",
+    f"wevtutil.exe epl \"Windows PowerShell\" ${tmp}\\WindowsPowerShell.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-WinRM/Analytic ${tmp}\\Microsoft-Windows-WinRMAnalytic.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-Sysmon/Operational ${tmp}\\Microsoft-Windows-SysmonOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational ${tmp}\\Microsoft-Windows-WMIActivityOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational ${tmp}\\Microsoft-Windows-TerminalServicesRDPClientOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational ${tmp}\\Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx",
+    f"wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' ${tmp}\\Microsoft-Windows-DefenderOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational ${tmp}\\Microsoft-Windows-TerminalServices-GatewayOperational.evtx",
+    f"wevtutil.exe epl Microsoft-Windows-SmbClient/Security ${tmp}\\Microsoft-Windows-SMBClient.evtx"
 }
 for _, cmd in ipairs(cmds) do
-    hunt.debug("Running Command: "..cmd)
-    pipe = io.popen(cmd.." 2>&1 " , "r")
+    hunt.debug(f"Running Command: ${cmd}")
+    pipe = io.popen(f"${cmd} 2>&1", "r")
     if pipe then 
         out = pipe:read("*all")
         pipe:close()
@@ -188,15 +155,15 @@ for n,v in pairs(regtz) do
         end
     end
 end
-tz = name.." ("..bias..")"
-hunt.log("Local Timezone: "..tz)
+tz = f"${name} (${bias})"
+hunt.log(f"Local Timezone: ${tz}")
 
 -- uploading
 files = hunt.fs.ls(tmp, {files})
 for _, path in pairs(files) do 
     outpath = path:path()..".gz"
     hash = hunt.hash.sha1(path:path())
-    hunt.log("Compressing (gzip) " .. path:path() .. " (sha1=".. hash .. ") to " .. outpath)
+    hunt.log(f"Compressing (gzip) ${path:path()} (sha1=${hash}) to ${outpath}")
     hunt.gzip(path:path(), outpath, nil)
     os.remove(path:path())
     file = hunt.fs.ls(outpath)
@@ -215,18 +182,22 @@ elseif instance:match("infocyte") then
     instancename = instance:match("(.+).infocyte.com")
 end
 s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
-s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
+s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
 
 files = hunt.fs.ls(tmp)
-for name, path in pairs(files) do 
+for name, p in pairs(files) do 
+    path = p
     -- Upload file to S3
-    s3path = s3path_preamble.."/"..name.."_"..path:name()
-    link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+    s3path = f"${s3path_preamble}/${name}_${path:name()}"
+    link = "https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
     s3:upload_file(path:path(), s3path)
-    hunt.log("Uploaded "..path:name().." - "..path:path().." (size= "..string.format("%.2f", (path:size()/1000)).."KB, sha1=".. hash .. ") to S3 bucket " .. link)
+    size = string.format("%.2f", (path:size()/1000))
+    hunt.log(f"Uploaded ${path:name()} - ${path:path()} (size= ${size}KB, sha1=${hash}) to S3 bucket ${link}")
+    files_uploaded = files_uploaded + 1
     os.remove(outpath)
 end
 
 -- Cleanup
-os.execute("RMDIR /S/Q "..tmp)
+os.execute(f"RMDIR /S/Q ${tmp}")
 hunt.status.good()
+hunt.summary(f"Uploaded ${files_uploaded} files")

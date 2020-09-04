@@ -11,7 +11,8 @@ created = "2019-09-19"
 updated = "2020-08-12"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "s3_keyid"
@@ -56,7 +57,8 @@ updated = "2020-08-12"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
     name = "use_s3"
@@ -69,51 +71,17 @@ updated = "2020-08-12"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
 
 -- Args
-use_s3 = validate_arg("use_s3", "boolean", "arg", false, false)
+use_s3 = hunt.arg.boolean("use_s3", false, false)
 
 -- Globals
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false, false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", use_s3)
-s3_bucket = validate_arg("s3_bucket", "string", "global", use_s3)
+local debug = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", use_s3)
+s3_bucket = hunt.global.string("s3_bucket", use_s3)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
@@ -142,9 +110,7 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
-
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if hunt.env.is_windows() then
     logs = {
@@ -185,23 +151,24 @@ if use_s3 then
     s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
 
 
-    for _, p in pairs(logs) do
-        for _, path in pairs(hunt.fs.ls(p)) do
+    for _, logpath in pairs(logs) do
+        for _, p in pairs(hunt.fs.ls(logpath)) do
+            path = p
             fn = get_filename(path:path())
             -- Send File to S3
             if path_exists(path:path()) and (string.find(fn, "^agent-") or string.find(fn, "^worker-")) then
-                s3path = s3path_preamble.."/"..path:name()
-                link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
+                s3path = f"${s3path_preamble}/${path:name()}"
+                link = "https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
 
                 -- Upload to S3
                 success, err = s3:upload_file(path:path(), s3path)
                 if success then
-                    hunt.log("Uploaded "..path:path().." to S3 at "..link)
+                    hunt.log(f"Uploaded ${path:path()} to S3 at ${link}")
                 else
-                    hunt.error("Error on s3 upload of "..path:path()..": "..err)
+                    hunt.error(f"Error on s3 upload of ${path:path()}: ${err}")
                 end
             else
-                hunt.error("File read/copy failed on "..path:path())
+                hunt.error(f"File read/copy failed on ${path:path()}")
             end
         end
     end

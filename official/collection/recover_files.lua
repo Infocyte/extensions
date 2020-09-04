@@ -13,7 +13,8 @@ created = "2019-11-23"
 updated = "2020-07-27"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "s3_keyid"
@@ -58,7 +59,8 @@ updated = "2020-07-27"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
     name = "path"
@@ -75,57 +77,23 @@ updated = "2020-07-27"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
-
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
-
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
 
 -- Provide paths below (full file path or folders). Folders will take everything
 -- in the folder.
 -- Format them any of the following ways
 -- NOTE: '\' needs to be escaped unless you make a explicit string like this: [[string]])
 
-path = validate_arg("path", "string", "arg", true)
+path = hunt.arg.string("path", true)
 
 -- Powerforensics can be used to bypass file locks
-use_powerforensics = not validate_arg("disable_powershell", "boolean", "global", false, false)
+use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
 
-debug = validate_arg("debug", "boolean", "global", false, false)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+local debug = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", true)
+s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "evidence"
 
 
@@ -134,11 +102,12 @@ s3path_modifier = "evidence"
 
 function string_to_list(str)
     -- Converts a comma seperated list to a lua list object
-    list = {}
-    for s in string.gmatch(patterns, '([^,]+)') do
-        table.insert(s, list)
+    local newlist = {}
+    for line in string.gmatch(str, '([^,]+)') do
+        local l = line:gsub("^%s*(.-)%s*$", "%1")
+        table.insert(newlist, l)
     end
-    return list
+    return newlist
 end
 
 function path_exists(path)
@@ -162,10 +131,6 @@ function install_powerforensics()
         Checks for NuGet and installs Powerforensics
         Output: [bool] Success
     ]=]
-    if not powershell then 
-        hunt.error("Infocyte's powershell lua functions are not available. Add Infocyte's powershell.* functions.")
-        throw "Error"
-    end
     script = [==[
         # Download/Install PowerForensics
         $n = Get-PackageProvider -name NuGet
@@ -181,10 +146,10 @@ function install_powerforensics()
     ]==]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug("Powershell Succeeded:\n"..out)
+        hunt.debug(f"Powershell Succeeded: ${out}")
         return true
     else 
-        hunt.error("Powershell Failed:\n"..err)
+        hunt.error(f"Powershell Failed: ${err}")
         return false
     end
 end
@@ -192,16 +157,15 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-domain = host_info:domain() or "N/A"
-hunt.debug("Starting Extention. Hostname: " .. host_info:hostname() .. ", Domain: " .. domain .. ", OS: " .. host_info:os() .. ", Architecture: " .. host_info:arch())
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Make tempdir
 logfolder = os.getenv("temp").."\\ic"
-lf = hunt.fs.ls(logfolder)
-if #lf == 0 then os.execute("mkdir "..logfolder) end
+if not path_exists(logfolder) then os.execute("mkdir "..logfolder) end
 
 if use_powerforensics and hunt.env.has_powershell() then
-    install_powerforensics()
+    installed = install_powerforensics()
+    hunt.debug(f"PowerForensics was installed: ${installed}")
 end
 
 
@@ -213,52 +177,60 @@ elseif instance:match("infocyte") then
     instancename = instance:match("(.+).infocyte.com")
 end
 s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
-s3path_preamble = instancename..'/'..os.date("%Y%m%d")..'/'..host_info:hostname().."/"..s3path_modifier
+s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
 
+paths = string_to_list(path)
 
-for _, p in pairs(paths) do
-    for _, path in pairs(hunt.fs.ls(p)) do
-        -- If file is being used or locked, this copy will get passed it (usually)
-        outpath = os.getenv("temp").."\\ic\\"..path:name()
-        infile, err = io.open(path:path(), "rb")
-        if not infile and use_powerforensics and hunt.env.has_powershell() then
-            -- Assume file locked by kernel, use powerforensics to copy
-            cmd = 'Copy-ForensicFile -Path '..path:path()..' -Destination '..outpath
-            hunt.debug("File Locked. Executing: "..cmd)
-            ret, out = powershell.run_cmd(cmd)
-            hunt.debug("Powerforensics output: "..out)
-        elseif not infile then
-            hunt.error("Could not open "..path:path().." ["..err.."].\nTry enabling powerforensics to bypass file lock.")
-            goto continue
-        else
-            data = infile:read("*all")
-            infile:close()
-
-            outfile = io.open(outpath, "wb")
-            outfile:write(data)
-            outfile:flush()
-            outfile:close()
-        end
-
-        -- Hash the file copy
-        if path_exists(outpath) then
-            hash = hunt.hash.sha1(outpath)
-            s3path = s3path_preamble.."/"..path:name().."-"..hash
-            link = "https://"..s3_bucket..".s3."..s3_region..".amazonaws.com/" .. s3path
-
-            -- Upload to S3
-            success, err = s3:upload_file(outpath, s3path)
-            if success then
-                hunt.log("Uploaded "..path:path().." (sha1=".. hash .. ") to S3 at "..link)
+for i, p in pairs(paths) do
+    hunt.debug(f"Finding file: ${p}")
+    files = hunt.fs.ls(p)
+    if files and #files > 0 then 
+        for _, p2 in pairs(files) do
+            path = p2
+            -- If file is being used or locked, this copy will get passed it (usually)
+            outpath = os.getenv("temp").."\\ic\\"..path:name()
+            infile, err = io.open(path:path(), "rb")
+            if not infile and use_powerforensics and hunt.env.has_powershell() then
+                -- Assume file locked by kernel, use powerforensics to copy
+                cmd = f"Copy-ForensicFile -Path '${path:path()}' -Destination '${outpath}'"
+                hunt.debug(f"File Locked. Executing: ${cmd}")
+                ret, out = powershell.run_cmd(cmd)
+                hunt.debug(f"Powerforensics output: ${out}")
+            elseif not infile then
+                hunt.error(f"Could not open ${path:path()} [${err}].\nTry enabling powerforensics to bypass file lock.")
+                goto continue
             else
-                hunt.error("Error on s3 upload of "..path:path()..": "..err)
+                data = infile:read("*all")
+                infile:close()
+
+                outfile = io.open(outpath, "wb")
+                outfile:write(data)
+                outfile:flush()
+                outfile:close()
             end
 
-            os.remove(outpath)
-        else
-            hunt.error("File read/copy failed on "..path:path())
+            -- Hash the file copy
+            if path_exists(outpath) then
+                hash = hunt.hash.sha1(outpath)
+                s3path = s3path_preamble.."/"..path:name().."-"..hash
+                link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
+
+                -- Upload to S3
+                success, err = s3:upload_file(outpath, s3path)
+                if success then
+                    hunt.log(f"Uploaded ${path:path()} (sha1=${hash}) to S3 at ${link}")
+                else
+                    hunt.error(f"Error on s3 upload of ${path:path()}: ${err}")
+                end
+
+                os.remove(outpath)
+            else
+                hunt.error(f"File read/copy failed on ${path:path()}")
+            end
+            ::continue::
         end
-        ::continue::
+    else
+        hunt.warn(f"No files found at: ${p}")
     end
 end
-os.execute("RMDIR /S/Q "..os.getenv("temp").."\\ic")
+os.execute(f"RMDIR /S/Q ${os.getenv('temp')}\\ic")
