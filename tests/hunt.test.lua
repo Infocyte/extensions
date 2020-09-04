@@ -11,7 +11,8 @@ created = "2020-01-24"
 updated = "2020-08-24"
 
 ## GLOBALS ##
-# Global variables -> hunt.global('name')
+# Global variables
+# -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
     name = "test"
@@ -23,12 +24,14 @@ updated = "2020-08-24"
     name = "s3_region"
     description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
     type = "string"
+    default = "us-east-2"
     required = false
 
     [[globals]]
     name = "s3_bucket"
     description = "S3 Bucket name for uploading"
     type = "string"
+    default = "test-extensions"
     required = false
 
     [[globals]]
@@ -39,13 +42,15 @@ updated = "2020-08-24"
     required = false
 
 ## ARGUMENTS ##
-# Runtime arguments -> hunt.arg('name')
+# Runtime arguments
+# -> hunt.arg(name = string, default = <type>, isRequired = boolean) 
 
     [[args]]
     name = "path"
-    description = 'Test'
+    description = 'This is a test of a path variable'
     type = "string"
     required = false
+    default = "C:\\users"
 
     [[args]]
     name = "arg1"
@@ -57,54 +62,26 @@ updated = "2020-08-24"
 
 
 --[=[ SECTION 1: Inputs ]=]
--- validate_arg(arg, obj_type, var_type, is_required, default)
-function validate_arg(arg, obj_type, var_type, is_required, default)
-    -- Checks arguments (arg) or globals (global) for validity and returns the arg if it is set, otherwise nil
+-- hunt.global(name = string, isRequired = bool, default = bool)
+-- hunt.arg(name = string, isRequired = bool, default = bool)
 
-    obj_type = obj_type or "string"
-    if var_type == "global" then 
-        obj = hunt.global(arg)
-    else if var_type == "arg" then
-        obj = hunt.arg(arg)
-    else 
-        hunt.error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-        error("ERROR: Incorrect var_type provided. Must be 'global' or 'arg' -- assuming arg")
-    end
+path = hunt.arg.string("path", false, "C:\\Users")
+arg1 = hunt.arg.string("arg1", false, "arg1_default")
+test = hunt.arg.number("test", true)
 
-    if is_required and obj == nil then
-        msg = "ERROR: Required argument '"..arg.."' was not provided"
-        hunt.error(msg); error(msg) 
-    end
-    if obj ~= nil and type(obj) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(obj)..") for argument '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    
-    if default ~= nil and type(default) ~= obj_type then
-        msg = "ERROR: Invalid type ("..type(default)..") for default to '"..arg.."', expected "..obj_type
-        hunt.error(msg); error(msg)
-    end
-    hunt.debug("INPUT[global="..tostring(is_global or false).."]: "..arg.."["..obj_type.."]"..tostring(obj).."; Default="..tostring(default))
-    if obj ~= nil and obj ~= '' then
-        return obj
-    else
-        return default
-    end
-end
+debugging = hunt.global.boolean("debug", false, false)
+proxy = hunt.global.string("proxy", false)
+s3_keyid = hunt.global.string("s3_keyid", false)
+s3_secret = hunt.global.string("s3_secret", false)
+s3_region = hunt.global.string("s3_region", false, "us-east-2")
+s3_bucket = hunt.global.string("s3_bucket", false, "test-extensions")
 
-path = validate_arg("path", "string", "global", false)
-arg1 = validate_arg("arg1", "string", "global", false)
-test = validate_arg("test", "boolean", "global", false)
 
-debug = validate_arg("debug", "boolean", "global", true)
-proxy = validate_arg("proxy", "string", "global", false)
-s3_keyid = validate_arg("s3_keyid", "string", "global", false)
-s3_secret = validate_arg("s3_secret", "secret", "global", false)
-s3_region = validate_arg("s3_region", "string", "global", true)
-s3_bucket = validate_arg("s3_bucket", "string", "global", true)
+hunt.log(f"Arguments: test=${test}, path=${path}, arg1=${arg1}")
+hunt.log(f"Globals:s3_region=${s3_region}, s3_bucket=${s3_bucket}, debugging=${debugging}, proxy=${proxy}")
 
-hunt.log("Arguments: path="..tostring(path)..", arg1="..tostring(arg1))
-hunt.log("Globals: test="..tostring(test)..", s3_region="..tostring(s3_region)..", s3_bucket="..tostring(s3_bucket)..", debug="..tostring(debug))
+host_info = hunt.env.host_info()
+hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 --[[ SECTION 2: Functions --]]
 
@@ -220,11 +197,15 @@ procs = hunt.process.list()
 hunt.log("ProcessList: ")
 n = 0
 for _, proc in pairs(procs) do
+    print("Process("..n.."): "..proc:pid())
     if n == 3 then break end
-    hunt.log("Found pid " .. proc:pid() .. " @ " .. proc:path())
-    hunt.log("- Owned by: " .. proc:owner())
-    hunt.log("- Started by: " .. proc:ppid())
-    hunt.log("- Command Line: " .. proc:cmd_line())
+    if not proc:path() then 
+        hunt.error("(${n})OH FUCK! ${proc:pid()}")
+    end
+    hunt.log(f"Found pid ${proc:pid()} @ ${proc:path()}")
+    hunt.log(f"- Owned by: ${proc:owner()}")
+    hunt.log(f"- Started by: ${proc:ppid()}")
+    hunt.log(f"- Command Line: ${proc:cmd_line()}")
     n = n+1
 end
 os.execute('C:\\windows\\system32\\calc.exe')
@@ -244,11 +225,12 @@ r,err = hunt.registry.list_keys(regkey)
 if not r then 
     hunt.error(tostring(err))
 else
-    hunt.log("Registry: " .. table.tostring(r))
+    str = table.tostring(r)
+    hunt.log(f"Registry: ${str}")
 end
 
 for name,value in pairs(hunt.registry.list_values(regkey)) do
-    print(name .. ": " .. value)
+    print(f"${name}: ${value}")
 end
 
 
@@ -350,4 +332,5 @@ a:sha1('1a4e2c3bbc095cb7d9b85cabe2aea2c9a769b480')
 --a:sha256('2190f181fe3c821e2d3fa8a09832fe56f36a25b8825af61c2eea7ae4fc2afa55')
 hunt.survey.add(a)
 
-
+hunt.status.good()
+hunt.summary("My summary goes here")
