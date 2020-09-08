@@ -24,15 +24,15 @@ updated = "2020-07-29"
     [[args]]
     name = 'max_size'
     type = 'number'
-    description = 'Max size of file to analyze in MB'
-    default = 1
+    description = 'Max size of file to analyze in kB'
+    default = 1000
     required = false
 
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
 
-max_size = hunt.arg.number('max_size', 1, false)
+max_size = hunt.arg.number('max_size', 1000, false)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -103,7 +103,7 @@ end
 paths = {}
 opts = {
     "files",
-    f"size<${max_size}mb", -- all files below this size
+    f"size<${max_size}kb", -- all files below this size
     "recurse=1" --depth of recursion into the folder
 }
 for _, userfolder in pairs(userfolders()) do
@@ -118,6 +118,7 @@ end
 -- Create a new artifact
 n = 0
 for path,_ in pairs(paths) do
+    print(f"Adding: ${path}")
     artifact = hunt.survey.artifact()
     artifact:exe(path)
     artifact:type("AppData")

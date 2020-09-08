@@ -15,13 +15,13 @@ updated = "2020-07-27"
 # -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
-    name = "filesystem_scanner-default_regex_bad"
+    name = "filesystem_scanner_default_regex_bad"
     description = "Filesystem scanner regex to produce an alerting match against"
     type = "string"
     default = '(^[0-9,A-Z,a-z]{4,6}-Readme.txt$)|DECRYPT'
 
     [[globals]]
-    name = "filesystemscanner-default_regex_suspicious"
+    name = "filesystemscanner_default_regex_suspicious"
     description = "Filesystem scanner regex to produce a non-alerting match against"
     type = "string"
     default = '''readme.*\.txt$'''

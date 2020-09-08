@@ -36,11 +36,11 @@ updated = "2020-07-27"
 
 default_reason = "Infocyte"
 
-reason = hunt.arg.string("reason", false) or hunt.global.string("reboot_reason", false, default_reason)
+reason = hunt.arg.string("reboot_reason", false) or hunt.global.string("reboot_reason", false, default_reason)
 
 
-local debug = hunt.global.boolean("reboot", false, false)
-
+local debug = hunt.global.boolean("debug", false, false)
+print(f"debug=${debug}")
 --[=[ SECTION 2: Functions ]=]
 
 
@@ -59,23 +59,24 @@ end
 hunt.debug("Running command: "..cmd)
 pipe = io.popen(cmd, 'r')
 if pipe then 
-	out = pipe:read("*all")
+    out = pipe:read("*all")
     pipe:close()
-	if out:gmatch("failed|error") then
-    	hunt.error(out)
+    if out:gmatch("failed|error") then
+        hunt.error(out)
   	else
-    	hunt.log(out)
+        hunt.log(out)
         hunt.log("System reboot initiated")
         hunt.summary(f"Reboot Initiated")
     end
 end
 
 if debug then 
-    if hunt.env.is_windows() then
-        os.execute("sleep 3")
-        os.execute('shutdown /a')
+    os.execute("sleep 3")
+    hunt.log("DEBUG: Cancelling shutdown")
+    if hunt.env.is_windows() then     
+        os.execute('shutdown /a /fw')
     else 
-    os.execute("shutdown ") -- cancel
+        os.execute("shutdown -c") -- cancel
     end
     hunt.log("Debugging: Reboot cancelled")
     hunt.summary(f"DEBUG: Reboot Cancelled.")

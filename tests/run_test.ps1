@@ -177,6 +177,27 @@ Describe "Contributed Response Extensions" {
             debug     = $true 
         }
     }
+
+    Describe "appdata_artifacts" {
+
+        It "Executes without error" {
+            $arguments = @{
+                max_size = 500
+            }
+            $test = Test-ICExtension -Path ..\contrib\collection\appdata_artifacts.lua -Globals $globals -Arguments $arguments
+            $test | Should -Be $true
+        }
+    }
+
+    Describe "ediscovery" {
+
+        It "Executes without error" {
+            $arguments = @{}
+            $test = Test-ICExtension -Path ..\contrib\collection\ediscovery.lua -Globals $globals -Arguments $arguments
+            $test | Should -Be $true
+        }
+    }
+
 }
 
 #>

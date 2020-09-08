@@ -2,7 +2,7 @@
 filetype = "Infocyte Extension"
 
 [info]
-name = "E-Discovery"
+name = "EDiscovery"
 type = "Collection"
 description = """Proof of Concept. Searches the hard drive for office documents
         (currently only .doc and .docx files) with specified keywords or alldocs.
@@ -34,7 +34,7 @@ updated = "2020-07-29"
     default = "C:/users/"
 
     [[globals]]
-    name = "ediscovery-upload_to_s3"
+    name = "ediscovery_upload_to_s3"
     description = "Sets e-discovery extension to upload matching documents to S3. Otherwise just uploads metadata."
     type = "boolean"
     default = false

@@ -45,6 +45,8 @@ differential = hunt.arg.boolean("differential", false, true) -- Will save last s
 local debug = hunt.global.boolean("debug", false, false)
 proxy = hunt.global.string("proxy", false)
 
+print(f"differential=${differential}, debug=${debug}, proxy=${proxy}")
+
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
@@ -95,14 +97,14 @@ function parse_csv(path, sep)
     local csvFile = {}
     local file,msg = io.open(path, "r")
     if not file then
-        hunt.error(f"AmcacheParser failed: ${msg}")
+        hunt.error("AmcacheParser failed: "..msg)
         return nil
     end
     header = {}
     for line in file:lines() do
         n = 1
         local fields = {}
-        for str in string.gmatch(line, "([^${sep}]+)") do
+        for str in string.gmatch(line, "([^"..sep.."]+)") do
             s = str:gsub('"(.+)"', "%1")
             if #header == 0 then
                 fields[n] = s
@@ -196,14 +198,10 @@ end
 
 -- Execute amcacheparser
 hunt.debug("Executing Amcache Parser...")
-os.execute(f"${binpath} -f 'C:\\Windows\\AppCompat\\Programs\\Amcache.hve' --csv '${tmppath}\\temp' > ${tmppath}\\icextensions.log")
+os.execute(f"${binpath} -f C:\\Windows\\AppCompat\\Programs\\Amcache.hve --csv ${tmppath}\\temp > ${tmppath}\\icextensions.log")
 file, msg = io.open(f"${tmppath}\\icextensions.log", "r")
 if file then
-    if debug then
-        hunt.debug(file:read("*all"))
-    else 
-       --print(file:read("*all")) 
-    end
+    hunt.debug(file:read("*all"))
     file:close()
     os.remove(f"${tmppath}\\icextensions.log")
 else 
@@ -212,7 +210,7 @@ else
 end
 
 -- Parse output using powershell
-script = '$temp = "'..tmppath..'"\n'
+script = f"$temp = ${tmppath}\n"
 script = script..[=[
 $outpath = "$temp\amcache.csv"
 Get-ChildItem "$temp\temp" -filter *Amcache*.csv | Foreach-Object { 
@@ -244,6 +242,9 @@ end
 if path_exists(outpath) then
     hunt.debug("Parsing Powershell Output...")
     csv = parse_csv(outpath, sep)
+    if not csv then
+        hunt.error("Failed: Could not parse CSV: ${outpath}")
+    end
 else
     hunt.error(f"Failed: Could not find powershell output csv at ${outpath}")
     return
@@ -281,5 +282,3 @@ end
 -- Set Status (not really necessary since bad items will be flagged in artifacts)
 hunt.status.good()
 hunt.debug("Amcache Parser completed.")
-
-

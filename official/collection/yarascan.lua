@@ -16,25 +16,25 @@ updated = "2020-07-20"
 # -> hunt.global(name = string, default = <type>, isRequired = boolean) 
 
     [[globals]]
-    name = "yarascanner-scan_activeprocesses"
+    name = "yarascanner_scan_activeprocesses"
     description = "Adds running processes to list of paths to scan"
     type = "boolean"
     default = true
 
     [[globals]]
-    name = "yarascanner-scan_appdata"
+    name = "yarascanner_scan_appdata"
     description = "Recurse through each user's appdata for binaries to scan (windows only)"
     type = "boolean"
     default = false
 
     [[globals]]
-    name = "yarascanner-max_size"
+    name = "yarascanner_max_size"
     description = "Largest size of binary in Kb"
     type = "number"
     default = 5000
 
     [[globals]]
-    name = "yarascanner-additional_paths" 
+    name = "yarascanner_additional_paths" 
     description = "Additional paths to scan"
     type = "string"
 
@@ -1541,6 +1541,9 @@ matchedpaths = {}
 -- Scan all paths with Yara signatures
 n=1
 for path, i in pairs(paths) do
+    if debug and n > 3 then
+        break
+    end
     hunt.debug(f"[${n}] Scanning ${path}")
     n=n+1
     hunt.verbose("Scanning with bad_rules")
@@ -1575,6 +1578,9 @@ end
 -- Add bad and suspicious files to Artifacts list for analysis
 n = 0
 for path,i in pairs(matchedpaths) do
+    if debug and n > 3 then
+        break
+    end
 	-- Create a new artifact
 	artifact = hunt.survey.artifact()
 	artifact:exe(path)

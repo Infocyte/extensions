@@ -14,7 +14,7 @@ updated = "2020-07-24"
 # Global variables accessed within extensions via hunt.global('name')
 
     [[globals]]
-    name = "runcommand-command"
+    name = "runcommand_command"
     description = "Command to run on the default shell (bash, cmd, or powershell). Global variable is optional and used if run time arguent not provided"
     type = "string"
     required = false
