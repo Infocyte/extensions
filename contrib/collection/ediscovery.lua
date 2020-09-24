@@ -95,8 +95,10 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-path = hunt.arg.string("path") or hunt.global.string("ediscovery_default_path", false, 'C:/Users/')
-patterns = hunt.arg.string("patterns", false) or hunt.global.string("ediscovery_default_patterns", true)
+path =  hunt.arg.string("path") or
+        hunt.global.string("ediscovery_default_path", false, 'C:/Users/')
+patterns =  hunt.arg.string("patterns", false) or
+            hunt.global.string("ediscovery_default_patterns", true)
 
 all_office_docs = hunt.global.boolean("ediscovery-all_office_docs", false, false) -- set to true to bypass string search
 

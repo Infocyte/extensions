@@ -36,11 +36,12 @@ updated = "2020-09-10"
 
 default_reason = "Infocyte"
 
-reason = hunt.arg.string("reboot_reason", false) or hunt.global.string("reboot_reason", false, default_reason)
+reason =    hunt.arg.string("reboot_reason", false) or
+            hunt.global.string("reboot_reason", false, default_reason)
 
 
 local debug = hunt.global.boolean("debug", false, false)
-print(f"debug=${debug}")
+
 --[=[ SECTION 2: Functions ]=]
 
 

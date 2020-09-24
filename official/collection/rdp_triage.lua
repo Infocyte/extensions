@@ -46,7 +46,8 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-trailing_days = hunt.arg.number("trailing_days") or hunt.global.number("trailing_days", false, 60)
+trailing_days = hunt.arg.number("trailing_days") or
+                hunt.global.number("trailing_days", false, 60)
 local debug = hunt.global.boolean("debug", false, false)
 
 if hunt.global.boolean("disable_powershell", false, false) then

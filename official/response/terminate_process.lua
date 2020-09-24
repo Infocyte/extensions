@@ -65,10 +65,13 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-path = hunt.arg.string("path") or hunt.global.string("terminateprocess_default_path", true)
-kill_process = hunt.arg.boolean("kill_process") or hunt.global.boolean("terminateprocess_kill_process", false, true) 
-delete_file = hunt.arg.boolean("delete_file") or hunt.global.boolean("terminateprocess_delete_file", false, false)
-local debug = hunt.arg.boolean("debug", false, false) 
+path =  hunt.arg.string("path") or
+        hunt.global.string("terminateprocess_default_path", true)
+kill_process =  hunt.arg.boolean("kill_process") or
+                hunt.global.boolean("terminateprocess_kill_process", false, true) 
+delete_file =   hunt.arg.boolean("delete_file") or
+                hunt.global.boolean("terminateprocess_delete_file", false, false)
+local debug = hunt.global.boolean("debug", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
