@@ -41,8 +41,9 @@ updated = "2020-09-24"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-path = hunt.arg.string("path") or hunt.global.string("deletefile_default_path", true)
-local debug = hunt.arg.boolean("debug", false, false) 
+path = hunt.arg.string("path") or
+        hunt.global.string("deletefile_default_path", true)
+local debug = hunt.global.boolean("debug", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -69,13 +70,6 @@ if debug then
 end
 
 paths = string_to_list(path)
-
-if debug then
-    path = "C:/windows/temp/test/txt"
-    hunt.log(f"Debugging: creating ${path} and deleting it")
-    os.execute(f"test > ${path}")
-    os.execute("sleep 5")
-end
 
 hunt.log(f"Finding and deleting ${path}")
 file_found = false
