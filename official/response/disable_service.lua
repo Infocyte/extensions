@@ -73,7 +73,7 @@ delete_service = hunt.arg.boolean("delete_service") or
 delete_file = hunt.arg.boolean("delete_file") or
         hunt.global.boolean("disableservice_delete_file", false, false)
         
-local debug = hunt.arg.boolean("debug", false, false) 
+local debug = hunt.global.boolean("debug", false, false) 
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -93,19 +93,20 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    local pipe = io.popen(f"${cmd} 2>&1", "r")
+    if debug then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
         pipe:close()
-        if out:gmatch("failed|error|not recognized as an") then
-            hunt.error(out)
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
             return false, out
         else
-            hunt.debug(out)
+            if debug then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
-        hunt.error(f"ERROR: No Output from pipe running command ${cmd}")
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
         return false, "ERROR: No output"
     end
 end
@@ -116,9 +117,9 @@ end
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
-if not hunt.env.is_Windows() then 
+if not hunt.env.is_windows() then 
     -- Windows only for now
-    hunt.warning(f"Extension is for windows only [${host_info:os()}]")
+    hunt.warn(f"Extension is for windows only [${host_info:os()}]")
     hunt.summary(f"Extension Not Compatible with ${host_info:os()}")
     return
 end
@@ -127,113 +128,114 @@ end
 if debug then 
     -- Debugging, creating test service first
     hunt.log("Debugging: creating a service and deleting it")
-    path = os.getenv("temp").."/test.exe"
-    name = "TestSvc"
-    os.execute(f"'test' > ${path}")
-    if hunt.env.has_powershell() then 
-        local out = hunt.env.run_powershell(f"sc.exe create ${name} binPath='${path}'")
-        hunt.debug(out)
-    else 
-        local s, out = run_cmd(f"sc.exe create ${name} binPath='${path}'")
-    end    
-    os.execute("sleep 5")
+    path = "C:\\Program Files\\test.exe"
+    name = "TestSvc A"
+    cmd = f"echo test > \"${path}\""
+    s, out = run_cmd(cmd)
+    -- local out = hunt.env.run_powershell(f"sc.exe create ${name} binPath='${path}'")
+    s, out = run_cmd(f"sc.exe create \"${name}\" binPath='\"${path}\"'")
+    os.execute("sleep 3")
 end
 
+service_found = false
+service_disabled = false
+service_stopped = false
+service_deleted = false
+file_deleted = false
+file_found = false
 
 -- Find service
 hunt.log(f"Finding and disabling service named ${name}")
-service_found = false
-if hunt.env.has_powershell() then 
-    out = hunt.env.run_powershell(f"Get-wmiobject -Query 'Select pathname from win32_service where Name = \"${name}\"' | select -expandproperty pathname")
-    hunt.debug(out)
-    path = out
-else 
-    s, out = run_cmd(f"wmic service where 'name=\"${name}\" get pathname")
-    if out:gmatch("No Instance(s) Available.") then 
-        hunt.error(f"Could not find service with name ${name}")       
-    elseif out:gmatch("PathName") then
-        path = out[1]
-        hunt.log(f"Service with name ${name} found! [${path}]")
-        service_found = true
-    end
+--out = hunt.env.run_powershell(f"Get-wmiobject -Query 'Select pathname from win32_service where Name = \"${name}\"' | select -expandproperty pathname") 
+s, out = run_cmd(f"wmic service where name=\"${name}\" get StartMode, state, pathname /format:list")
+if out:find("No Instance(s) Available.") then 
+    hunt.error(f"Could not find service with name ${name}: ${out}")       
+elseif out:find("PathName") then
+    path = out:match("PathName='([^\r\n]+)'")
+    state = out:match("State=([^\r\n]+)")
+    startmode = out:match("StartMode=([^\r\n]+)")
+    hunt.log(f"Service with name ${name} found! [PathName=${path}, State=${state}, StartMode=${startmode}]")
+    service_found = true
 end
 
 -- Disable service
-service_disabled = false
-service_stopped = false
 if service_found then
     -- Disable Startmode
-    local s, out = run_cmd(f"wmic service where 'name=\"${name}\" call ChangeStartmode Disabled")
-    if s and out:gmatch("PathName") then
-        hunt.log(f"Service with name ${name} disabled!")
-        service_disabled = true
-        hunt.status.good()
+    if startmode == "Disabled" then 
+        service_disabled = true 
     else
-        hunt.error(out)
-        hunt.status.suspicious()
+        s, out = run_cmd(f"wmic service where name=\"${name}\" call ChangeStartmode Disabled")
+        if s and out:find("ReturnValue = 0") then
+            hunt.log(f"Service with name ${name} startMode set to disabled!")
+            service_disabled = true
+            hunt.status.good()
+        else
+            hunt.error(f"Could not change startmode on ${name}: ${out}")
+            hunt.status.suspicious()
+        end
     end
 
     -- Stop Service
-    local s, out = run_cmd(f"wmic service where 'name=\"${name}\" call StopService")
-    if s and out:gmatch("Method execution successful") then
-        hunt.log(f"Service with name ${name} Stopped!")
+    if state == "Stopped" then
         service_stopped = true
-        hunt.debug(out)
-        hunt.status.good()
     else
-        hunt.error(out)
-        hunt.status.suspicious()
-    end        
-end
-
--- Delete Service
-if delete_service then 
-    service_deleted = false
-    local s, out = run_cmd(f"wmic service where 'name=\"${name}\" call Delete")
-    if s and out:gmatch("Method execution successful") then
-        hunt.log(f"Service with name ${name} deleted!")
-        service_deleted = true
-        hunt.status.good()
-    else
-        hunt.status.suspicious()
-    end
-end
-
--- Delete File
-if delete_file then
-    file_deleted = false
-    file_found = false
-    for _,i in pairs(hunt.fs.ls(path, {"files"})) do
-        file = i
-        file_found = true
-        hunt.log(f"Found file ${path} [Size=${file:size()}]")
-    end
-    if file_found then
-        ok, err = os.remove(path)
-        if ok then
-            file_deleted = true
-            hunt.log(f"SUCCESS: ${path} was deleted.")
+        s, out = run_cmd(f"wmic service where 'name=\"${name}\"' call StopService")
+        if s and out:find("ReturnValue = 0") then
+            hunt.log(f"Service with name ${name} Stopped!")
+            service_stopped = true
             hunt.status.good()
         else
-            file_deleted = false
-            if err:match("No such file") then 
-                hunt.error(f"FAILED: Could not delete ${path}: OS could not see file, you may need raw drive access to delete this file (this extension currently does not support this)")
-                hunt.status.bad()
+            hunt.error(f"Could not stop service ${name}: ${out}")
+            hunt.status.suspicious()
+        end
+    end
+
+    -- Delete Service
+    if delete_service then
+        s, out = run_cmd(f"wmic service where name=\"${name}\" call Delete")
+        if s and out:find("ReturnValue = 0") then
+            hunt.log(f"Service with name ${name} deleted!")
+            service_deleted = true
+            hunt.status.good()
+        else
+            hunt.error(f"Could not delete service ${name}: ${out}")
+            hunt.status.suspicious()
+        end
+    end
+
+    -- Delete File
+    if delete_file then
+        for _,i in pairs(hunt.fs.ls(path, {"files"})) do
+            file = i
+            file_found = true
+            hunt.log(f"Found file ${path} [Size=${file:size()}]")
+        end
+        if file_found then
+            ok, err = os.remove(path)
+            if ok then
+                file_deleted = true
+                hunt.log(f"SUCCESS: ${path} was deleted.")
+                hunt.status.good()
             else
-                hunt.error(f"FAILED: ${err}")
-                hunt.status.suspicious()
+                if err:match("No such file") then 
+                    hunt.error(f"FAILED: Could not delete ${path}: OS could not see file, you may need raw drive access to delete this file (this extension currently does not support this)")
+                    hunt.status.bad()
+                else
+                    hunt.error(f"FAILED: ${err}")
+                    hunt.status.suspicious()
+                end
             end
         end
     end
 end
 
 -- Print final summary of actions and results
-local summary = f"[${name}] Service Found=${service_found}, Disabled=${service_disabled}, Stopped=${service_stopped}"
+summary = f"[${name}] Service Found=${service_found}, StartModeDisabled=${service_disabled}, Stopped=${service_stopped}"
 if delete_service then
     summary = summary..f", Deleted=${service_deleted}"
 end
 if delete_file then
-    summary = summary..f", File Found=${file_found}, Deleted={file_deleted}"
+    summary = summary..f", File Found=${file_found}, Deleted=${file_deleted}"
 end
 
 hunt.log(summary)
