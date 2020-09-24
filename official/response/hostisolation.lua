@@ -142,7 +142,7 @@ elseif hunt.env.is_windows() then
 	if out:find("State%s+ON") then
 		hunt.debug("Windows Firewall is ON")
 	else
-		hunt.warning("Windows Firewall is NOT enabled. Will attempt to enable it but this could conflict with other firewall software")
+		hunt.warn("Windows Firewall is NOT enabled. Will attempt to enable it but this could conflict with other firewall software")
 		disabled = true
 	end
 
