@@ -56,6 +56,14 @@ function string_to_list(str)
     return list
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
+
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
@@ -66,7 +74,7 @@ if debug then
     tmp = os.getenv("temp")
     path = tmp.."/test.txt"
     os.execute(f"'test' > ${path}")
-    os.execute("ping -n 4 127.0.0.1>null")
+    sleep(3)
 end
 
 paths = string_to_list(path)

@@ -84,17 +84,31 @@ function string_to_list(str)
     return list
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
+
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if debug then 
-    hunt.log("Debugging: firing up notepad and killing it")
-    pipe = io.popen("notepad.exe")
+    if hunt.env.is_windows() then
+        hunt.log("Debugging: firing up notepad and killing it")
+        pipe = io.popen("notepad.exe")
+        path = [[C:\Windows\System32\notepad.exe]]
+    else 
+        hunt.log("Debugging: firing up gedit and killing it")
+        pipe = io.popen("gedit &")      
+        path = [[gedit]]
+    end
     hunt.log("Debugging: sleeping for 3")
-    os.execute("ping -n 4 127.0.0.1>null")
-    path = [[C:\Windows\System32\notepad.exe]]
+    sleep(3)
 end
 
 paths = string_to_list(path)
@@ -113,7 +127,6 @@ if kill_process then
                 hunt.log(f"SUCCESS: Killed ${proc:path()} [pid: ${proc:pid()}]")
                 hunt.status.good()
                 killed = true
-                os.execute("ping -n 4 127.0.0.1>null")
             else
                 killed = false 
                 hunt.error(f"FAILED: Could not kill ${proc:path()} [pid: ${proc:pid()}]: ${err}")
@@ -132,9 +145,9 @@ if delete_file then
         path = "C:/windows/temp/test/txt"
         hunt.log(f"Debugging: creating ${path} and deleting it")
         os.execute(f"test > ${path}")
-        os.execute("ping -n 4 127.0.0.1>null")
     end
 
+    sleep(3)
     hunt.log(f"Finding and deleting ${path}")
     file_found = false
     for _,i in pairs(hunt.fs.ls(path, {"files"})) do

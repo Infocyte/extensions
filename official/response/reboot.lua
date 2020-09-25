@@ -44,6 +44,13 @@ local debug = hunt.global.boolean("debug", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
 
 --[=[ SECTION 3: Actions ]=]
 
@@ -72,7 +79,7 @@ if pipe then
 end
 
 if debug then 
-    os.execute("ping -n 4 127.0.0.1>null")
+    sleep(3)
     hunt.log("DEBUG: Cancelling shutdown")
     if hunt.env.is_windows() then     
         os.execute('shutdown /a /fw')

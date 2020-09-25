@@ -87,6 +87,13 @@ function run_cmd(cmd)
     end
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
 
 --[=[ SECTION 3: Actions ]=]
 
@@ -109,7 +116,7 @@ if debug then
     keyname = "TestKey A"
     value = [['C:\Program Files\test.exe' --hack]]
     s, out = run_cmd(f"reg add \"${key}\" /v \"${keyname}\" /t REG_SZ /d \"${value}\" /f")
-    os.execute("ping -n 4 127.0.0.1>null")
+    sleep(4)
 end
 
 key_found = false
