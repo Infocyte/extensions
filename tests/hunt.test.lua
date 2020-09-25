@@ -149,6 +149,14 @@ function table.tostring( tbl )
     return "{" .. table.concat( result, "," ) .. "}"
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
+
 
 -- Tests
 
@@ -207,7 +215,7 @@ for _, proc in pairs(procs) do
     n = n+1
 end
 os.execute('C:\\windows\\system32\\calc.exe')
-os.execute("ping -n 4 127.0.0.1>null")
+sleep(3)
 hunt.log("Killing calc.exe")
 ret = hunt.process.kill_process('Calculator.exe')
 if ret then 
