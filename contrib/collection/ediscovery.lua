@@ -591,7 +591,7 @@ else
             else 
                 hunt.error(f"Powershell command errored: ${err}")
             end
-            os.execute("sleep 1")
+            os.execute("ping -n 2 127.0.0.1>null")
 
             -- Parse CSV output from Powershell
             csv = parse_csv(tempfile, '|')

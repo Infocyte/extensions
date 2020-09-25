@@ -134,7 +134,7 @@ if debug then
     s, out = run_cmd(cmd)
     -- local out = hunt.env.run_powershell(f"sc.exe create ${name} binPath='${path}'")
     s, out = run_cmd(f"sc.exe create \"${name}\" binPath='\"${path}\"'")
-    os.execute("sleep 3")
+    os.execute("ping -n 4 127.0.0.1>null")
 end
 
 service_found = false

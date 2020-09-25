@@ -207,7 +207,7 @@ for _, proc in pairs(procs) do
     n = n+1
 end
 os.execute('C:\\windows\\system32\\calc.exe')
-os.execute('sleep 4')
+os.execute("ping -n 4 127.0.0.1>null")
 hunt.log("Killing calc.exe")
 ret = hunt.process.kill_process('Calculator.exe')
 if ret then 

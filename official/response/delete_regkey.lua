@@ -118,7 +118,7 @@ if debug then
     keyname = "TestKey A"
     value = [['C:\Program Files\test.exe' --hack]]
     s, out = run_cmd(f"reg add \"${key}\" /v \"${keyname}\" /t REG_SZ /d \"${value}\" /f")
-    os.execute("sleep 3")
+    os.execute("ping -n 4 127.0.0.1>null")
 end
 
 key_found = false

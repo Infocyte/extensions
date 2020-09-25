@@ -72,7 +72,7 @@ if pipe then
 end
 
 if debug then 
-    os.execute("sleep 3")
+    os.execute("ping -n 4 127.0.0.1>null")
     hunt.log("DEBUG: Cancelling shutdown")
     if hunt.env.is_windows() then     
         os.execute('shutdown /a /fw')

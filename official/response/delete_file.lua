@@ -66,7 +66,7 @@ if debug then
     tmp = os.getenv("temp")
     path = tmp.."/test.txt"
     os.execute(f"'test' > ${path}")
-    os.execute("sleep 5")
+    os.execute("ping -n 4 127.0.0.1>null")
 end
 
 paths = string_to_list(path)

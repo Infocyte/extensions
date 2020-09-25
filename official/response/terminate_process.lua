@@ -91,8 +91,9 @@ hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:
 
 if debug then 
     hunt.log("Debugging: firing up notepad and killing it")
-    os.execute("notepad.exe")
-    os.execute("sleep 5")
+    pipe = io.popen("notepad.exe")
+    hunt.log("Debugging: sleeping for 3")
+    os.execute("ping -n 4 127.0.0.1>null")
     path = [[C:\Windows\System32\notepad.exe]]
 end
 
@@ -112,7 +113,7 @@ if kill_process then
                 hunt.log(f"SUCCESS: Killed ${proc:path()} [pid: ${proc:pid()}]")
                 hunt.status.good()
                 killed = true
-                os.execute("sleep 5")
+                os.execute("ping -n 4 127.0.0.1>null")
             else
                 killed = false 
                 hunt.error(f"FAILED: Could not kill ${proc:path()} [pid: ${proc:pid()}]: ${err}")
@@ -131,7 +132,7 @@ if delete_file then
         path = "C:/windows/temp/test/txt"
         hunt.log(f"Debugging: creating ${path} and deleting it")
         os.execute(f"test > ${path}")
-        os.execute("sleep 5")
+        os.execute("ping -n 4 127.0.0.1>null")
     end
 
     hunt.log(f"Finding and deleting ${path}")
