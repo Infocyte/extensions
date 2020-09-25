@@ -125,7 +125,7 @@ cmds = {
     f"wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational ${tmp}\\Microsoft-Windows-WMIActivityOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational ${tmp}\\Microsoft-Windows-TerminalServicesRDPClientOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational ${tmp}\\Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx",
-    f"wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' ${tmp}\\Microsoft-Windows-DefenderOperational.evtx",
+    f"wevtutil.exe epl \"Microsoft-Windows-Windows Defender/Operational\" ${tmp}\\Microsoft-Windows-DefenderOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational ${tmp}\\Microsoft-Windows-TerminalServices-GatewayOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-SmbClient/Security ${tmp}\\Microsoft-Windows-SMBClient.evtx"
 }

@@ -4,7 +4,7 @@ filetype = "Infocyte Extension"
 [info]
 name = "Disable Service"
 type = "Response"
-description = """Disables (or deletes) a service by name"""
+description = """Disables a service by name. Can specify variables to delete the service and binarypath as well"""
 author = "Infocyte"
 guid = "a568a907-0bc8-4231-a87a-13e539ee8074"
 created = "2020-09-24"
@@ -15,20 +15,20 @@ updated = "2020-09-24"
 
     [[globals]]
     name = "disableservice_default_name"
-    description = "Service name to disable/delete"
+    description = "Service name to disable"
     type = "string"
     required = true
 
     [[globals]]
     name = "disableservice_delete_service"
-    description = "Service name to disable/delete"
+    description = "Delete rather than Disable"
     type = "boolean"
     default = false
 
 
     [[globals]]
     name = "disableservice_delete_file"
-    description = "Service name to disable/delete"
+    description = "Delete file as well"
     type = "string"
     default = false
 
@@ -76,15 +76,6 @@ delete_file = hunt.arg.boolean("delete_file") or
 local debug = hunt.global.boolean("debug", false, false) 
 
 --[=[ SECTION 2: Functions ]=]
-
-function string_to_list(str)
-    -- Converts a comma seperated list to a lua list object
-    list = {}
-    for s in string.gmatch(str, '([^,]+)') do
-        table.insert(list, s)
-    end
-    return list
-end
 
 function run_cmd(cmd)    
     --[=[

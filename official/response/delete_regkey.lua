@@ -4,7 +4,7 @@ filetype = "Infocyte Extension"
 [info]
 name = "Delete Regkey"
 type = "Response"
-description = """Deletes a registry key"""
+description = """Deletes a registry key. Supply key and keyname using Regquery.exe syntax"""
 author = "Infocyte"
 guid = "5c977e21-0ac1-4328-ab5f-be3ef5f6d06a"
 created = "2020-09-24"
@@ -61,15 +61,6 @@ keyname =   hunt.arg.string("keyname") or
 local debug = hunt.global.boolean("debug", false, false) 
 
 --[=[ SECTION 2: Functions ]=]
-
-function string_to_list(str)
-    -- Converts a comma seperated list to a lua list object
-    list = {}
-    for s in string.gmatch(str, '([^,]+)') do
-        table.insert(list, s)
-    end
-    return list
-end
 
 function run_cmd(cmd)    
     --[=[
