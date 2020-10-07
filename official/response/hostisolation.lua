@@ -32,6 +32,7 @@ updated = "2020-09-10"
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
 whitelisted_ips = hunt.global.string("whitelisted_ips", false)
+local debug = hunt.global.boolean("debug", false, false)
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
@@ -160,8 +161,8 @@ elseif hunt.env.is_windows() then
 	os.execute('netsh advfirewall set allprofiles firewallpolicy "blockinbound,blockoutbound"')
 	os.execute('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe" service="dnscache"')
 	os.execute('netsh advfirewall firewall add rule name="Core Networking (DHCP-Out)" dir=out action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
-	os.execute(f"netsh advfirewall firewall add rule name='Infocyte Host Isolation (infocyte)' dir=out action=allow protocol=ANY remoteip='${list_to_string(hunt.net.api_ipv4())}'")
-	os.execute(f"netsh advfirewall firewall add rule name='Infocyte Host Isolation (custom)' dir=out action=allow protocol=ANY remoteip='${whitelisted_ips}'")
+	os.execute(f"netsh advfirewall firewall add rule name='Infocyte Host Isolation (infocyte)' dir=out action=allow protocol=ANY remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
+	os.execute(f"netsh advfirewall firewall add rule name='Infocyte Host Isolation (custom)' dir=out action=allow protocol=ANY remoteip=\"${whitelisted_ips}\"")
 
 	if disabled then 
 		hunt.log("Enabling Windows Firewall")
