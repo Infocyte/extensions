@@ -44,6 +44,7 @@ updated = "2020-09-24"
 path = hunt.arg.string("path") or
         hunt.global.string("deletefile_default_path", true)
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 

@@ -73,7 +73,8 @@ delete_service = hunt.arg.boolean("delete_service") or
 delete_file = hunt.arg.boolean("delete_file") or
         hunt.global.boolean("disableservice_delete_file", false, false)
         
-local debug = hunt.global.boolean("debug", false, false) 
+local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -84,7 +85,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    if debug then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -93,7 +95,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug then hunt.debug("[run_cmd] "..out) end
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 

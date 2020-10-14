@@ -58,7 +58,8 @@ key =   hunt.arg.string("key") or
 keyname =   hunt.arg.string("keyname") or
             hunt.global.string("deleteregkey_default_keyname", true)
 
-local debug = hunt.global.boolean("debug", false, false) 
+local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -69,7 +70,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    if debug then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -78,7 +80,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug then hunt.debug("[run_cmd] "..out) end
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -116,6 +118,7 @@ if debug then
     keyname = "TestKey A"
     value = [['C:\Program Files\test.exe' --hack]]
     s, out = run_cmd(f"reg add \"${key}\" /v \"${keyname}\" /t REG_SZ /d \"${value}\" /f")
+    if verbose then hunt.debug(out) end
     sleep(4)
 end
 
@@ -126,6 +129,8 @@ key_deleted = false
 hunt.log(f"Finding and deleting registry key ${keyname} under ${key}")
 --out = hunt.env.run_powershell(f"Get-wmiobject -Query 'Select pathname from win32_service where Name = \"${name}\"' | select -expandproperty pathname") 
 s, out = run_cmd(f"reg query \"${key}\" /v \"${keyname}\"")
+if verbose then hunt.debug(out) end
+if verbose then hunt.debug(out) end
 if out:find("The system was unable to find the specified registry key or value.") then 
     hunt.warn(f"Could not find key ${key} -> '${keyname}': ${out}")       
 elseif out:find(keyname) then
@@ -137,6 +142,7 @@ end
 -- Delete
 if key_found then
     s, out = run_cmd(f"reg delete \"${key}\" /v \"${keyname}\" /f")
+    if verbose then hunt.debug(out) end
     if s and out:find("The operation completed successfully.") then
         hunt.log(f"${key} -> '${keyname}' deleted!")
         key_deleted = true

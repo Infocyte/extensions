@@ -27,6 +27,13 @@ updated = "2020-09-10"
     default = false
     required = false
 
+    [[globals]]
+    name = "verbose"
+    description = "Print verbose output"
+    type = "boolean"
+    default = true
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
 
@@ -45,12 +52,49 @@ updated = "2020-09-10"
 differential = hunt.arg.boolean("differential", false, true) -- Will save last scan locally and only add new items on subsequent scans.
 
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
+
 proxy = hunt.global.string("proxy", false)
 
 url = 'https://infocyte-support.s3.us-east-2.amazonaws.com/extension-utilities/AmcacheParser.exe'
 amcacheparser_sha1 = 'A17EEF27F3EB3F19B15E2C7E557A7B4FB2257485' -- hash validation of amcashparser.exe (version 1.4) at url
 
 --[=[ SECTION 2: Functions ]=]
+
+
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+        pipe:close()
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
+            return false, out
+        else
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
+
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
 
 function is_executable(path)
     magicnumbers = {
@@ -148,7 +192,10 @@ binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
 if not path_exists(tmppath) then 
     print(f"Creating directory: ${tmppath}")
-    os.execute(f"mkdir ${tmppath}")
+    success, out = run_cmd(f"mkdir ${tmppath}")
+    if not success then
+        hunt.error(f"Failed to make temp directory:\n${out}")
+    end
 end
 
 -- Check if we have amcacheparser.exe already and validate hash
@@ -198,14 +245,9 @@ end
 
 -- Execute amcacheparser
 hunt.debug("Executing Amcache Parser...")
-os.execute(f"${binpath} -f C:\\Windows\\AppCompat\\Programs\\Amcache.hve --csv ${tmppath}\\temp > ${tmppath}\\icextensions.log")
-file, msg = io.open(f"${tmppath}\\icextensions.log", "r")
-if file then
-    hunt.debug(file:read("*all"))
-    file:close()
-    os.remove(f"${tmppath}\\icextensions.log")
-else 
-    hunt.error(f"AmcacheParser failed to run: ${msg}")
+success, out = run_cmd(f"${binpath} -f C:\\Windows\\AppCompat\\Programs\\Amcache.hve --csv ${tmppath}\\temp")
+if not success then
+    hunt.error(f"AmcacheParser failed to run:\n${out}")
     return
 end
 
@@ -229,9 +271,7 @@ Remove-item "$temp\temp" -Force -Recurse
 hunt.debug("Initiatializing Powershell to parse output")
 out, err = hunt.env.run_powershell(script)
 if out then
-    if debug then
-        hunt.debug(out)
-    end
+    hunt.debug(out)
 else
     hunt.error(f"Failed: Could not parse AmCache output with Powershell.\n${err}")
     return

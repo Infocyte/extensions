@@ -9,7 +9,7 @@ description = """Reverses the local network isolation of a Windows, Linux, and O
 author = "Infocyte"
 guid = "2896731a-ef52-4569-9669-e9a6d8769e76"
 created = "2019-9-16"
-updated = "2020-09-10"
+updated = "2020-10-7"
 
 ## GLOBALS ##
 # Global variables
@@ -27,6 +27,10 @@ updated = "2020-09-10"
 --[=[ SECTION 1: Inputs ]=]
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
+
+local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
+
 backup_location = "C:\\fwbackup.wfw"
 iptables_bkup = "/opt/iptables-bkup"
 
@@ -45,6 +49,32 @@ function path_exists(path)
    return ok, err
 end
 
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+        pipe:close()
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
+            return false, out
+        else
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
+
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
@@ -55,10 +85,11 @@ if string.find(osversion, "windows xp") then
 
 elseif hunt.env.is_windows() then
 	if path_exists(backup_location) then
-		-- os.execute("netsh advfirewall firewall delete rule name='Infocyte Host Isolation (infocyte)'")
-		os.execute(f"netsh advfirewall import ${backup_location}")
+		-- success, out = run_cmd("netsh advfirewall firewall delete rule name='Infocyte Host Isolation (infocyte)'")
+		success, out = run_cmd(f"netsh advfirewall import ${backup_location}")
+		hunt.debug(out)
 		os.remove(backup_location)
-		-- os.execute("netsh advfirewall reset")
+		-- success, out = run_cmd("netsh advfirewall reset")
 		hunt.log("Host has been restored and is no longer isolated")
 	else
 		hunt.error("Host has no backup. Cannot be restored (it may not have been isolated).")
@@ -71,9 +102,8 @@ elseif  hunt.env.has_sh() then
 	-- Assume linux-type OS and iptables
 	if path_exists(iptables_bkup) then
 		hunt.log("Restoring iptables from backup")
-		handle = assert(io.popen('iptables-restore < '..iptables_bkup, 'r'))
-		output = assert(handle:read('*a'))
-		handle:close()
+		success, out = run_cmd('iptables-restore < '..iptables_bkup)
+		hunt.debug(out)
 		os.remove(iptables_bkup)
 		hunt.log("Host has been restored and is no longer isolated")
 	else

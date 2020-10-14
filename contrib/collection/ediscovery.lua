@@ -73,6 +73,13 @@ updated = "2020-09-10"
     default = false
     required = false
 
+    [[globals]]
+    name = "verbose"
+    description = "Print verbose output"
+    type = "boolean"
+    default = true
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -104,7 +111,6 @@ all_office_docs = hunt.global.boolean("ediscovery-all_office_docs", false, false
 
 -- S3 Bucket
 upload_to_s3 = hunt.global.boolean("ediscovery-upload_to_s3", false, false) -- set this to true to upload to your S3 bucket
-local debug = hunt.global.boolean("debug", false, false)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -113,6 +119,8 @@ s3_bucket = hunt.global.string("s3_bucket", upload_to_s3)
 s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
+local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --Options for all_office_docs:
 opts = {

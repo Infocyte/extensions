@@ -30,6 +30,13 @@ updated = "2020-09-10"
     default = false
     required = false
 
+    [[globals]]
+    name = "verbose"
+    description = "Print verbose output"
+    type = "boolean"
+    default = true
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -49,6 +56,7 @@ updated = "2020-09-10"
 trailing_days = hunt.arg.number("trailing_days") or
                 hunt.global.number("trailing_days", false, 60)
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 if hunt.global.boolean("disable_powershell", false, false) then
     hunt.error("disable_powershell global is set. Cannot run extension without powershell")

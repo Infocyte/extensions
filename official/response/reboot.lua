@@ -41,8 +41,35 @@ reason =    hunt.arg.string("reboot_reason", false) or
 
 
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --[=[ SECTION 2: Functions ]=]
+
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+        pipe:close()
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
+            return false, out
+        else
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
 
 function sleep(sec)
     if hunt.env.is_windows() then
@@ -65,10 +92,8 @@ else
 end
 
 hunt.debug("Running command: "..cmd)
-pipe = io.popen(cmd, 'r')
-if pipe then 
-    out = pipe:read("*all")
-    pipe:close()
+success, out = run_cmd(cmd, 'r')
+if success then 
     if out:gmatch("failed|error") then
         hunt.error(out)
   	else
@@ -82,9 +107,11 @@ if debug then
     sleep(3)
     hunt.log("DEBUG: Cancelling shutdown")
     if hunt.env.is_windows() then     
-        os.execute('shutdown /a /fw')
+        success, out = run_cmd('shutdown /a /fw')
+        hunt.debug(out)
     else 
-        os.execute("shutdown -c") -- cancel
+        success, out = run_cmd("shutdown -c") -- cancel
+        hunt.debug(out)
     end
     hunt.log("Debugging: Reboot cancelled")
     hunt.summary(f"DEBUG: Reboot Cancelled.")

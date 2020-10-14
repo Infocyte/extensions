@@ -56,6 +56,13 @@ updated = "2020-09-10"
     default = false
     required = false
 
+    [[globals]]
+    name = "verbose"
+    description = "Print verbose output"
+    type = "boolean"
+    default = true
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -73,6 +80,7 @@ hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -81,6 +89,32 @@ s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "memory"
 
 --[=[ SECTION 2: Functions ]=]
+
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    verbose = verbose or true
+    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+        pipe:close()
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
+            return false, out
+        else
+            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
 
 function tempfolder()
     -- Returns OS-specific temp folder
@@ -131,10 +165,10 @@ elseif hunt.env.is_macos() then
         client:proxy(proxy)
     end
     client:download_file(pmemzippath)
-    os.execute(f"unzip ${pmemzippath}")
+    success, out = run_cmd(f"unzip ${pmemzippath}")
     pmempath = "./osxpmem.app/osxpmem"
-    os.execute("kextutil -t osxpmem.app/MacPmem.kext/")
-    os.execute("chown -R root:wheel osxpmem.app/")
+    success, out = run_cmd("kextutil -t osxpmem.app/MacPmem.kext/")
+    success, out = run_cmd("chown -R root:wheel osxpmem.app/")
     os.remove(pmemzippath)
 
 elseif hunt.env.is_linux() or hunt.env.has_sh() then
@@ -148,7 +182,7 @@ elseif hunt.env.is_linux() or hunt.env.has_sh() then
         client:proxy(proxy)
     end
     client:download_file(pmempath)
-    os.execute("chmod +x "..pmempath)
+    success, out = run_cmd("chmod +x "..pmempath)
 
 else
     hunt.warn(f"WARNING: Not a compatible operating system for this extension [${host_info:os()}]")
@@ -158,11 +192,11 @@ end
 
 -- Dump Memory to disk
 hunt.debug(f"Memory dump on ${host_info:os()} host started to local path ${mempath}")
--- os.execute("winpmem.exe --output - --format map | ")    --split 1000M
-result = os.execute(f"${pmempath} --output ${mempath} --format map --split 500M")
-if not result then
-  hunt.error(f"Winpmem driver failed. [Error: ${result}]")
-  exit()
+-- success, out = run_cmd("winpmem.exe --output - --format map | ")    --split 1000M
+success, out = run_cmd(f"${pmempath} --output ${mempath} --format map --split 500M")
+if not success then
+    hunt.error(f"Winpmem driver failed. [Error: ${out}]")
+    return
 end
 
 
@@ -212,11 +246,10 @@ if hunt.env.is_windows() then
     scriptfile:close()
     -- Retain survey for background task
     bgsurveypath = 'C:\\windows\\temp\\survey2.exe'
-    os.execute(f'Powershell.exe -nologo -nop -command "Copy-Item C:\\windows\\temp\\s1.exe  -Destination ${bgsurveypath} -Force')
-
+    success, out = run_cmd(f'Powershell.exe -nologo -nop -command "Copy-Item C:\\windows\\temp\\s1.exe  -Destination ${bgsurveypath} -Force')
     -- Use Scheduled Tasks
-    os.execute(f"SCHTASKS /CREATE /SC ONCE /RU 'SYSTEM' /TN 'Infocyte\\Upload' /TR 'cmd.exe /c ${bgsurveypath} -r ${timeout} --only-extensions --extensions '${scriptpath}' /ST 23:59 /F")
-    os.execute('SCHTASKS /RUN /TN "Infocyte\\Upload"')
+    success, out = run_cmd(f"SCHTASKS /CREATE /SC ONCE /RU 'SYSTEM' /TN 'Infocyte\\Upload' /TR 'cmd.exe /c ${bgsurveypath} -r ${timeout} --only-extensions --extensions '${scriptpath}' /ST 23:59 /F")
+    success, out = run_cmd('SCHTASKS /RUN /TN "Infocyte\\Upload"')
 
 else
     -- write background extension
@@ -227,25 +260,25 @@ else
 
     -- Retain survey for background task
     bgsurveypath = '/tmp/survey2.bin'
-    os.execute(f"sudo chmod +x ${bgsurveypath}")
+    success, out = run_cmd(f"sudo chmod +x ${bgsurveypath}")
 
     if hunt.env.is_macos() then
         -- Enable at command
-        os.execute("atrun_plist=/System/Library/LaunchDaemons/com.apple.atrun.plist")
-        os.execute("sudo sed -i '' 's/true/false/g' $atrun_plist")
-        os.execute("sudo launchctl unload -F $atrun_plist")
-        os.execute("sudo launchctl load -F $atrun_plist")
+        success, out = run_cmd("atrun_plist=/System/Library/LaunchDaemons/com.apple.atrun.plist")
+        success, out = run_cmd("sudo sed -i '' 's/true/false/g' $atrun_plist")
+        success, out = run_cmd("sudo launchctl unload -F $atrun_plist")
+        success, out = run_cmd("sudo launchctl load -F $atrun_plist")
 
     elseif hunt.env.is_linux() or hunt.env.has_sh() then
         -- Enable at command
         if not os.execute('dpkg -s at | grep Status') then
-            os.execute('sudo apt-get install at')
+            success, out = run_cmd('sudo apt-get install at')
         end
 
     end
     -- use at command
-    os.execute(f"#!/bin/sh\n${bgsurveypath} -r ${timeout} --only-extensions --extensions '${scriptpath}' > /tmp/icat.sh")
-    os.execute('sudo at now +1 minutes -f /tmp/icat.sh')
+    success, out = run_cmd(f"#!/bin/sh\n${bgsurveypath} -r ${timeout} --only-extensions --extensions '${scriptpath}' > /tmp/icat.sh")
+    success, out = run_cmd('sudo at now +1 minutes -f /tmp/icat.sh')
 end
 
 os.remove(pmempath)

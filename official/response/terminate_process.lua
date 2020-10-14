@@ -72,6 +72,7 @@ kill_process =  hunt.arg.boolean("kill_process") or
 delete_file =   hunt.arg.boolean("delete_file") or
                 hunt.global.boolean("terminateprocess_delete_file", false, false)
 local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
