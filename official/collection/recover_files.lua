@@ -51,10 +51,10 @@ updated = "2020-09-10"
     required = false
 
     [[globals]]
-    name = "verbose"
-    description = "Print verbose output"
+    name = "test"
+    description = "Run self tests"
     type = "boolean"
-    default = true
+    default = false
     required = false
 
     [[globals]]
@@ -96,7 +96,7 @@ path = hunt.arg.string("path", true)
 use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)

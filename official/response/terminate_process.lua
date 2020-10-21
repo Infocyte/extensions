@@ -33,9 +33,17 @@ updated = "2020-09-10"
 
     [[globals]]
     name = "debug"
-    description = "Used to debug the script"
+    description = "Print debug information"
     type = "boolean"
     default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
 
 ## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
@@ -72,7 +80,7 @@ kill_process =  hunt.arg.boolean("kill_process") or
 delete_file =   hunt.arg.boolean("delete_file") or
                 hunt.global.boolean("terminateprocess_delete_file", false, false)
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -98,7 +106,7 @@ end
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
-if debug then 
+if test then 
     if hunt.env.is_windows() then
         hunt.log("Debugging: firing up notepad and killing it")
         pipe = io.popen("notepad.exe")
@@ -142,7 +150,7 @@ if kill_process then
 end
 
 if delete_file then
-    if debug then
+    if test then
         path = "C:/windows/temp/test/txt"
         hunt.log(f"Debugging: creating ${path} and deleting it")
         os.execute(f"test > ${path}")

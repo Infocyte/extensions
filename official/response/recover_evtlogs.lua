@@ -52,10 +52,10 @@ updated = "2020-09-10"
     required = false
 
     [[globals]]
-    name = "verbose"
-    description = "Print verbose output"
+    name = "test"
+    description = "Run self tests"
     type = "boolean"
-    default = true
+    default = false
     required = false
 
 ## ARGUMENTS ##
@@ -70,7 +70,7 @@ updated = "2020-09-10"
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -79,6 +79,32 @@ s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
+
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+        pipe:close()
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd] "..out)
+            return false, out
+        else
+            if debug or test then hunt.debug("[run_cmd] "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
 
 -- FileSystem Functions --
 function path_exists(path)
@@ -139,15 +165,11 @@ cmds = {
 }
 for _, cmd in ipairs(cmds) do
     hunt.debug(f"Running Command: ${cmd}")
-    pipe = io.popen(f"${cmd} 2>&1", "r")
-    if pipe then 
-        out = pipe:read("*all")
-        pipe:close()
-        if out:gmatch("failed|error") then
-            hunt.error(out)
-        else
-            hunt.debug(out)
-        end
+    s, out = run_cmd(cmd)
+    if out and out:gmatch("failed|error") then
+        hunt.error(out)
+    else
+        hunt.debug(out)
     end
 end
 

@@ -74,10 +74,10 @@ updated = "2020-09-10"
     required = false
 
     [[globals]]
-    name = "verbose"
-    description = "Print verbose output"
+    name = "test"
+    description = "Run self tests"
     type = "boolean"
-    default = true
+    default = false
     required = false
 
 ## ARGUMENTS ##
@@ -120,7 +120,7 @@ s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 --Options for all_office_docs:
 opts = {

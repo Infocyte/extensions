@@ -21,9 +21,17 @@ updated = "2020-09-24"
 
     [[globals]]
     name = "debug"
-    description = "Used to debug the script"
+    description = "Print debug information"
     type = "boolean"
     default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
 
 ## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
@@ -44,7 +52,7 @@ updated = "2020-09-24"
 path = hunt.arg.string("path") or
         hunt.global.string("deletefile_default_path", true)
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -70,7 +78,7 @@ end
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
-if debug then 
+if test then 
     hunt.log("Debugging: creating a file and deleting it")
     tmp = os.getenv("temp")
     path = tmp.."/test.txt"

@@ -57,10 +57,10 @@ updated = "2020-09-10"
     required = false
 
     [[globals]]
-    name = "verbose"
-    description = "Print verbose output"
+    name = "test"
+    description = "Run self tests"
     type = "boolean"
-    default = true
+    default = false
     required = false
 
 ## ARGUMENTS ##
@@ -80,7 +80,7 @@ hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -97,8 +97,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -107,7 +107,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 

@@ -31,6 +31,19 @@ updated = "2020-09-10"
     default = 60
     required = false
 
+    [[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
 
 ## ARGUMENTS ##
 # Runtime arguments

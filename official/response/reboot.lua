@@ -19,6 +19,20 @@ updated = "2020-09-10"
     type = "string"
     default = "Infocyte"
 
+    [[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -41,7 +55,7 @@ reason =    hunt.arg.string("reboot_reason", false) or
 
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -52,8 +66,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -62,7 +76,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -103,15 +117,13 @@ if success then
     end
 end
 
-if debug then 
+if test then 
     sleep(3)
     hunt.log("DEBUG: Cancelling shutdown")
     if hunt.env.is_windows() then     
         success, out = run_cmd('shutdown /a /fw')
-        hunt.debug(out)
     else 
         success, out = run_cmd("shutdown -c") -- cancel
-        hunt.debug(out)
     end
     hunt.log("Debugging: Reboot cancelled")
     hunt.summary(f"DEBUG: Reboot Cancelled.")

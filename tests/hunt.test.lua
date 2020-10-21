@@ -40,6 +40,13 @@ updated = "2020-09-10"
     default = false
     required = false
 
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 

@@ -34,9 +34,17 @@ updated = "2020-09-24"
 
     [[globals]]
     name = "debug"
-    description = "Used to debug the script"
+    description = "Print debug information"
     type = "boolean"
     default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
 
 ## ARGUMENTS ##
 # Runtime arguments are accessed within extensions via hunt.arg('name')
@@ -74,7 +82,7 @@ delete_file = hunt.arg.boolean("delete_file") or
         hunt.global.boolean("disableservice_delete_file", false, false)
         
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -85,8 +93,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -95,7 +103,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -125,7 +133,7 @@ if not hunt.env.is_windows() then
 end
 
 
-if debug then 
+if test then 
     -- Debugging, creating test service first
     hunt.log("Debugging: creating a service and deleting it")
     path = "C:\\Program Files\\test.exe"

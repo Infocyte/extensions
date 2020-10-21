@@ -28,10 +28,10 @@ updated = "2020-09-10"
     required = false
 
     [[globals]]
-    name = "verbose"
-    description = "Print verbose output"
+    name = "test"
+    description = "Run self tests"
     type = "boolean"
-    default = true
+    default = false
     required = false
 
 ## ARGUMENTS ##
@@ -52,7 +52,7 @@ updated = "2020-09-10"
 differential = hunt.arg.boolean("differential", false, true) -- Will save last scan locally and only add new items on subsequent scans.
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 proxy = hunt.global.string("proxy", false)
 
@@ -69,8 +69,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -79,7 +79,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -192,8 +192,8 @@ binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
 if not path_exists(tmppath) then 
     print(f"Creating directory: ${tmppath}")
-    success, out = run_cmd(f"mkdir ${tmppath}")
-    if not success then
+    s, out = run_cmd(f"mkdir ${tmppath}")
+    if out:find("cannot|fail") then
         hunt.error(f"Failed to make temp directory:\n${out}")
     end
 end

@@ -20,6 +20,20 @@ updated = "2020-10-07"
 	type = "string"
 	required = false
 
+	[[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -33,7 +47,7 @@ updated = "2020-10-07"
 
 whitelisted_ips = hunt.global.string("whitelisted_ips", false)
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
@@ -122,8 +136,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -132,7 +146,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -175,30 +189,23 @@ elseif hunt.env.is_windows() then
 
 	success, out = run_cmd(f"netsh advfirewall export ${backup_location}")
 	
-	if debug then 
+	if test then 
 		hunt.log("Debugging: skipping changes to firewall")
 		hunt.summary("DEBUG: Isolation Aborted")
 		return nil
 	end
 	-- Disable all rules
 	success, out = run_cmd("netsh advfirewall firewall set rule all NEW enable=no")
-	hunt.debug(f"Disable Existing Rules: ${out}")
 	-- Set Isolation Rules
 	success, out = run_cmd('netsh advfirewall set allprofiles firewallpolicy "blockinbound,blockoutbound"')
-	hunt.debug(f"Block all inbound/outbound: ${out}")
 	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe" service="dnscache"')
-	hunt.debug(f"Enable exception for DNS: ${out}")
 	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DHCP-Out)" dir=out action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
-	hunt.debug(f"Enable exception for DHCP: ${out}")
 	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (infocyte)\" dir=out action=allow protocol=ANY remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
-	hunt.debug(f"Exception for Infocyte: ${out}")
 	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (custom)\" dir=out action=allow protocol=ANY remoteip=\"${whitelisted_ips}\"")
-	hunt.debug(f"Exception for custom IP list: ${out}")
 
 	if disabled then 
 		hunt.log("Enabling Windows Firewall")
 		success, out = run_cmd("Netsh advfirewall set currentprofile state on")
-		hunt.debug(f"Enable Windows Firewall: ${out}")
 	end
 elseif hunt.env.is_macos() then
 	-- TODO: ipfw (old) or pf (10.6+)
@@ -217,10 +224,9 @@ elseif  hunt.env.has_sh() then
     end
 	hunt.log("Backing up existing IP Tables")
 	success, out = run_cmd('iptables-save > '..iptables_bkup)
-	hunt.debug(out)
 
 
-	if debug then 
+	if test then 
 		hunt.log("Debugging: skipping changes to firewall")
 		hunt.summary("DEBUG: Isolation Aborted")
 		return nil
@@ -230,10 +236,8 @@ elseif  hunt.env.has_sh() then
 	hunt.log("Isolating Host with iptables")
 	hunt.log("Configuring iptables to allow loopback")
 	success, out = run_cmd("iptables -I INPUT -s 127.0.0.1 -j ACCEPT")
-	hunt.debug(out)
 	hunt.log("Configuring iptables to allow for DNS resolution")
 	success, out = run_cmd("iptables -I INPUT -s 127.0.0.53 -j ACCEPT")
-	hunt.debug(out)
 
 	--hunt.log("Allowing Infocyte Network IP " .. list_to_string(infocyte_ips))
 	--for _, az in pairs(infocyte_ips) do
@@ -245,7 +249,6 @@ elseif  hunt.env.has_sh() then
 	hunt.log(f"Allowing Infocyte API IP: ${ips}")
 	for _, ip in pairs(hunt.net.api_ipv4()) do
 		success, out = run_cmd(f"iptables -I INPUT -s ${ip} -j ACCEPT")
-	  	hunt.debug(out)
 	end
 
   	if whitelisted_ips == nil then
@@ -254,13 +257,11 @@ elseif  hunt.env.has_sh() then
 		hunt.log(f"Allowing User Defined IPs: ${whitelisted_ips}")
 	  	for _, ip in pairs(string_to_list(whitelisted_ips)) do
 			success, out = run_cmd(f"iptables -I INPUT -s ${ip} -j ACCEPT")
-			hunt.debug(out)
     	end
   	end
 
 	hunt.log("Setting iptables to drop all other traffic")
 	success, out = run_cmd("iptables -P INPUT DROP")
-	hunt.debug(out)
 end
 
 hunt.status.good()

@@ -37,6 +37,20 @@ updated = "2020-09-10"
     description = "Additional paths to scan"
     type = "string"
 
+    [[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -1541,7 +1555,7 @@ matchedpaths = {}
 -- Scan all paths with Yara signatures
 n=1
 for path, i in pairs(paths) do
-    if debug and n > 3 then
+    if test and n > 3 then
         break
     end
     hunt.debug(f"[${n}] Scanning ${path}")
@@ -1578,7 +1592,7 @@ end
 -- Add bad and suspicious files to Artifacts list for analysis
 n = 0
 for path,i in pairs(matchedpaths) do
-    if debug and n > 3 then
+    if test and n > 3 then
         break
     end
 	-- Create a new artifact

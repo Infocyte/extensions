@@ -16,6 +16,20 @@ updated = "2020-10-7"
 
 	[[globals]]
 
+    [[globals]]
+    name = "debug"
+    description = "Print debug information"
+    type = "boolean"
+    default = false
+    required = false
+
+    [[globals]]
+    name = "test"
+    description = "Run self tests"
+    type = "boolean"
+    default = false
+    required = false
+
 ## ARGUMENTS ##
 # Runtime arguments
 
@@ -29,7 +43,7 @@ updated = "2020-10-7"
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
 local debug = hunt.global.boolean("debug", false, false)
-local verbose = hunt.global.boolean("verbose", false, true)
+local test = hunt.global.boolean("test", false, true)
 
 backup_location = "C:\\fwbackup.wfw"
 iptables_bkup = "/opt/iptables-bkup"
@@ -56,8 +70,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    verbose = verbose or true
-    if debug or verbose then hunt.debug("Running command: "..cmd.." 2>&1") end
+    debug = debug or true
+    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -66,7 +80,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or verbose then hunt.debug("[run_cmd] "..out) end
+            if debug or test then hunt.debug("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -87,7 +101,6 @@ elseif hunt.env.is_windows() then
 	if path_exists(backup_location) then
 		-- success, out = run_cmd("netsh advfirewall firewall delete rule name='Infocyte Host Isolation (infocyte)'")
 		success, out = run_cmd(f"netsh advfirewall import ${backup_location}")
-		hunt.debug(out)
 		os.remove(backup_location)
 		-- success, out = run_cmd("netsh advfirewall reset")
 		hunt.log("Host has been restored and is no longer isolated")
@@ -103,7 +116,6 @@ elseif  hunt.env.has_sh() then
 	if path_exists(iptables_bkup) then
 		hunt.log("Restoring iptables from backup")
 		success, out = run_cmd('iptables-restore < '..iptables_bkup)
-		hunt.debug(out)
 		os.remove(iptables_bkup)
 		hunt.log("Host has been restored and is no longer isolated")
 	else
