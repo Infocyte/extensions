@@ -183,7 +183,10 @@ binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
 if not path_exists(tmppath) then 
     print(f"Creating directory: ${tmppath}")
-    os.execute(f"mkdir ${tmppath}")
+    s, out = run_cmd(f"mkdir ${tmppath}")
+    if out:find("cannot|fail") then
+        hunt.error(f"Failed to make temp directory:\n${out}")
+    end
 end
 
 -- Check if we have amcacheparser.exe already and validate hash
