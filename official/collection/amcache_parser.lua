@@ -249,6 +249,7 @@ if differential and path_exists(outpath) then
             ts = t
         end 
         oldhashlist[v["SHA1"]] = true
+        ::continue::
     end
     hunt.debug(f"Last AmCache Entry Timestamp from previous scan: ${os.date('%c', ts)}")
 end
@@ -260,6 +261,8 @@ if not success then
     hunt.error(f"AmcacheParser failed to run:\n${out}")
     return
 end
+
+sleep(3)
 
 -- Parse output using powershell
 script = f"$tmppath = '${tmppath}'\n"
