@@ -160,7 +160,13 @@ function parse_csv(path, sep)
 end
 
 function make_timestamp(dateString)
-    local pattern = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)%.(%d+)Z"
+    pattern = "(%d+)%-(%d+)%-(%d+)%s(%d+):(%d+):(%d+)"
+    if not dateString:match(pattern) then
+        pattern = "(%d+)%-(%d+)%-(%d+)T(%d+):(%d+):(%d+)%.(%d+)Z"
+        if not dateString:match(pattern) then
+            return
+        end
+    end
     local xyear, xmonth, xday, xhour, xminute, xseconds, xmseconds = dateString:match(pattern)
     local convertedTimestamp = os.time({year = xyear, month = xmonth, day = xday, hour = xhour, min = xminute, sec = xseconds})
     return convertedTimestamp
@@ -223,6 +229,9 @@ if differential and path_exists(outpath) then
     csvold = parse_csv(outpath, sep)
     for _,v in pairs(csvold) do
         t = make_timestamp(v["FileKeyLastWriteTimestamp"])
+        if not t then
+            goto continue
+        end
         if not ts then
             ts = t
         elseif ts < t then
