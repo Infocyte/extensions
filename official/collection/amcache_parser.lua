@@ -183,15 +183,25 @@ if not hunt.env.is_windows() then
 end
 
 -- define temp paths
-tmppath = os.getenv("systemroot").."\\temp\\ic"
---tmppath = os.getenv("TEMP").."\\ic"
+--tmppath = os.getenv("systemroot").."\\temp\\ic"
+infocytepath = os.getenv("APPDATA").."\\infocyte"
+tmppath = infocytepath.."\\amcacheparser"
 binpath = tmppath.."\\AmcacheParser.exe"
 outpath = tmppath.."\\amcache.csv"
+if not path_exists(infocytepath) then 
+    print(f"Creating directory: ${infocytepath}")
+    s, out = run_cmd(f"mkdir ${infocytepath}")
+    if out:find("cannot|fail") then
+        hunt.error(f"Failed to make infocyte directory:\n${out}")
+        return
+    end
+end
 if not path_exists(tmppath) then 
     print(f"Creating directory: ${tmppath}")
     s, out = run_cmd(f"mkdir ${tmppath}")
     if out:find("cannot|fail") then
         hunt.error(f"Failed to make temp directory:\n${out}")
+        return
     end
 end
 
@@ -252,12 +262,14 @@ if not success then
 end
 
 -- Parse output using powershell
-script = f"$temp = ${tmppath}\n"
+script = f"$tmppath = '${tmppath}'\n"
 script = script..[=[
-$outpath = "$temp\amcache.csv"
-Get-ChildItem "$temp\temp" -filter *Amcache*.csv | Foreach-Object { 
-    $a += gc $_.fullname | convertfrom-csv | where { 
-        $_.isPeFile -AND $_.sha1 } | select-object sha1,fullpath,filekeylastwritetimestamp -unique 
+$outpath = "$tmppath\amcache.csv"
+Get-ChildItem $tmppath -filter *_Amcache_*.csv | Foreach-Object { 
+    $a += gc $_.fullname | convertfrom-csv |
+        where { $_.isPeFile -AND $_.sha1 } |
+            select-object sha1,fullpath,filekeylastwritetimestamp -unique 
+    remove-item $_.fullname
 }
 $a | Foreach-Object { 
     if ($_.FileKeyLastWriteTimestamp) {
@@ -266,9 +278,9 @@ $a | Foreach-Object {
 }
 $a = $a | Sort-object FileKeyLastWriteTimestamp,sha1,fullpath -unique -Descending
 $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
-Remove-item "$temp\temp" -Force -Recurse
 ]=]
 hunt.debug("Initiatializing Powershell to parse output")
+hunt.debug(script)
 out, err = hunt.env.run_powershell(script)
 if out then
     hunt.debug(out)
