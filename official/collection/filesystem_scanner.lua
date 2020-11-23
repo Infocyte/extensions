@@ -4,11 +4,14 @@ filetype = "Infocyte Extension"
 [info]
 name = "Filesystem Scanner"
 type = "Collection"
-description = """Scans system for filenames matching a set of regex patterns (like ransomware notes)"""
+description = """Scans system for filenames matching a set of regex patterns (like ransomware notes)
+    Inputs: path, regex_bad, regex_suspicious
+    Outputs: File metadata for matches reported to extension output
+    """
 author = "Infocyte"
 guid = "1775f23f-34a6-4f83-91e6-49c48faa66bb"
 created = "2020-04-06"
-updated = "2020-09-10"
+updated = "2020-11-22"
 
 ## GLOBALS ##
 # Global variables
@@ -26,10 +29,23 @@ updated = "2020-09-10"
     default = """readme.*txt$"""
 
     [[globals]]
+    name = "filesystemscanner_path"
+    description = "Path to search within"
+    type = "string"
+    default = 60
+    default = "C:\"
+
+    [[globals]]
     name = "trailing_days"
     type = "number"
     default = 60
     required = false
+
+    [[globals]]
+    name = "recurse_depth"
+    description = "Levels below a folder to search through"
+    type = "number"
+    default = 3
 
     [[globals]]
     name = "debug"
@@ -76,6 +92,7 @@ updated = "2020-09-10"
 --[=[ SECTION 1: Inputs ]=]
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
+
 default_suspicious_regex = [[readme.*\.txt$]]
 default_bad_regex = [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]]
 
@@ -84,20 +101,22 @@ regex_suspicious =  hunt.arg.string("regex_suspicious") or
 regex_bad = hunt.arg.string("regex_bad") or 
             hunt.global.string("filesystem_scanner_default_regex_bad", false, default_bad_regex)
 
-path = hunt.global.string("path", false, "C:/Users")
+path = hunt.arg.string("path") or hunt.global.string("filesystemscanner_path", false, "C:/Users")
 paths = {}
 if path ~= nil then
     -- Split comma-seperated values
-	for val in string.gmatch(path, '[^,%s]+') do
+	for val in string.gmatch(path, '[^,]+') do
 		table.insert(paths, val)
 	end
 end
 
-recurse_depth = hunt.arg.number("recurse_depth", false, 3)
+add_to_artifacts = false
 
---experimental (not in use)
+recurse_depth = hunt.arg.number("recurse_depth") or hunt.global.number("recurse_depth", false, 3)
+
 powershell = not hunt.global.boolean("disable_powershell", false, false)
 trailing_days = hunt.global.number("trailing_days", false, 30)
+
 
 
 --[=[ SECTION 2: Functions ]=]
@@ -206,51 +225,66 @@ startdate = os.date("%x", os.time()-60*60*24*trailing_days)
 
 hunt.status.good()
 
-for _, path in pairs(paths) do 
-    opts = {
-        "files",
-        f"recurse=${recurse_depth}"
-    }
-    for _, fi in pairs(hunt.fs.ls(path, opts)) do 
-        file = fi
-        fn = get_filename(file:path())
-        if regex_bad and string.find(fn, regex_bad) then
-            hunt.status.bad()
-            hunt.log(f"[BAD]'${regex_bad}': ${file:path()}")
-        end
-        if regex_suspicious and string.find(fn, regex_suspicious) then 
-            hunt.status.bad()
-            hunt.log(f"[BAD]'${regex_suspicious}': ${file:path()}")
+if not powershell then
+    for _, path in pairs(paths) do 
+        opts = {
+            "files",
+            f"recurse=${recurse_depth}"
+        }
+        for _, fi in pairs(hunt.fs.ls(path, opts)) do 
+            file = fi
+            fn = get_filename(file:path())
+            if regex_bad and string.find(fn, regex_bad) then
+                hunt.status.bad()
+                hunt.log(f"[BAD]'${regex_bad}': ${file:path()}")
+            end
+            if regex_suspicious and string.find(fn, regex_suspicious) then 
+                hunt.status.bad()
+                hunt.log(f"[BAD]'${regex_suspicious}': ${file:path()}")
+            end
         end
     end
-end
-
-if powershell then
+else
+    hunt.debug("Using Powershell")
     for _, path in pairs(paths) do 
-        cmd = f"Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} -Filter *.txt | where-object { $_.Name -match '${regex_bad}' } | Select FullName -ExpandProperty FullName"
+        cmd = f"Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} | where-object { $_.Name -match '${regex_bad}' } | Select FullName -ExpandProperty FullName"
         out, err = hunt.env.run_powershell(cmd)
         if out then
-            for line in out:gmatch("[^\n]+") do
+            n = 0
+            for matchpath in out:gmatch("[^\n]+") do
+                n = n + 1
                 hunt.status.bad() -- Set Threat to Suspicious on finding
-                hunt.log(f"[BAD]'${regex_bad}': ${line}") -- Send to Infocyte Extension Output
+                hunt.log(f"[BAD]'${regex_bad}': ${matchpath}") -- Send to Infocyte Extension Output
+                
+                -- Add to artifacts
+                if add_to_artifacts then
+                    artifact = hunt.survey.artifact()
+                    artifact:exe(matchpath)
+                    artifact:type("FileSystemScanner")
+                    hunt.survey.add(artifact)
+                end
             end
+            hunt.log(f"Found ${n} matches using command: ${cmd}")
         else
             hunt.error(f"Error running powershell: ${err}")
         end
-    end
 
-    if regex_suspicious then 
-        cmd = "Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} -Filter *.txt | where-object { $_.Name -match '${regex_suspicious}' } | Select FullName -ExpandProperty FullName"
-        out, err = hunt.env.run_powershell(cmd)
-        if out then
-            for line in out:gmatch"[^\n]+" do
-                hunt.status.suspicious() -- Set Threat to Suspicious on finding
-                hunt.log(f"[SUSPICIOUS]'${regex_suspicious}': ${line}") -- Send to Infocyte Extension Output
+        if regex_suspicious then 
+            cmd = f"Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} | where-object { $_.Name -match '${regex_suspicious}' } | Select FullName -ExpandProperty FullName"
+            out, err = hunt.env.run_powershell(cmd)
+            if out then
+                n = 0
+                for matchpath in out:gmatch("[^\n]+") do
+                    n = n + 1
+                    hunt.status.suspicious() -- Set Threat to Suspicious on finding
+                    hunt.log(f"[SUSPICIOUS]'${regex_suspicious}': ${matchpath}") -- Send to Infocyte Extension Output
+                end
+                hunt.log(f"Found ${n} matches using command: ${cmd}")
+            else 
+                hunt.error(f"Error running powershell: ${err}")
             end
-        else 
-            hunt.error(f"Error running powershell: ${err}")
         end
-    end
+    end    
 end
 
 hunt.log("Result: Extension successfully executed")
