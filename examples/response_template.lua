@@ -1,43 +1,32 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Response Template
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Example script show format, style, and options for commiting
+    an action or change against a host.
+author: Infocyte
+guid: b5f18032-6749-4bef-80d3-8094dca66798
+created: 2019-09-19
+updated: 2020-09-10
 
-[info]
-name = "Response Template"
-type = "Response"
-description = """Example script show format, style, and options for commiting
-        an action or change against a host."""
-author = "Infocyte"
-guid = "b5f18032-6749-4bef-80d3-8094dca66798"
-created = "2019-09-19"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 

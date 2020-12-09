@@ -1,50 +1,38 @@
 --[=[
-filetype = "Infocyte Extension"
-
-[info]
-name = "RDP Triage"
-type = "Collection"
-description = """RDP Lateral Movement
+name: RDP Triage
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    RDP Lateral Movement
     https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
     Gathers and combines 4624,4778,4648 logon events, rdp session 
-    events 21,24,25, and 1149 with processes started (4688) by those sessions"""
-author = "Infocyte"
-guid = "f606ff51-4e99-4687-90a7-43aaabae8634"
-created = "2020-03-01"
-updated = "2020-09-10"
+    events 21,24,25, and 1149 with processes started (4688) by those sessions
+author: Infocyte
+guid: f606ff51-4e99-4687-90a7-43aaabae8634
+created: 2020-03-01
+updated: 2020-09-10
 
-## GLOBALS ##
 # Global variables
+globals:
+- trailing_days:
+    description: Number of days to go back in the logs
+    type: number
+    default: 60
+    required: false
 
-    [[globals]]
-    name = "trailing_days"
-    description = "Number of days to go back in the logs"
-    type = "number"
-    default = 60
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[Args]]
-    name = "trailing_days"
-    description = "Number of days to go back in the logs"
-    type = "number"
-    required = false
+args:
+- trailing_days:
+    description: Number of days to go back in the logs
+    type: number
+    required: false
 
 ]=]
 

@@ -1,48 +1,41 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Collection Template
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Example script show format, style, and options for gathering
+    additional data from a host.
+author: Infocyte
+guid: f8e44229-4d8d-4909-b148-58130b660077
+created: 2019-09-19
+updated: 2020-09-10
 
-[info]
-name = "Collection Template"
-type = "Collection"
-description = """Example script show format, style, and options for gathering
-     additional data from a host."""
-author = "Infocyte"
-guid = "f8e44229-4d8d-4909-b148-58130b660077"
-created = "2019-09-19"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+-  proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+- test:
+    description: Run self tests
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+args:
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
 ]=]
 

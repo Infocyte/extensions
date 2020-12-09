@@ -1,53 +1,34 @@
 --[=[ 
-filetype = "Infocyte Extension"
+name: Run Command
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Runs a command on the shell (bash, powershell, or cmd). WARNING This is a dangerous extension, run with caution
+author: Infocyte
+guid: 0d22ae39-bd9e-4448-a418-b4f08dea36b3
+created: 2020-07-24
+updated: 2020-09-10
 
-[info]
-name = "Run Command"
-type = "Response"
-description = """Runs a command on the shell (bash, powershell, or cmd). WARNING: This is a dangerous extension, run with caution"""
-author = "Infocyte"
-guid = "0d22ae39-bd9e-4448-a418-b4f08dea36b3"
-created = "2020-07-24"
-updated = "2020-09-10"
 
-## GLOBALS ##
-# Global variables accessed within extensions via hunt.global('name')
+# Global Variables
+globals:
+- runcommand_command:
+    description: Command to run on the default shell (bash, cmd, or powershell). Global variable is optional and used if run time arguent not provided
+    type: string
+    required: false
 
-    [[globals]]
-    name = "runcommand_command"
-    description = "Command to run on the default shell (bash, cmd, or powershell). Global variable is optional and used if run time arguent not provided"
-    type = "string"
-    required = false
+- disable_powershell:
+    description: Uses cmd instead of powershell if true
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "disable_powershell"
-    description = "Uses cmd instead of powershell if true"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
-# Runtime arguments are accessed within extensions via hunt.arg('name')
-
-    [[args]]
-    name = "command"
-    description = "Command to run on the default shell"
-    type = "string"
-    required = true 
+# Runtime arguments
+args:
+- command:
+    description: Command to run on the default shell
+    type: string
+    required: true 
 
 ]=]
 

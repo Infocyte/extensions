@@ -1,45 +1,31 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Filesystem Scanner
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Scans system for filenames matching a set of regex patterns (like ransomware notes)
+author: Infocyte
+guid: 1775f23f-34a6-4f83-91e6-49c48faa66bb
+created: 2020-04-06
+updated: 2020-09-10
 
-[info]
-name = "Filesystem Scanner"
-type = "Collection"
-description = """Scans system for filenames matching a set of regex patterns (like ransomware notes)
-    Inputs: path, regex_bad, regex_suspicious
-    Outputs: File metadata for matches reported to extension output
-    """
-author = "Infocyte"
-guid = "1775f23f-34a6-4f83-91e6-49c48faa66bb"
-created = "2020-04-06"
-updated = "2020-11-22"
-
-## GLOBALS ##
 # Global variables
+globals:
+- filesystem_scanner_default_regex_bad:
+    description: Filesystem scanner regex to produce an alerting match against
+    type: string
+    default: DECRYPT
 
-    [[globals]]
-    name = "filesystem_scanner_default_regex_bad"
-    description = "Filesystem scanner regex to produce an alerting match against"
-    type = "string"
-    default = """DECRYPT"""
+- filesystemscanner_default_regex_suspicious:
+    description: Filesystem scanner regex to produce a non-alerting match against
+    type: string
+    default: readme.*txt$
 
-    [[globals]]
-    name = "filesystemscanner_default_regex_suspicious"
-    description = "Filesystem scanner regex to produce a non-alerting match against"
-    type = "string"
-    default = """readme.*txt$"""
+- trailing_days:
+    type: number
+    default: 60
+    required: false
 
-    [[globals]]
-    name = "filesystemscanner_path"
-    description = "Path to search within"
-    type = "string"
-    default = 60
-    default = "C:\"
-
-    [[globals]]
-    name = "trailing_days"
-    type = "number"
-    default = 60
-    required = false
 
     [[globals]]
     name = "recurse_depth"
@@ -61,30 +47,25 @@ updated = "2020-11-22"
     default = false
     required = false
 
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- regex_bad:
+    description: Filesystem scanner regex to produce an alerting match against
+    type: string
 
-    [[args]]
-    name = "regex_bad"
-    description = "Filesystem scanner regex to produce an alerting match against"
-    type = "string"
+- regex_suspicious:
+    description: Filesystem scanner regex to produce a non-alerting match against
+    type: string
 
-    [[args]]
-    name = "regex_suspicious"
-    description = "Filesystem scanner regex to produce a non-alerting match against"
-    type = "string"
+- path:
+    description: Path or comma-seperated list of paths to search
+    type: string
+    default: C:/users
 
-    [[args]]
-    name = "path"
-    description = "Path or comma-seperated list of paths to search"
-    type = "string"
-    default = 'C:/users'
-
-    [[args]]
-    name = "recurse_depth"
-    description = "Levels below the folder to search through"
-    type = "number"
-    default = 3
+- recurse_depth:
+    description: Levels below the folder to search through
+    type: number
+    default: 3
 
 
 ]=]

@@ -1,43 +1,27 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Host Isolation
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Performs a local network isolation of a Windows, Linux, or OSX
+    system using windows firewall, iptables, ipfw, or pf
+author: Infocyte
+guid: 0c18bac7-5fbf-445d-ada5-0626295a9a81
+created: 2019-09-16
+updated: 2020-09-10
 
-[info]
-name = "Host Isolation"
-type = "Response"
-description = """Performs a local network isolation of a Windows, Linux, or OSX
-     system using windows firewall, iptables, ipfw, or pf"""
-author = "Infocyte"
-guid = "0c18bac7-5fbf-445d-ada5-0626295a9a81"
-created = "2019-09-16"
-updated = "2020-10-07"
 
-## GLOBALS ##
 # Global variables
+globals:
+- whitelisted_ips:
+    description: | 
+        Any additional IPs you wish whitelisted for isolated hosts. Comma-seperated list
+    type: boolean
+    required: false
 
-	[[globals]]
-	name = "whitelisted_ips"
-	description = """Any additional IPs you wish whitelisted for isolated hosts. Comma-seperated list"""
-	type = "string"
-	required = false
 
-	[[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-	[[args]]
+args:
 
 ]=]
 

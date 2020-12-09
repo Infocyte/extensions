@@ -1,72 +1,57 @@
 --[=[
-filetype = "Infocyte Extension"
-
-[info]
-name = "Memory Extraction"
-type = "Response"
-description = """Uses winpmem/linpmem to dump full physical memory and
-       stream it to an S3 bucket, ftp server, or smb share. If output path not
-       specified, will dump to local temp folder.
-       Source:
+name: Memory Extraction
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Uses winpmem/linpmem to dump full physical memory and
+    stream it to an S3 bucket, ftp server, or smb share. If output path not
+    specified, will dump to local temp folder.
+    Source
        https://github.com/Velocidex/c-aff4/releases/tag/v3.3.rc3
        http://releases.rekall-forensic.com/v1.5.1/linpmem-2.1.post4
        http://releases.rekall-forensic.com/v1.5.1/osxpmem-2.1.post4.zip
-       Instructions:
-       https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/"""
-author = "Infocyte"
-guid = "89abebc6-d0db-4eba-b771-6a2652033581"
-created = "2019-9-19"
-updated = "2020-09-10"
+    Instructions
+       https://holdmybeersecurity.com/2017/07/29/rekall-memory-analysis-framework-for-windows-linux-and-mac-osx/
+author: Infocyte
+guid: 89abebc6-d0db-4eba-b771-6a2652033581
+created: 2019-9-19
+updated: 2020-09-10
 
-## GLOBALS ##
+
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 
 ]=]

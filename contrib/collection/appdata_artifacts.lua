@@ -1,30 +1,25 @@
 --[=[
-filetype = "Infocyte Extension"
+name: AppData Artifact Triage
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Adds all executable binaries in user appdata folder
+    (with recursion depth of 1) to artifacts for analysis.
+author: Infocyte
+guid: 4d5ce2fb-df0f-4186-8116-4957cd405ec8
+created: 2019-11-21
+updated: 2020-09-10
 
-[info]
-name = "AppData Artifact Triage"
-type = "Collection"
-description = """Adds all executable binaries in user appdata folder
-        (with recursion depth of 1) to artifacts for analysis."""
-author = "Infocyte"
-guid = "4d5ce2fb-df0f-4186-8116-4957cd405ec8"
-created = "2019-11-21"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
 
-    [[globals]]
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
-    name = 'max_size'
-    type = 'number'
-    description = 'Max size of file to analyze in kB'
-    default = 1000
-    required = false
+args:
+- max_size:
+    type: number
+    description: Max size of file to analyze in kB
+    default: 1000
+    required: false
 
 ]=]
 

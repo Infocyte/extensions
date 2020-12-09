@@ -1,129 +1,106 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Evidence Collector
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Collects event logs, .dat files, etc. from system and forwards
+    them to your Recovery point. 
+    S3 Path Format
+    <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+    Loads Powerforensics to bypass file locks. Currently only works on Windows
+author: Infocyte
+guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
+created: 2019-10-18
+updated: 2020-09-10
 
-[info]
-name = "Evidence Collector"
-type = "Response"
-description = """Collects event logs, .dat files, etc. from system and forwards
-        them to your Recovery point. S3 Path Format: 
-        <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-        Loads Powerforensics to bypass file locks. Currently only works on Windows"""
-author = "Infocyte"
-guid = "e07252a1-4aea-47e4-80e8-c7ea8c558aed"
-created = "2019-10-18"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
-# -> hunt.global(name = string, isRequired = boolean, [default]) 
+globals: 
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+- disable_powershell:
+    description: Does not use powershell
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "disable_powershell"
-    description = "Does not use powershell"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- MFT:
+    description: Pulls MFT using Powerforenics -- warning, this is a big job
+    type: boolean
+    required: false
+    default: false
 
-    [[args]]
-    name = "MFT"
-    description = "Pulls MFT using Powerforenics -- warning: this is a big job"
-    type = "boolean"
-    required = false
-    default = false
+- SecurityEvents:
+    description: Pulls full security event logs
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "SecurityEvents"
-    description = "Pulls full security event logs"
-    type = "boolean"
-    required = false
-    default = true
+- IEHistory:
+    description: Pulls IE History
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "IEHistory"
-    description = "Pulls IE History"
-    type = "boolean"
-    required = false
-    default = true
+- FireFoxHistory:
+    description: Pulls Firefox History
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "FireFoxHistory"
-    description = "Pulls Firefox History"
-    type = "boolean"
-    required = false
-    default = true
+- ChromeHistory:
+    description: Pulls chrome history
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "ChromeHistory"
-    description = "Pulls chrome history"
-    type = "boolean"
-    required = false
-    default = true
+- OutlookPSTandAttachments:
+    description: Pulls chrome history
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "OutlookPSTandAttachments"
-    description = "Pulls chrome history"
-    type = "boolean"
-    required = false
-    default = true
+- UserDats:
+    description: Pulls all user dat files
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "UserDats"
-    description = "Pulls all user dat files"
-    type = "boolean"
-    required = false
-    default = true
-
-    [[args]]
-    name = "USBHistory"
-    description = "Pulls USB history"
-    type = "boolean"
-    required = false
-    default = true
+- USBHistory:
+    description: Pulls USB history
+    type: boolean
+    required: false
+    default: true
 
 ]=]
 

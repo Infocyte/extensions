@@ -1,81 +1,57 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Yara Scanner
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Scans files on disk with YARA signatures categorized as either informational, suspicious, or bad
+author: Infocyte
+guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
+created: 2019-10-18
+updated: 2020-09-10
 
-[info]
-name = "Yara Scanner"
-type = "Collection"
-description = """Scans files on disk with YARA signatures 
-    categorized as either informational, suspicious, or bad"""
-author = "Infocyte"
-guid = "f0565351-1dc3-4a94-90b3-34a5765b33bc"
-created = "2019-10-18"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- yarascanner_scan_activeprocesses:
+    description: Adds running processes to list of paths to scan
+    type: boolean
+    default: true
 
-    [[globals]]
-    name = "yarascanner_scan_activeprocesses"
-    description = "Adds running processes to list of paths to scan"
-    type = "boolean"
-    default = true
+- yarascanner_scan_appdata:
+    description: Recurse through each user's appdata for binaries to scan (windows only)
+    type: boolean
+    default: false
 
-    [[globals]]
-    name = "yarascanner_scan_appdata"
-    description = "Recurse through each user's appdata for binaries to scan (windows only)"
-    type = "boolean"
-    default = false
+- yarascanner_max_size:
+    description: Largest size of binary in Kb
+    type: number
+    default: 5000
 
-    [[globals]]
-    name = "yarascanner_max_size"
-    description = "Largest size of binary in Kb"
-    type = "number"
-    default = 5000
+- yarascanner_additional_paths:
+    description: Additional paths to scan
+    type: string
 
-    [[globals]]
-    name = "yarascanner_additional_paths" 
-    description = "Additional paths to scan"
-    type = "string"
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- scan_activeprocesses:
+    description: Adds running processes to list of paths to scan
+    type: boolean
+    default: true
 
-    [[args]]
-    name = "scan_activeprocesses"
-    description = "Adds running processes to list of paths to scan"
-    type = "boolean"
-    default = true
+- scan_appdata:
+    description: Recurse through each user's appdata for binaries to scan (windows only)
+    type: boolean
+    default: false
 
-    [[args]]
-    name = "scan_appdata"
-    description = "Recurse through each user's appdata for binaries to scan (windows only)"
-    type = "boolean"
-    default = false
+- max_size:
+    description: Largest size of binary in Kb
+    type: number
+    default: 5000
 
-    [[args]]
-    name = "max_size"
-    description = "Largest size of binary in Kb"
-    type = "number"
-    default = 5000
-
-    [[args]]
-    name = "additional_paths" 
-    description = "Additional paths to scan"
-    type = "string"
+- additional_paths:
+    description: Additional paths to scan
+    type: string
 
 ]=]
 

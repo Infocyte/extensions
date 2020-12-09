@@ -1,40 +1,20 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Host Isolation Restore
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Reverses the local network isolation of a Windows, Linux, and OSX
+    systems using windows firewall, iptables, ipfw, or pf respectively
+author: Infocyte
+guid: 2896731a-ef52-4569-9669-e9a6d8769e76
+created: 2019-9-16
+updated: 2020-09-10
 
-[info]
-name = "Host Isolation Restore"
-type = "Response"
-description = """Reverses the local network isolation of a Windows, Linux, and OSX
-     systems using windows firewall, iptables, ipfw, or pf respectively"""
-author = "Infocyte"
-guid = "2896731a-ef52-4569-9669-e9a6d8769e76"
-created = "2019-9-16"
-updated = "2020-10-7"
-
-## GLOBALS ##
 # Global variables
+globals:
 
-	[[globals]]
-
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-	[[args]]
-
+args:
 
 ]=]
 

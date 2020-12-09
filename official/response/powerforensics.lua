@@ -1,68 +1,49 @@
 --[=[
-filetype = "Infocyte Extension"
+name: PowerForensics MFT
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Deploy PowerForensics and gathers forensic data to Recovery
+    Location. This extension requires definition of a Recovery Location 
+    (S3)
+author: Infocyte
+guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
+created: 2019-10-18
+updated: 2020-09-10
 
-[info]
-name = "PowerForensics MFT"
-type = "Response"
-description = """Deploy PowerForensics and gathers forensic data to Recovery
-        Location. This extension requires definition of a Recovery Location 
-        (S3)"""
-author = "Infocyte"
-guid = "0989cd2f-a781-4cea-8f43-fcc3092144a1"
-created = "2019-10-18"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
-
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 

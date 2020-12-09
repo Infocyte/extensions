@@ -1,25 +1,20 @@
 --[=[
-filetype = "Infocyte Extension"
+name: ld.so.preload Rootkit Detector
+filetype: Infocyte Extension
+type: Collection
+description: |
+    Analyzes any references in ld.so.preload (always suspicious 
+    cause programs launched can intercept system calls)
+author: Infocyte
+guid: 0153a459-c36b-4542-940e-e4c81ab1eb63
+created: 2019-12-16
+updated: 2020-09-10
 
-[info]
-name = "ld.so.preload Rootkit Detector"
-type = "Collection"
-description = """Analyzes any references in ld.so.preload (always suspicious
-        cause programs launched can intercept system calls)"""
-author = "Infocyte"
-guid = "0153a459-c36b-4542-940e-e4c81ab1eb63"
-created = "2019-12-16"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
 
-    [[globals]]
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 

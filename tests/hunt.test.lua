@@ -1,67 +1,52 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Test
+filetype: Infocyte Extension
+type: response
+description: | 
+    Tests Infocyte Extension functions
+author: Infocyte
+guid: 09dd57ff-2ebd-4e3c-9012-1d593fecf43b
+created: 2020-01-24
+updated: 2020-09-10
 
-[info]
-name = "Test"
-type = "response"
-description = """Tests Infocyte Extension functions"""
-author = "Infocyte"
-guid = "09dd57ff-2ebd-4e3c-9012-1d593fecf43b"
-created = "2020-01-24"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+- test:
+    description: test global
+    type: boolean
+    required: true
 
-    [[globals]]
-    name = "test"
-    description = "test global"
-    type = "boolean"
-    required = true
+- s3_region:
+    description: S3 Bucket key Id for uploading. i.e. 'us-east-2'
+    type: string
+    default: us-east-2
+    required: false
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    default = "us-east-2"
-    required = false
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    default: test-extensions
+    required: false
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    default = "test-extensions"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- path:
+    description: This is a test of a path variable
+    type: string
+    required: false
+    default: C:\\users
 
-    [[args]]
-    name = "path"
-    description = 'This is a test of a path variable'
-    type = "string"
-    required = false
-    default = "C:\\users"
-
-    [[args]]
-    name = "arg1"
-    description = 'Test'
-    type = "string"
-    required = false
+- arg1:
+    description: Test
+    type: string
+    required: false
 
 ]=]
 

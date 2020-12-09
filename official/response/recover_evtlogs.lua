@@ -1,67 +1,52 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Recover Event Logs
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Collects raw event logs from system and forwards
+    them to your Recovery point. S3 Path Format
+    <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+    Loads Powerforensics to bypass file locks. Currently only works on Windows
+author: Infocyte
+guid: 2d34e7d7-86c4-42cd-9fa6-d50605e70bf4
+created: 2020-07-21
+updated: 2020-09-10
 
-[info]
-name = "Recover Event Logs"
-type = "Response"
-description = """Collects raw event logs from system and forwards
-        them to your Recovery point. S3 Path Format: 
-        <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-        Loads Powerforensics to bypass file locks. Currently only works on Windows"""
-author = "Infocyte"
-guid = "2d34e7d7-86c4-42cd-9fa6-d50605e70bf4"
-created = "2020-07-21"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example=myuser:password@10.11.12.88:8888
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 

@@ -1,13 +1,14 @@
 --[=[
-    Infocyte Extension
-    Name: Template
-    Type: Action
-    Description: Example script show format, style, and options for commiting
-        an action or change against a host.
-    Author: Infocyte
-    Guid: fcc078a5-06a8-4f53-b077-94c97d4162d8
-    Created: 20190919
-    Updated: 20191204 (Gerritz)
+name: Duplicate Controllers
+filetype: Infocyte Extension
+type: Action
+description: | 
+    Creates duplicate controller services to speed up scanning from a high power system
+author: Infocyte
+guid: fcc078a5-06a8-4f53-b077-94c97d4162d8
+created: 20190919
+updated: 20191204
+
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]

@@ -1,46 +1,28 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Force System Reboot
+filetype: Infocyte Extension
+type: Response
+description: Forces system reboot after delay
+author: Infocyte
+guid: 8bd31ce0-75c4-42d9-a2b3-d32fad3b61ec
+created: 2020-01-22
+updated: 2020-09-10
 
-[info]
-name = "Force System Reboot"
-type = "Response"
-description = """Forces system reboot after delay"""
-author = "Infocyte"
-guid = "8bd31ce0-75c4-42d9-a2b3-d32fad3b61ec"
-created = "2020-01-22"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- reboot_reason:
+    description: Default reason message to display to user and input in logs
+    type: string
+    default: Infocyte
 
-    [[globals]]
-    name = "reboot_reason"
-    description = "Default reason message to display to user and input in logs"
-    type = "string"
-    default = "Infocyte"
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
-    name = "reason"
-    description = "Reason message to display to user and input in logs"
-    type = "string"
-    required = false
+args:
+- reason:
+    description: Reason message to display to user and input in logs
+    type: string
+    required: false
 
 ]=]
 
@@ -110,7 +92,7 @@ success, out = run_cmd(cmd, 'r')
 if success then 
     if out:gmatch("failed|error") then
         hunt.error(out)
-  	else
+      else
         hunt.log(out)
         hunt.log("System reboot initiated")
         hunt.summary(f"Reboot Initiated")
