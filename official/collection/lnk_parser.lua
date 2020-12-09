@@ -183,8 +183,8 @@ end
 n = 0
 for _,link in pairs(links) do
     print("Adding file: "..link['Target'])
-    -- Create a new artifact
-    autostart = hunt.survey.autostart()    
+	-- Create a new artifact
+    autostart = hunt.survey.autostart()
     autostart:type("Lnk")
     autostart:exe(link['Target'])
     if link['Args'] ~= nil and link['Args'] ~= "" then
