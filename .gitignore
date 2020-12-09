@@ -5,3 +5,4 @@ official/collection/test.lua
 official/collection/test.ps1
 draft/test.lua
 tests/test.lua
+*.ps1
