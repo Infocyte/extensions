@@ -74,17 +74,17 @@ hunt.debug(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=
 bad_rules = [=[
 rule Base64d_PE
 {
-	meta:
-		description = "Contains a base64-encoded executable"
-		author = "Florian Roth"
-		date = "2017-04-21"
+    meta:
+        description = "Contains a base64-encoded executable"
+        author = "Florian Roth"
+        date = "2017-04-21"
 
-	strings:
-		$s0 = "TVqQAAIAAAAEAA8A//8AALgAAAA" wide ascii
-		$s1 = "TVqQAAMAAAAEAAAA//8AALgAAAA" wide ascii
+    strings:
+        $s0 = "TVqQAAIAAAAEAA8A//8AALgAAAA" wide ascii
+        $s1 = "TVqQAAMAAAAEAAAA//8AALgAAAA" wide ascii
 
-	condition:
-		any of them
+    condition:
+        any of them
 }
 
 rule APT_KimSuky_bckdr_dll {
@@ -134,22 +134,22 @@ rule APT_KimSuky_bckdr_dll {
 }
 rule Shifu {
 
-	meta:
+    meta:
 
-		reference = "https://blogs.mcafee.com/mcafee-labs/japanese-banking-trojan-shifu-combines-malware-tools/"
-		author = "McAfee Labs"
+        reference = "https://blogs.mcafee.com/mcafee-labs/japanese-banking-trojan-shifu-combines-malware-tools/"
+        author = "McAfee Labs"
 
-	strings:
+    strings:
 
-		$b = "RegCreateKeyA"
-		$a = "CryptCreateHash"
-		$c = {2F 00 63 00 20 00 73 00 74 00 61 00 72 00 74 00 20 00 22 00 22 00 20 00 22 00 25 00 73 00 22 00 20 00 25 00 73 00 00 00 00 00 63 00 6D 00 64 00 2E 00 65 00 78 00 65 00 00 00 72 00 75 00 6E}
-		$d = {53 00 6E 00 64 00 56 00 6F 00 6C 00 2E 00 65 00 78 00 65}
-		$e = {52 00 65 00 64 00 69 00 72 00 65 00 63 00 74 00 45 00 58 00 45}
+        $b = "RegCreateKeyA"
+        $a = "CryptCreateHash"
+        $c = {2F 00 63 00 20 00 73 00 74 00 61 00 72 00 74 00 20 00 22 00 22 00 20 00 22 00 25 00 73 00 22 00 20 00 25 00 73 00 00 00 00 00 63 00 6D 00 64 00 2E 00 65 00 78 00 65 00 00 00 72 00 75 00 6E}
+        $d = {53 00 6E 00 64 00 56 00 6F 00 6C 00 2E 00 65 00 78 00 65}
+        $e = {52 00 65 00 64 00 69 00 72 00 65 00 63 00 74 00 45 00 58 00 45}
 
-	condition:
+    condition:
 
-		all of them
+        all of them
 }
 rule VPNFilter {
 
@@ -329,20 +329,20 @@ rule crime_ransomware_windows_GPGQwerty
 {
 meta:
 
-	author = "McAfee Labs"
-	description = "Detect GPGQwerty ransomware"
-	reference = "https://securingtomorrow.mcafee.com/mcafee-labs/ransomware-takes-open-source-path-encrypts-gnu-privacy-guard/"
-	date = "2018-03-21"
+    author = "McAfee Labs"
+    description = "Detect GPGQwerty ransomware"
+    reference = "https://securingtomorrow.mcafee.com/mcafee-labs/ransomware-takes-open-source-path-encrypts-gnu-privacy-guard/"
+    date = "2018-03-21"
 
 strings:
 
-	$a = "gpg.exe ???recipient qwerty  -o"
-	$b = "%s%s.%d.qwerty"
-	$c = "del /Q /F /S %s$recycle.bin"
-	$d = "cryz1@protonmail.com"
+    $a = "gpg.exe ???recipient qwerty  -o"
+    $b = "%s%s.%d.qwerty"
+    $c = "del /Q /F /S %s$recycle.bin"
+    $d = "cryz1@protonmail.com"
 
 condition:
-	all of them
+    all of them
 }
 
 rule kraken_cryptor_ransomware_loader {
@@ -1114,25 +1114,25 @@ rule AntivirusReferences
         $a575 = "zapro.exe" nocase wide ascii
         $a577 = "zatutor.exe" nocase wide ascii
         $a579 = "zonealarm.exe" nocase wide ascii
-		// Strings from Dubnium below
-		$a580 = "QQPCRTP.exe" nocase wide ascii
-		$a581 = "QQPCTray.exe" nocase wide ascii
-		$a582 = "ZhuDongFangYu.exe" nocase wide ascii
-		$a583 = /360(tray|sd|rp).exe/ nocase wide ascii
-		$a584 = /qh(safetray|watchdog|activedefense).exe/ nocase wide ascii
-		$a585 = "McNASvc.exe" nocase wide ascii
-		$a586 = "MpfSrv.exe" nocase wide ascii
-		$a587 = "McProxy.exe" nocase wide ascii
-		$a588 = "mcmscsvc.exe" nocase wide ascii
-		$a589 = "McUICnt.exe" nocase wide ascii
-		$a590 = /ui(WatchDog|seagnt|winmgr).exe/ nocase wide ascii
-		$a591 = "ufseagnt.exe" nocase wide ascii
-		$a592 = /core(serviceshell|frameworkhost).exe/ nocase wide ascii
-		$a593 = /ay(agent|rtsrv|updsrv).aye/ nocase wide ascii
-		$a594 = /avast(ui|svc).exe/ nocase wide ascii
-		$a595 = /ms(seces|mpeng).exe/ nocase wide ascii
-		$a596 = "afwserv.exe" nocase wide ascii
-		$a597 = "FiddlerUser"
+        // Strings from Dubnium below
+        $a580 = "QQPCRTP.exe" nocase wide ascii
+        $a581 = "QQPCTray.exe" nocase wide ascii
+        $a582 = "ZhuDongFangYu.exe" nocase wide ascii
+        $a583 = /360(tray|sd|rp).exe/ nocase wide ascii
+        $a584 = /qh(safetray|watchdog|activedefense).exe/ nocase wide ascii
+        $a585 = "McNASvc.exe" nocase wide ascii
+        $a586 = "MpfSrv.exe" nocase wide ascii
+        $a587 = "McProxy.exe" nocase wide ascii
+        $a588 = "mcmscsvc.exe" nocase wide ascii
+        $a589 = "McUICnt.exe" nocase wide ascii
+        $a590 = /ui(WatchDog|seagnt|winmgr).exe/ nocase wide ascii
+        $a591 = "ufseagnt.exe" nocase wide ascii
+        $a592 = /core(serviceshell|frameworkhost).exe/ nocase wide ascii
+        $a593 = /ay(agent|rtsrv|updsrv).aye/ nocase wide ascii
+        $a594 = /avast(ui|svc).exe/ nocase wide ascii
+        $a595 = /ms(seces|mpeng).exe/ nocase wide ascii
+        $a596 = "afwserv.exe" nocase wide ascii
+        $a597 = "FiddlerUser"
 
     condition:
         any of them
@@ -1194,9 +1194,9 @@ rule network_dyndns {
     meta:
         author = "x0r"
         description = "Communications dyndns network"
-	version = "0.1"
+    version = "0.1"
     strings:
-	$s1 =".no-ip.org"
+    $s1 =".no-ip.org"
         $s2 =".publicvm.com"
         $s3 =".linkpc.net"
         $s4 =".dynu.com"
@@ -1237,7 +1237,7 @@ rule network_tor {
     meta:
         author = "x0r"
         description = "Communications over TOR network"
-	version = "0.1"
+    version = "0.1"
     strings:
         $p1 = "tor\\hidden_service\\private_key" nocase
         $p2 = "tor\\hidden_service\\hostname" nocase
@@ -1251,20 +1251,20 @@ rule certificate {
     meta:
         author = "x0r"
         description = "Inject certificate in store"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "Crypt32.dll" nocase
         $r1 = "software\\microsoft\\systemcertificates\\spc\\certificates" nocase
         $c1 = "CertOpenSystemStore"
     condition:
-	all of them
+    all of them
 }
 
 rule lookupip {
     meta:
         author = "x0r"
         description = "Lookup external IP"
-	version = "0.1"
+    version = "0.1"
     strings:
         $n1 = "checkip.dyndns.org" nocase
         $n2 = "whatismyip.org" nocase
@@ -1279,7 +1279,7 @@ rule cred_local {
     meta:
         author = "x0r"
         description = "Steal credential"
-	version = "0.1"
+    version = "0.1"
     strings:
         $c1 = "LsaEnumerateLogonSessions"
         $c2 = "SamIConnect"
@@ -1302,9 +1302,9 @@ rule keylogger_strings {
     meta:
         author = "x0r"
         description = "Strings common to keyloggers. High FP"
-	version = "0.1"
+    version = "0.1"
     strings:
-	    $f1 = "User32.dll" nocase
+        $f1 = "User32.dll" nocase
         $c1 = "GetAsyncKeyState"
         $c2 = "GetKeyState"
         $c3 = "MapVirtualKey"
@@ -1317,9 +1317,9 @@ rule network_ftp {
     meta:
         author = "x0r"
         description = "Communications over FTP"
-	version = "0.1"
+    version = "0.1"
     strings:
-	   $f1 = "Wininet.dll" nocase
+       $f1 = "Wininet.dll" nocase
         $c1 = "FtpGetCurrentDirectory"
         $c2 = "FtpGetFile"
         $c3 = "FtpPutFile"
@@ -1340,7 +1340,7 @@ rule network_dropper {
     meta:
         author = "x0r"
         description = "File downloader/dropper"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "urlmon.dll" nocase
         $c1 = "URLDownloadToFile"
@@ -1354,9 +1354,9 @@ rule create_service {
     meta:
         author = "x0r"
         description = "Create a windows service"
-	version = "0.2"
+    version = "0.2"
     strings:
-	$f1 = "Advapi32.dll" nocase
+    $f1 = "Advapi32.dll" nocase
         $c1 = "CreateService"
         $c2 = "ControlService"
         $c3 = "StartService"
@@ -1368,9 +1368,9 @@ rule network_tcp_socket {
     meta:
         author = "x0r"
         description = "Communications over RAW socket"
-	version = "0.1"
+    version = "0.1"
     strings:
-	$f1 = "Ws2_32.dll" nocase
+    $f1 = "Ws2_32.dll" nocase
         $f2 = "wsock32.dll" nocase
         $c1 = "WSASocket"
         $c2 = "socket"
@@ -1389,17 +1389,17 @@ rule network_dns {
     meta:
         author = "x0r"
         description = "Communications use DNS"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "System.Net"
         $f2 = "Ws2_32.dll" nocase
         $f3 = "Dnsapi.dll" nocase
         $f4 = "wsock32.dll" nocase
         $c2 = "GetHostEntry"
-	    $c3 = "getaddrinfo"
-	    $c4 = "gethostbyname"
-	    $c5 = "WSAAsyncGetHostByName"
-	    $c6 = "DnsQuery"
+        $c3 = "getaddrinfo"
+        $c4 = "gethostbyname"
+        $c5 = "WSAAsyncGetHostByName"
+        $c6 = "DnsQuery"
     condition:
         1 of ($f*) and  1 of ($c*)
 }
@@ -1543,7 +1543,7 @@ for path, i in pairs(paths) do
         end
         hunt.log(f"Matched yara rule [BAD]${signature} on: ${path} <${hash}>")
         bad = true
-		matchedpaths[path] = true
+        matchedpaths[path] = true
     end
     hunt.verbose("Scanning with suspicious_rules")
     for _, signature in pairs(yara_suspicious:scan(path)) do
@@ -1552,7 +1552,7 @@ for path, i in pairs(paths) do
         end
         hunt.log(f"Matched yara rule [SUSPICIOUS]${signature} on: ${path} <${hash}>")
         suspicious = true
-		matchedpaths[path] = true
+        matchedpaths[path] = true
     end
     hunt.verbose("Scanning with info_rules")
     for _, signature in pairs(yara_info:scan(path)) do
@@ -1571,10 +1571,10 @@ for path,i in pairs(matchedpaths) do
     if test and n > 3 then
         break
     end
-	-- Create a new artifact
-	artifact = hunt.survey.artifact()
-	artifact:exe(path)
-	artifact:type("Yara Match")
+    -- Create a new artifact
+    artifact = hunt.survey.artifact()
+    artifact:exe(path)
+    artifact:type("Yara Match")
     hunt.survey.add(artifact)
     n = n + 1
 end

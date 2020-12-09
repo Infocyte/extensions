@@ -35,13 +35,13 @@ local test = hunt.global.boolean("test", false, true)
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
-	"3.221.153.58",
-	"3.227.41.20",
-	"3.229.46.33",
-	"35.171.204.49",
-	"52.200.73.72",
-	"52.87.145.239",
-	"dl.infocyte.com"
+    "3.221.153.58",
+    "3.227.41.20",
+    "3.229.46.33",
+    "35.171.204.49",
+    "52.200.73.72",
+    "52.87.145.239",
+    "dl.infocyte.com"
 }
 
 backup_location = "C:\\fwbackup.wfw"
@@ -60,44 +60,44 @@ function string_to_list(str)
 end
 
 function list_to_string(tbl)
-	n = true
-	for _, item in pairs(tbl) do
-		if n == true then
-			str = item
+    n = true
+    for _, item in pairs(tbl) do
+        if n == true then
+            str = item
             n = false
-		else
-			str = str .. "," .. item
-		end
-	end
-	return str
+        else
+            str = str .. "," .. item
+        end
+    end
+    return str
 end
 
 function is_agent_installed()
-	if hunt.env.is_windows() then
-		key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
-		if hunt.registry.list_values(key) then
-			return true
-		else
-			return false
-		end
+    if hunt.env.is_windows() then
+        key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
+        if hunt.registry.list_values(key) then
+            return true
+        else
+            return false
+        end
 
-	elseif hunt.env.is_macos() then
-		installpath = [[/bin/infocyte/agent.exe]]
-		if hunt.fs.ls(installpath) then
-			return true
-		else
-			return false
-		end
-	elseif hunt.env.is_linux() or hunt.env.has_sh() then
-		installpath = [[/bin/infocyte/agent.exe]]
-		if hunt.fs.ls(installpath) then
-			return true
-		else
-			return false
-		end
-	else
-		return false
-	end
+    elseif hunt.env.is_macos() then
+        installpath = [[/bin/infocyte/agent.exe]]
+        if hunt.fs.ls(installpath) then
+            return true
+        else
+            return false
+        end
+    elseif hunt.env.is_linux() or hunt.env.has_sh() then
+        installpath = [[/bin/infocyte/agent.exe]]
+        if hunt.fs.ls(installpath) then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
 end
 
 function path_exists(path)
