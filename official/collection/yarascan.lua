@@ -7,7 +7,7 @@ description: |
 author: Infocyte
 guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
 created: 2019-10-18
-updated: 2020-09-10
+updated: 2020-12-14
 
 
 # Global variables
@@ -60,13 +60,17 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-scan_activeprocesses = hunt.arg.boolean("scan_activeprocesses") or hunt.global.boolean("yarascanner_scan_activeprocesses", false, true)
+scan_activeprocesses = hunt.arg.boolean("scan_activeprocesses") or 
+    hunt.global.boolean("yarascanner_scan_activeprocesses", false, true)
 
-scan_appdata = hunt.arg.boolean("scan_appdata") or hunt.global.boolean("yarascanner_scan_appdata", "boolean", "global", false, false)
+scan_appdata = hunt.arg.boolean("scan_appdata") or 
+    hunt.global.boolean("yarascanner_scan_appdata", "boolean", "global", false, false)
 
-max_size = hunt.arg.number("max_size") or hunt.global.number("yarascanner-max_size", false, 5000)
+max_size = hunt.arg.number("max_size") or 
+    hunt.global.number("yarascanner-max_size", false, 5000)
 
-additional_paths = hunt.arg.string("additional_paths", false) or hunt.global.string("yarascanner_additional_paths", false)
+additional_paths = hunt.arg.string("additional_paths", false) or 
+    hunt.global.string("yarascanner_additional_paths", false)
 
 hunt.debug(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
 

@@ -6,7 +6,7 @@ description: Kills a process by path and/or deletes the associated file
 author: Infocyte
 guid: e7824ed1-7ac9-46eb-addc-6949bf2cc084
 created: 2020-01-23
-updated: 2020-09-10
+updated: 2020-12-14
 
 # Global Variables
 globals:

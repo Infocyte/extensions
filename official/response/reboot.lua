@@ -6,7 +6,7 @@ description: Forces system reboot after delay
 author: Infocyte
 guid: 8bd31ce0-75c4-42d9-a2b3-d32fad3b61ec
 created: 2020-01-22
-updated: 2020-09-10
+updated: 2020-12-14
 
 
 # Global variables

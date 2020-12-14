@@ -6,7 +6,7 @@ description: Deploys Microsoft DaRT tools
 author: Coherent Cyber
 guid: 2d34e7d7-86c4-42cd-9fa6-d50605e70bf0
 created: 2020-05-15
-updated: 2020-09-10
+updated: 2020-12-14
 
 # Global variables
 globals:

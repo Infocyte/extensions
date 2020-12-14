@@ -7,7 +7,7 @@ description: |
 author: Infocyte
 guid: 1775f23f-34a6-4f83-91e6-49c48faa66bb
 created: 2020-04-06
-updated: 2020-09-10
+updated: 2020-12-14
 
 # Global variables
 globals:
@@ -26,26 +26,22 @@ globals:
     default: 60
     required: false
 
+- recurse_depth:
+    description: Levels below a folder to search through
+    type: number
+    default: 3
 
-    [[globals]]
-    name = "recurse_depth"
-    description = "Levels below a folder to search through"
-    type = "number"
-    default = 3
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
+- test:
+    description: Run self tests
+    type: boolean
+    default: false
+    required: false
 
 # Runtime arguments
 args:
@@ -67,7 +63,6 @@ args:
     type: number
     default: 3
 
-
 ]=]
 
 --[=[ SECTION 1: Inputs ]=]
@@ -78,9 +73,10 @@ default_suspicious_regex = [[readme.*\.txt$]]
 default_bad_regex = [[(^[0-9,A-Z,a-z]{4,6}-Readme\.txt$)|DECRYPT]]
 
 regex_suspicious =  hunt.arg.string("regex_suspicious") or
-                    hunt.global.string("filesystemscanner_default_regex_suspicious", false, default_suspicious_regex)
+    hunt.global.string("filesystemscanner_default_regex_suspicious", false, default_suspicious_regex)
+
 regex_bad = hunt.arg.string("regex_bad") or 
-            hunt.global.string("filesystem_scanner_default_regex_bad", false, default_bad_regex)
+    hunt.global.string("filesystem_scanner_default_regex_bad", false, default_bad_regex)
 
 path = hunt.arg.string("path") or hunt.global.string("filesystemscanner_path", false, "C:/Users")
 paths = {}

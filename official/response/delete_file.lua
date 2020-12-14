@@ -1,46 +1,39 @@
 --[=[ 
-filetype = "Infocyte Extension"
+name: Delete File
+filetype: Infocyte Extension
+type: Response
+description: |  
+    Deletes a file by path
+author: Infocyte
+guid: fdaec6bc-a335-4335-9aca-45c64f669d03
+created: 2020-09-24
+updated: 2020-12-14
 
-[info]
-name = "Delete File"
-type = "Response"
-description = """Deletes a file by path"""
-author = "Infocyte"
-guid = "fdaec6bc-a335-4335-9aca-45c64f669d03"
-created = "2020-09-24"
-updated = "2020-09-24"
+# Global variables
+globals:
+- deletefile_default_path:
+    description: path(s) to kill/delete (comma seperated for multiple)
+    type: string
+    required: true
 
-## GLOBALS ##
-# Global variables accessed within extensions via hunt.global('name')
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "deletefile_default_path"
-    description = "path(s) to kill/delete (comma seperated for multiple)"
-    type = "string"
-    required = true
+- test:
+    description: Run self tests
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
-# Runtime arguments are accessed within extensions via hunt.arg('name')
-
-    [[args]]
-    name = "path"
-    description = "path(s) to kill/delete (comma seperated for multiple)"
-    type = "string"
-    required = true
+# Runtime arguments
+args:
+- path:
+    description: path(s) to kill/delete (comma seperated for multiple)
+    type: string
+    required: true
 
 ]=]
 

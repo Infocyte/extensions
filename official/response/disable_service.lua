@@ -1,71 +1,60 @@
 --[=[ 
-filetype = "Infocyte Extension"
+name: Disable Service
+filetype: Infocyte Extension
+type: Response
+description: |
+    Disables a service by name. Can specify variables to delete the service and binarypath as well
+author: Infocyte
+guid: a568a907-0bc8-4231-a87a-13e539ee8074
+created: 2020-09-24
+updated: 2020-12-14
 
-[info]
-name = "Disable Service"
-type = "Response"
-description = """Disables a service by name. Can specify variables to delete the service and binarypath as well"""
-author = "Infocyte"
-guid = "a568a907-0bc8-4231-a87a-13e539ee8074"
-created = "2020-09-24"
-updated = "2020-09-24"
+# Global variables
+globals:
+- disableservice_default_name:
+    description: Service name to disable
+    type: string
+    required: true
 
-## GLOBALS ##
-# Global variables accessed within extensions via hunt.global('name')
-
-    [[globals]]
-    name = "disableservice_default_name"
-    description = "Service name to disable"
-    type = "string"
-    required = true
-
-    [[globals]]
-    name = "disableservice_delete_service"
-    description = "Delete rather than Disable"
-    type = "boolean"
-    default = false
+- disableservice_delete_service:
+    description: Delete rather than Disable
+    type: boolean
+    default: false
 
 
-    [[globals]]
-    name = "disableservice_delete_file"
-    description = "Delete file as well"
-    type = "string"
-    default = false
+- disableservice_delete_file:
+    description: Delete file as well
+    type: string
+    default: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+- debug
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
+- test:
+    description: Run self tests
+    type: boolean
+    default: false
+    required: false
 
-## ARGUMENTS ##
-# Runtime arguments are accessed within extensions via hunt.arg('name')
+# Runtime arguments
+args:
+- name:
+    description: Service name to disable/delete
+    type: string
+    required: true
 
-    [[args]]
-    name = "name"
-    description = "Service name to disable/delete"
-    type = "string"
-    required = true
+- delete_service:
+    description: Service name to disable/delete
+    type: boolean
+    default: false
 
-    [[args]]
-    name = "delete_service"
-    description = "Service name to disable/delete"
-    type = "boolean"
-    default = false
-
-    [[args]]
-    name = "delete_file"
-    description = "Service name to disable/delete"
-    type = "string"
-    default = false
+- delete_file:
+    description: Service name to disable/delete
+    type: string
+    default: false
 
 ]=]
 

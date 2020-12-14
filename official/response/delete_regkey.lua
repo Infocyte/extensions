@@ -1,58 +1,49 @@
 --[=[ 
-filetype = "Infocyte Extension"
+name: Delete Regkey
+filetype: Infocyte Extension
+type: Response
+description: |
+    Deletes a registry key. Supply key and keyname using Regquery.exe syntax
+author: Infocyte
+guid: 5c977e21-0ac1-4328-ab5f-be3ef5f6d06a
+created: 2020-09-24
+updated: 2020-12-14
 
-[info]
-name = "Delete Regkey"
-type = "Response"
-description = """Deletes a registry key. Supply key and keyname using Regquery.exe syntax"""
-author = "Infocyte"
-guid = "5c977e21-0ac1-4328-ab5f-be3ef5f6d06a"
-created = "2020-09-24"
-updated = "2020-09-24"
+# Global variables
+globals:
+- deleteregkey_default_key:
+    description: Registry Key to delete
+    type: string
+    required: true
 
-## GLOBALS ##
-# Global variables accessed within extensions via hunt.global('name')
+- deleteregkey_default_keyname:
+    description: Registry Key Name to delete
+    type: string
+    required: true
 
-    [[globals]]
-    name = "deleteregkey_default_key"
-    description = "Registry Key to delete"
-    type = "string"
-    required = true
+- debug:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "deleteregkey_default_keyname"
-    description = "Registry Key Name to delete"
-    type = "string"
-    required = true
+- test:
+    description: Run self tests
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+# Runtime arguments
+args:
+- key:
+    description: Keypath to delete
+    type: string
+    required: true
 
-    [[globals]]
-    name = "test"
-    description = "Run self tests"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
-# Runtime arguments are accessed within extensions via hunt.arg('name')
-
-    [[args]]
-    name = "key"
-    description = "Keypath to delete"
-    type = "string"
-    required = true
-
-    [[args]]
-    name = "keyname"
-    description = "Key name to delete"
-    type = "string"
-    required = true
+- keyname:
+    description: Key name to delete
+    type: string
+    required: true
 
 ]=]
 
