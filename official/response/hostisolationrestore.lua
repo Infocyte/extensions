@@ -56,6 +56,7 @@ function run_cmd(cmd)
     if pipe then
         local out = pipe:read("*all")
         pipe:close()
+        out = out:gsub("^%s*(.-)%s*$", "%1")
         if out:find("failed|error|not recognized as an") then
             hunt.error("[run_cmd] "..out)
             return false, out

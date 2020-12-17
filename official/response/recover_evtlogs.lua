@@ -77,18 +77,20 @@ function run_cmd(cmd)
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
-        pipe:close()
+		pipe:close()
+		out = out:gsub("^%s*(.-)%s*$", "%1")
         if out:find("failed|error|not recognized as an") then
-            hunt.error("[run_cmd] "..out)
+            hunt.error("[run_cmd]: "..out)
             return false, out
         else
-            if verbose or test then hunt.log("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd]: "..out) end
             return true, out
         end
     else 
         hunt.error("ERROR: No Output from pipe running command "..cmd)
         return false, "ERROR: No output"
     end
+end
 end
 
 -- FileSystem Functions --
