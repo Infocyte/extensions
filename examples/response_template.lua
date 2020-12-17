@@ -18,8 +18,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -34,7 +34,7 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false, false)
 
@@ -46,7 +46,7 @@ proxy = hunt.global.string("proxy", false, false)
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then

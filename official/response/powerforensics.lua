@@ -36,8 +36,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -51,7 +51,7 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
@@ -91,7 +91,7 @@ function install_powerforensics()
     ]==]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
+        hunt.log(f"[install_powerforensics] Succeeded:\n${out}")
         return true
     else 
         hunt.error(f"[install_powerforensics] Failed:\n${err}")
@@ -116,7 +116,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() or not hunt.env.has_powershell() then
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
@@ -136,8 +136,8 @@ install_powerforensics()
 
 -- Get MFT w/ Powerforensics
 cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
-hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
-hunt.debug(f"Executing Powershell command: ${cmd}")
+hunt.log(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+hunt.log(f"Executing Powershell command: ${cmd}")
 out, err = hunt.env.run_powershell(cmd)
 if not out then 
     hunt.error(f"Failed to run Get-ForensicFileRecord: ${err}")
@@ -147,7 +147,7 @@ end
 -- Compress results
 file = hunt.fs.ls(temppath)
 if #file > 0 then
-    hunt.debug(f"Compressing (gzip) ${temppath} to ${outpath}")
+    hunt.log(f"Compressing (gzip) ${temppath} to ${outpath}")
     hunt.gzip(temppath, outpath, nil)
 else
     hunt.error("PowerForensics MFT Dump failed.")

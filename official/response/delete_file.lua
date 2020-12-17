@@ -16,8 +16,8 @@ globals:
     type: string
     required: true
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -44,7 +44,7 @@ args:
 
 path = hunt.arg.string("path") or
         hunt.global.string("deletefile_default_path", true)
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
@@ -69,7 +69,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if test then 
     hunt.log("Debugging: creating a file and deleting it")

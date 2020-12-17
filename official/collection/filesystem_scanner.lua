@@ -31,8 +31,8 @@ globals:
     type: number
     default: 3
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -168,8 +168,8 @@ function parse_csv(path, sep)
             for str in string.gmatch(line, "([^${sep}]+)") do
                 s = str:gsub('"(.+)"', "%1")
                 if not s then 
-                    hunt.debug(line)
-                    hunt.debug('column: '..v)
+                    hunt.log(line)
+                    hunt.log('column: '..v)
                 end
                 if #header == 0 then
                     fields[n] = s
@@ -196,7 +196,7 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 startdate = os.date("%x", os.time()-60*60*24*trailing_days)
 
@@ -222,7 +222,7 @@ if not powershell then
         end
     end
 else
-    hunt.debug("Using Powershell")
+    hunt.log("Using Powershell")
     for _, path in pairs(paths) do 
         cmd = f"Get-ChildItem -Path '${path}' -Recurse -Depth ${recurse_depth} | where-object { $_.Name -match '${regex_bad}' } | Select FullName -ExpandProperty FullName"
         out, err = hunt.env.run_powershell(cmd)

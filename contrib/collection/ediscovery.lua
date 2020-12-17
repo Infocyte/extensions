@@ -57,8 +57,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -100,7 +100,7 @@ s3_bucket = hunt.global.string("s3_bucket", upload_to_s3)
 s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 --Options for all_office_docs:
@@ -258,7 +258,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Check required inputs
 if upload_to_s3 and (not s3_region or not s3_bucket) then
@@ -529,7 +529,7 @@ if all_office_docs then
             hunt.error(f"Problem with file ${path:path()}, hash=${hash}")
             break
         end
-        --print("[${ext}] "..path:full().." [${hash}]") -- debug
+        --print("[${ext}] "..path:full().." [${hash}]") -- verbose
         
         local file = {
             hash = hash,
@@ -576,7 +576,7 @@ else
             script = script..'\n'..cmd
             out, err = hunt.env.run_powershell(script)
             if out then
-                hunt.debug(f"Powershell Returned: ${out}")
+                hunt.log(f"Powershell Returned: ${out}")
             else 
                 hunt.error(f"Powershell command errored: ${err}")
             end

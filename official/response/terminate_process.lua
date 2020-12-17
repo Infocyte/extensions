@@ -25,8 +25,8 @@ globals:
     type: boolean
     default: false
 
-- debug:
-    description: Used to debug the script
+- verbose:
+    description: Used to verbose the script
     type: boolean
     default: false
 
@@ -60,7 +60,7 @@ kill_process =  hunt.arg.boolean("kill_process") or
                 hunt.global.boolean("terminateprocess_kill_process", false, true) 
 delete_file =   hunt.arg.boolean("delete_file") or
                 hunt.global.boolean("terminateprocess_delete_file", false, false)
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
@@ -85,7 +85,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if test then 
     if hunt.env.is_windows() then

@@ -38,8 +38,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -54,7 +54,7 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
@@ -72,8 +72,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -82,7 +82,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -112,7 +112,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 files_uploaded = 0
 
@@ -149,12 +149,12 @@ cmds = {
     f"wevtutil.exe epl Microsoft-Windows-SmbClient/Security ${tmp}\\Microsoft-Windows-SMBClient.evtx"
 }
 for _, cmd in ipairs(cmds) do
-    hunt.debug(f"Running Command: ${cmd}")
+    hunt.log(f"Running Command: ${cmd}")
     s, out = run_cmd(cmd)
     if out and out:gmatch("failed|error") then
         hunt.error(out)
     else
-        hunt.debug(out)
+        hunt.log(out)
     end
 end
 

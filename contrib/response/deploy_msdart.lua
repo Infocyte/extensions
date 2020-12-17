@@ -52,7 +52,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- All OS-specific instructions should be behind an 'if' statement
 if hunt.env.is_windows() then
@@ -67,7 +67,7 @@ if hunt.env.is_windows() then
         --return
     end
 
-    hunt.debug(f"Unzipping ${zippath} to ${tmp}\\..." )
+    hunt.log(f"Unzipping ${zippath} to ${tmp}\\..." )
     args = '$ZipPath = "'..zippath..'"\n'
     args = args..'$Tmp = "'..tmp..'"\n'
     unzip_script = args..[=[
@@ -80,11 +80,11 @@ if hunt.env.is_windows() then
             $shell.Namespace("$Tmp\").copyhere($item)
         }
     ]=]
-    hunt.debug(f"Executing Script:\n${unzip_script}")
+    hunt.log(f"Executing Script:\n${unzip_script}")
 
     out, err = hunt.env.run_powershell(unzip_script)
     if out or path_exists(cmdpath) then
-        hunt.debug(f"Executing ${cmdpath}...")
+        hunt.log(f"Executing ${cmdpath}...")
         os.execute(f"cmd /c ${cmdpath}")
         hunt.log(f"Successfully executed ${path} [zip_sha1=${sha1}]")
         hunt.status.good()
@@ -104,4 +104,4 @@ else
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
 end
 
-hunt.debug("Result: Extension successfully executed.")
+hunt.log("Result: Extension successfully executed.")

@@ -72,7 +72,7 @@ max_size = hunt.arg.number("max_size") or
 additional_paths = hunt.arg.string("additional_paths", false) or 
     hunt.global.string("yarascanner_additional_paths", false)
 
-hunt.debug(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
+hunt.log(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
 
 -- #region bad_rules
 bad_rules = [=[
@@ -1434,7 +1434,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        hunt.log(msg)
         return nil
     end
     local bytes = f:read(4)
@@ -1466,7 +1466,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Load Yara rules
 yara_bad = hunt.yara.new()
@@ -1491,7 +1491,7 @@ if scan_activeprocesses then
         proc = p
         file = hunt.fs.ls(proc:path(), opts)
         if #file == 1 and file[1]:size() < max_size * 1000 then
-            --hunt.debug(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
+            --hunt.log(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
             paths[proc:path()] = true -- add to keys of list to unique paths
         end
     end
@@ -1538,7 +1538,7 @@ for path, i in pairs(paths) do
     if test and n > 3 then
         break
     end
-    hunt.debug(f"[${n}] Scanning ${path}")
+    hunt.log(f"[${n}] Scanning ${path}")
     n=n+1
     hunt.verbose("Scanning with bad_rules")
     for _, signature in pairs(yara_bad:scan(path)) do

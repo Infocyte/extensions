@@ -43,8 +43,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -64,7 +64,7 @@ args:
 hash_image = false -- set to true if you need the sha1 of the memory image
 timeout = 6*60*60 -- 6 hours to upload?
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
@@ -82,8 +82,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -92,7 +92,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -121,7 +121,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Download os-specific pmem
 mempath = tempfolder().."/physmem.map"
@@ -176,7 +176,7 @@ end
 
 
 -- Dump Memory to disk
-hunt.debug(f"Memory dump on ${host_info:os()} host started to local path ${mempath}")
+hunt.log(f"Memory dump on ${host_info:os()} host started to local path ${mempath}")
 -- success, out = run_cmd("winpmem.exe --output - --format map | ")    --split 1000M
 success, out = run_cmd(f"${pmempath} --output ${mempath} --format map --split 500M")
 if not success then

@@ -36,7 +36,7 @@ reason =    hunt.arg.string("reboot_reason", false) or
             hunt.global.string("reboot_reason", false, default_reason)
 
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
@@ -48,8 +48,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -58,7 +58,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -78,7 +78,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if hunt.env.is_windows() then
     cmd = 'shutdown /r /t 30 /c "Rebooting: '..reason..'"'
@@ -87,7 +87,7 @@ else
     cmd = 'sudo shutdown -r +1 "Server will restart in 1 minute ('..reason..'). Please save your work."'
 end
 
-hunt.debug("Running command: "..cmd)
+hunt.log("Running command: "..cmd)
 success, out = run_cmd(cmd, 'r')
 if success then 
     if out:gmatch("failed|error") then
@@ -101,7 +101,7 @@ end
 
 if test then 
     sleep(3)
-    hunt.log("DEBUG: Cancelling shutdown")
+    hunt.log("verbose: Cancelling shutdown")
     if hunt.env.is_windows() then     
         success, out = run_cmd('shutdown /a /fw')
     else 

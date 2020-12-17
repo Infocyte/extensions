@@ -39,8 +39,8 @@ globals:
     type: string
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -120,7 +120,7 @@ USBHistory      = hunt.arg.boolean("USBHistory", false, true)
 
 -- Global Variables
 use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
-local debug     = hunt.global.boolean("debug", false, false)
+local verbose     = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy           = hunt.global.string("proxy", false)
 s3_keyid        = hunt.global.string("s3_keyid", false)
@@ -192,7 +192,7 @@ function install_powerforensics()
     ]=]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+        hunt.log("[install_powerforensics] Succeeded:\n"..out)
         return true
     else 
         hunt.error("[install_powerforensics] Failed:\n"..err)
@@ -204,7 +204,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 files_uploaded = 0
 
 -- All OS-specific instructions should be behind an 'if' statement
@@ -309,11 +309,11 @@ if hunt.env.is_windows() then
         logfile = os.getenv("TEMP").."\\ic\\pslog.log"
 
         cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
-        hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
-        hunt.debug(f"Executing Powershell command: ${cmd}")
+        hunt.log(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+        hunt.log(f"Executing Powershell command: ${cmd}")
         out, err = hunt.env.run_powershell(cmd)
         if out then 
-            hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
+            hunt.log(f"[install_powerforensics] Succeeded:\n${out}")
             return true
         else 
             hunt.error(f"[install_powerforensics] Failed:\n${err}")
@@ -375,7 +375,7 @@ for name,path in pairs(paths) do
         if not infile and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = f"Copy-ForensicFile -Path '${path}' -Destination '${outpath}'"
-            hunt.debug(f"File Locked [${err}]. Executing: ${cmd}")
+            hunt.log(f"File Locked [${err}]. Executing: ${cmd}")
             out, err = hunt.env.run_powershell(cmd)
             if not out then 
                 hunt.error(f"Powerforensics error: ${err}")
@@ -398,7 +398,7 @@ for name,path in pairs(paths) do
         -- hash file
         hash, err = hunt.hash.sha1(outpath)
         if not hash then
-            hunt.debug(f"Error hashing file: ${outpath}, error: ${err}")
+            hunt.log(f"Error hashing file: ${outpath}, error: ${err}")
             goto continue
         end
 
@@ -413,7 +413,7 @@ for name,path in pairs(paths) do
         os.remove(outpath)
         ::continue::
     else
-        hunt.debug(f"${name} failed. ${path} does not exist.")
+        hunt.log(f"${name} failed. ${path} does not exist.")
     end
 end
 

@@ -21,8 +21,8 @@ globals:
     type: string
     required: true
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -57,7 +57,7 @@ key =   hunt.arg.string("key") or
 keyname =   hunt.arg.string("keyname") or
             hunt.global.string("deleteregkey_default_keyname", true)
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 --[=[ SECTION 2: Functions ]=]
@@ -69,8 +69,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -79,7 +79,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -99,7 +99,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() then 
     -- Windows only for now

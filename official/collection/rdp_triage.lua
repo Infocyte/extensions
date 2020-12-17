@@ -20,8 +20,8 @@ globals:
     default: 60
     required: false
 
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -43,7 +43,7 @@ args:
 
 trailing_days = hunt.arg.number("trailing_days") or
                 hunt.global.number("trailing_days", false, 60)
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 if hunt.global.boolean("disable_powershell", false, false) then
@@ -103,9 +103,10 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 if not hunt.env.is_windows() then
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
+    return
 end
 
 tmppath = os.getenv("systemroot").."\\temp\\ic"
@@ -274,10 +275,10 @@ script = script..[==[
     return $true
 ]==]
 
-hunt.debug("Running powershell script")
+hunt.log("Running powershell script")
 out, err = hunt.env.run_powershell(script)
 if out then 
-    hunt.verbose(out)
+    hunt.log(f"Powershell Output: ${out}")
 else
     hunt.error(err)
     return
@@ -288,7 +289,7 @@ rdp_localSessionManager = parse_csv(tmppath.."\\RDP_LocalSessionManager.csv")
 rdp_remoteConnectionManager = parse_csv(tmppath.."\\RDP_RemoteConnectionManager.csv")
 rdp_logons = parse_csv(tmppath.."\\RDP_Logons.csv")
 
-if not debug then 
+if not test then 
     os.remove(tmppath.."\\RDP_Processes.csv") 
     os.remove(tmppath.."\\RDP_LocalSessionManager.csv")
     os.remove(tmppath.."\\RDP_RemoteConnectionManager.csv")

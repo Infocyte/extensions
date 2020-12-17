@@ -43,7 +43,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        hunt.log(msg)
         return nil
     end
     local bytes = f:read(4)
@@ -83,7 +83,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 script = f"$trailing_days=${trailing_days}\n"
 script = script..[=[
 Function Parse-LnkFile {
@@ -133,7 +133,7 @@ $out = Get-LnkFiles -TrailingDays $trailing_days -Parse
 Return $out
 ]=]
 
---hunt.debug(f"Running powershell script:\n${script}")
+--hunt.log(f"Running powershell script:\n${script}")
 out, err = hunt.env.run_powershell(script)
 if not out then 
     hunt.error(err)

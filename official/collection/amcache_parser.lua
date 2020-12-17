@@ -17,8 +17,8 @@ globals:
     type: string
     required: false
     
-- debug:
-    description: Print debug information
+- verbose:
+    description: Print verbose information
     type: boolean
     default: false
     required: false
@@ -38,7 +38,7 @@ args:
 
 differential = hunt.arg.boolean("differential", false, true) -- Will save last scan locally and only add new items on subsequent scans.
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
 proxy = hunt.global.string("proxy", false)
@@ -56,8 +56,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -66,7 +66,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -171,7 +171,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() then
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
@@ -216,7 +216,7 @@ end
 
 -- Download Zimmerman's AmCacheParser
 if download then
-    hunt.debug(f"Downloading AmCacheParser.exe from ${url}")
+    hunt.log(f"Downloading AmCacheParser.exe from ${url}")
     client = hunt.web.new(url)
     if proxy then
         client:proxy(proxy)
@@ -247,11 +247,11 @@ if differential and path_exists(outpath) then
         oldhashlist[v["SHA1"]] = true
         ::continue::
     end
-    hunt.debug(f"Last AmCache Entry Timestamp from previous scan: ${os.date('%c', ts)}")
+    hunt.log(f"Last AmCache Entry Timestamp from previous scan: ${os.date('%c', ts)}")
 end
 
 -- Execute amcacheparser
-hunt.debug("Executing Amcache Parser...")
+hunt.log("Executing Amcache Parser...")
 local success, out = run_cmd(f"${binpath} -f C:\\Windows\\AppCompat\\Programs\\Amcache.hve --csv ${tmppath}")
 if not success then
     hunt.error(f"AmcacheParser failed to run:\n${out}")
@@ -278,11 +278,11 @@ $a | Foreach-Object {
 $a = $a | Sort-object FileKeyLastWriteTimestamp,sha1,fullpath -unique -Descending
 $a | Export-CSV $outpath -Delimiter "|" -NoTypeInformation -Force
 ]=]
-hunt.debug("Initiatializing Powershell to parse output")
-hunt.debug(script)
+hunt.log("Initiatializing Powershell to parse output")
+hunt.log(script)
 out, err = hunt.env.run_powershell(script)
 if out then
-    hunt.debug(out)
+    hunt.log(out)
 else
     hunt.error(f"Failed: Could not parse AmCache output with Powershell.\n${err}")
     return
@@ -291,7 +291,7 @@ end
 
 -- Read csv into array
 if path_exists(outpath) then
-    hunt.debug("Parsing Powershell Output...")
+    hunt.log("Parsing Powershell Output...")
     csv = parse_csv(outpath, sep)
     if not csv then
         hunt.error(f"Failed: Could not parse CSV: ${outpath}")
@@ -306,12 +306,12 @@ end
 if differential and ts then
     newitems = #csv - #csvold
     if newitems > 0 then
-        hunt.debug(f"Differential scan: Adding ${newitems} new Amcache entries found since: ${os.date('%c', ts)}")
+        hunt.log(f"Differential scan: Adding ${newitems} new Amcache entries found since: ${os.date('%c', ts)}")
     else
-        hunt.debug(f"Differential scan: No new entries found after: ${os.date('%c', ts)}")
+        hunt.log(f"Differential scan: No new entries found after: ${os.date('%c', ts)}")
     end
 elseif differential then
-    hunt.debug(f"Differential Scan: No previous scan data found, analyzing all ${#csv} items to establish baseline.")
+    hunt.log(f"Differential Scan: No previous scan data found, analyzing all ${#csv} items to establish baseline.")
 end
 paths = {}
 for _, item in pairs(csv) do
@@ -332,4 +332,4 @@ end
 
 -- Set Status (not really necessary since bad items will be flagged in artifacts)
 hunt.status.good()
-hunt.debug("Amcache Parser completed.")
+hunt.log("Amcache Parser completed.")

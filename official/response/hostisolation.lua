@@ -30,8 +30,8 @@ args:
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
 whitelisted_ips = hunt.global.string("whitelisted_ips", false)
-local debug = hunt.global.boolean("debug", false, false)
-local test = hunt.global.boolean("test", false, true)
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, false)
 
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
@@ -120,8 +120,8 @@ function run_cmd(cmd)
         Output: [boolean] -- success
                 [string] -- returned message
     ]=]
-    debug = debug or true
-    if debug or test then hunt.debug("Running command: "..cmd.." 2>&1") end
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
     local pipe = io.popen(cmd.." 2>&1", "r")
     if pipe then
         local out = pipe:read("*all")
@@ -130,7 +130,7 @@ function run_cmd(cmd)
             hunt.error("[run_cmd] "..out)
             return false, out
         else
-            if debug or test then hunt.debug("[run_cmd] "..out) end
+            if verbose or test then hunt.log("[run_cmd] "..out) end
             return true, out
         end
     else 
@@ -142,7 +142,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 osversion = host_info:os()
 
 -- TO DO: Check for Agent and install if not present
@@ -165,7 +165,7 @@ elseif hunt.env.is_windows() then
 	pipe = io.popen("netsh advfirewall show all state")
 	out = pipe:read("*a")
 	if out:find("State%s+ON") then
-		hunt.debug("Windows Firewall is ON")
+		hunt.log("Windows Firewall is ON")
 	else
 		hunt.warn("Windows Firewall is NOT enabled. Will attempt to enable it but this could conflict with other firewall software")
 		disabled = true
@@ -213,6 +213,7 @@ elseif  hunt.env.has_sh() then
 	if test then 
 		hunt.log("Debugging: skipping changes to firewall")
 		hunt.summary("DEBUG: Isolation Aborted")
+		hunt.summary("verbose: Isolation Aborted")
 		return nil
 	end
 
@@ -226,7 +227,7 @@ elseif  hunt.env.has_sh() then
 	--hunt.log("Allowing Infocyte Network IP " .. list_to_string(infocyte_ips))
 	--for _, az in pairs(infocyte_ips) do
 	  --success, out = run_cmd("iptables -I INPUT -s " .. az .. " -j ACCEPT")
-	  --hunt.debug(out)
+	  --hunt.log(out)
 	--end
 
 	ips = list_to_string(hunt.net.api_ipv4())
@@ -236,7 +237,7 @@ elseif  hunt.env.has_sh() then
 	end
 
   	if whitelisted_ips == nil then
-    	hunt.debug("User Defined IPs are empty")
+    	hunt.log("User Defined IPs are empty")
 	  else
 		hunt.log(f"Allowing User Defined IPs: ${whitelisted_ips}")
 	  	for _, ip in pairs(string_to_list(whitelisted_ips)) do
