@@ -60,6 +60,10 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
+paths = {
+    "c:\\windows\\temp"
+}
+
 scan_activeprocesses = hunt.arg.boolean("scan_activeprocesses") or 
     hunt.global.boolean("yarascanner_scan_activeprocesses", false, true)
 
@@ -68,6 +72,7 @@ scan_appdata = hunt.arg.boolean("scan_appdata") or
 
 max_size = hunt.arg.number("max_size") or 
     hunt.global.number("yarascanner-max_size", false, 5000)
+
 
 additional_paths = hunt.arg.string("additional_paths", false) or 
     hunt.global.string("yarascanner_additional_paths", false)
@@ -1463,115 +1468,185 @@ function string_to_list(str)
     return list
 end
 
+function is_script(path)
+    --[=[
+        Check if a file is an shell script by extension. 
+        Input:  [string]path
+        Output: [bool] Is Script
+    ]=] 
+    match = path:match("^.+%.(ps1|bat|sh)$")
+    if match then 
+        return true
+    else 
+        return false
+    end
+end
+
+function yara_scan(paths, signatures, level) 
+    --[=[
+        Scans list of files with yara signatures and returns list of matched file paths 
+        Will also make a log entry with each match. 
+        Input:  [table]paths
+                [string]signatures
+                [int]level       --(3=info, 2=suspicious, 1=bad)
+        Output: [bool]matches
+                [table]matchedpaths
+    ]=]
+
+    if type(paths) ~= "table" or type(signatures) ~= "string" or level > 3 or level < 1 then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [table]paths=${type(paths)}, [string]signatures=${type(signatures)}, [int 1-3]level=${level}")
+    end 
+
+    levels = {}
+    levels[1] = "BAD"
+    levels[2] = "SUSPICIOUS"
+    levels[3] = "INFO" 
+    
+    unique_paths = {} -- add to keys of list to easily unique paths
+    matchedpaths = {}
+
+    -- Load Yara rules
+    yara = hunt.yara.new()
+    yara:add_rule(signatures)
+
+
+    -- Scan all paths with Yara signatures
+    n=1
+    for i, path in pairs(paths) do
+        -- dedup paths
+        if unique_paths[path] then
+            goto continue
+        end
+        if verbose then hunt.log(f"[${n}] Scanning ${path} with ${levels[level]} signatures") end
+        for _, signature in pairs(yara:scan(path)) do
+            if not hash then
+                hash = hunt.hash.sha1(path)
+            end
+            hunt.log(f"Matched yara rule [${levels[level]}]${signature} on: ${path} <${hash}>")
+            table.insert(matchedpaths, path)
+        end
+        unique_paths[path] = true
+        n=n+1
+        hash = nil
+        if test and n > 3 then
+            return #matchedpaths > 0, matchedpaths
+        end
+        ::continue::
+    end
+    match = false
+    if #matchedpaths > 0 then
+        match = true
+    end
+    return #matchedpaths > 0, matchedpaths
+end
+
+function table.concat(t1,t2)
+    for i=1,#t2 do
+        t1[#t1+i] = t2[i]
+    end
+    return t1
+end
+
+
+
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
 hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
--- Load Yara rules
-yara_bad = hunt.yara.new()
-yara_bad:add_rule(bad_rules)
-
-yara_suspicious = hunt.yara.new()
-yara_suspicious:add_rule(suspicious_rules)
-
-yara_info = hunt.yara.new()
-yara_info:add_rule(info_rules)
-
-opts = {
-    "files",
-    f"size<=${max_size}kb", -- any file below this size
-}
-
--- Add active processes
-paths = {} -- add to keys of list to easily unique paths
+-- Add all file paths to a list
 if scan_activeprocesses then
+    -- Add active processes
+    opts = {
+        "files",
+        f"size<=${max_size}kb", -- any file below this size
+    }
     procs = hunt.process.list()
     for i, p in pairs(procs) do
         proc = p
         file = hunt.fs.ls(proc:path(), opts)
         if #file == 1 and file[1]:size() < max_size * 1000 then
-            --hunt.log(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
-            paths[proc:path()] = true -- add to keys of list to unique paths
+            -- hunt.debug(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
+            table.insert(paths, proc:path())
         end
     end
 end
 
--- Add appdata paths
-appdata_opts = {
-    "files",
-    f"size<${max_size}kb", -- any file below this size
-    "recurse=1" -- depth of 1
-}
+
 if scan_appdata then
+    -- Add appdata paths
+    appdata_opts = {
+        "files",
+        f"size<${max_size}kb", -- any file below this size
+        "recurse=1" -- depth of 1
+    }
     for _, u in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
         userfolder = u
         for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\appdata\\roaming", appdata_opts)) do
-            if is_executable(path:path()) then
-                paths[path:path()] = true
+            if is_script(path:path()) or is_executable(path:path()) then
+                table.insert(paths, path:path())
             end
         end
     end
 end
 
--- Add additional paths
 if additional_paths then
+    -- Add additional paths
+    opts = {
+        "files",
+        f"size<=${max_size}kb", -- any file below this size
+    }
     more_paths = string_to_list(additional_paths)
     
     for i, path in pairs(more_paths) do
         files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do
-            if is_executable(path2:path()) then
-                paths[path2:path()] = true
+            if is_script(path2:path()) or is_executable(path2:path()) then
+                table.insert(paths, path2:path())
             end
         end
     end
 end
 
-
-
+-- Scan
+level = 0 -- threat level (0 is not defined)
 matchedpaths = {}
 
--- Scan all paths with Yara signatures
-n=1
-for path, i in pairs(paths) do
-    if test and n > 3 then
-        break
-    end
-    hunt.log(f"[${n}] Scanning ${path}")
-    n=n+1
-    hunt.verbose("Scanning with bad_rules")
-    for _, signature in pairs(yara_bad:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [BAD]${signature} on: ${path} <${hash}>")
-        bad = true
-        matchedpaths[path] = true
-    end
-    hunt.verbose("Scanning with suspicious_rules")
-    for _, signature in pairs(yara_suspicious:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [SUSPICIOUS]${signature} on: ${path} <${hash}>")
-        suspicious = true
-        matchedpaths[path] = true
-    end
-    hunt.verbose("Scanning with info_rules")
-    for _, signature in pairs(yara_info:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [INFO]${signature} on: ${path} <${hash}>")
-        lowrisk = true
-    end
-    hash = nil
+hunt.log(f"Scanning ${#paths} paths with info_rules")
+match, mpaths = yara_scan(paths, info_rules, 3)
+if match then 
+    hunt.log("Found matches!")
+    level = 3
+    matchedpaths = table.concat(matchedpaths,mpaths)
+else
+    hunt.log("No matches found with info_rules!")
 end
 
--- Add bad and suspicious files to Artifacts list for analysis
+hunt.log(f"Scanning ${#paths} paths with suspicious_rules")
+match, mpaths = yara_scan(paths, suspicious_rules, 2)
+if match then
+    hunt.log("Found matches!")
+    level = 2
+    matchedpaths = table.concat(matchedpaths,mpaths)
+else
+    hunt.log("No matches found with suspicious_rules!")
+end
+
+
+hunt.log(f"Scanning ${#paths} paths with bad_rules")
+match, mpaths = yara_scan(paths, bad_rules, 1) 
+if match then
+    hunt.log("Found matches!")
+    level = 1
+    matchedpaths = table.concat(matchedpaths,mpaths)
+else
+    hunt.log("No matches found with bad_rules!")
+end
+
+-- Add bad and suspicious files to Artifacts list for further analysis
 n = 0
 for path,i in pairs(matchedpaths) do
+    print(path)
     if test and n > 3 then
         break
     end
@@ -1584,13 +1659,13 @@ for path,i in pairs(matchedpaths) do
 end
 
 -- Set threat status
-if bad then
+if level == 1 then
     result = "Bad"
     hunt.status.bad()
-elseif suspicious then
+elseif level == 2 then
     result = "Suspicious"
     hunt.status.suspicious()
-elseif lowrisk then
+elseif level == 3 then
     result = "Low Risk"
     hunt.status.low_risk()
 else
@@ -1599,5 +1674,3 @@ else
 end
 
 hunt.log(f"Yara scan completed. Result=${result} Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")
-
-
