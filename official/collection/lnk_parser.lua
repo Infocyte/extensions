@@ -182,7 +182,7 @@ end
 -- Add targets to Autostarts list for analysis
 n = 0
 for _,link in pairs(links) do
-    print("Adding file: "..link['Target'])
+    --print("Adding file: "..link['Target'])
 	-- Create a new artifact
     autostart = hunt.survey.autostart()
     autostart:type("Lnk")

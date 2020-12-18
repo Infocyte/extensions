@@ -67,7 +67,6 @@ function run_cmd(cmd)
         return false, "ERROR: No output"
     end
 end
-end
 
 function sleep(sec)
     if hunt.env.is_windows() then

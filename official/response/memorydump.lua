@@ -101,7 +101,6 @@ function run_cmd(cmd)
         return false, "ERROR: No output"
     end
 end
-end
 
 function tempfolder()
     -- Returns OS-specific temp folder

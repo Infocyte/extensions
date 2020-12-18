@@ -91,7 +91,6 @@ function run_cmd(cmd)
         return false, "ERROR: No output"
     end
 end
-end
 
 -- FileSystem Functions --
 function path_exists(path)

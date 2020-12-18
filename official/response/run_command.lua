@@ -37,9 +37,14 @@ args:
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-command =   hunt.arg.string('command') or
+command =   hunt.arg.string('command') or 
             hunt.global.string('runcommand_command', true)
 disable_powershell = hunt.global.boolean('disable_powershell', false, false) 
+
+if not command or command == '' then 
+    hunt.error("No command parameter provided")
+    return
+end
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -68,7 +73,6 @@ function run_cmd(cmd)
         hunt.error("ERROR: No Output from pipe running command "..cmd)
         return false, "ERROR: No output"
     end
-end
 end
 
 --[=[ SECTION 3: Actions ]=]
