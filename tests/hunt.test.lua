@@ -11,11 +11,6 @@ updated: 2020-12-14
 
 # Global variables
 globals:
-- test:
-    description: test global
-    type: boolean
-    required: true
-
 - s3_region:
     description: S3 Bucket key Id for uploading. i.e. 'us-east-2'
     type: string
@@ -28,7 +23,7 @@ globals:
     default: test-extensions
     required: false
 
-- debug:
+- verbose:
     description: Print debug information
     type: boolean
     default: false
@@ -57,18 +52,18 @@ args:
 
 path = hunt.arg.string("path", false, "C:\\Users")
 arg1 = hunt.arg.string("arg1", false, "arg1_default")
-test = hunt.arg.number("test", true)
 
-debugging = hunt.global.boolean("debug", false, false)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
 s3_region = hunt.global.string("s3_region", false, "us-east-2")
 s3_bucket = hunt.global.string("s3_bucket", false, "test-extensions")
 
+test = hunt.arg.number("test", true)
+verbose = hunt.global.boolean("verbose", false, false)
 
 hunt.log(f"Arguments: test=${test}, path=${path}, arg1=${arg1}")
-hunt.log(f"Globals:s3_region=${s3_region}, s3_bucket=${s3_bucket}, debugging=${debugging}, proxy=${proxy}")
+hunt.log(f"Globals:s3_region=${s3_region}, s3_bucket=${s3_bucket}, verbose=${verbose}, proxy=${proxy}")
 
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
