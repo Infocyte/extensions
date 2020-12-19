@@ -5,8 +5,8 @@ type: Action
 description: Enables Volume Shadow Copy (VSS) on Windows hosts to harden against certain ransomware attacks.
 author: Infocyte
 guid: 75efc19f-c309-407c-9186-1171e689134d
-created: 20191008
-updated: 20191008
+created: 2019-10-08
+updated: 2019-10-08
 --]]
 
 --[[ SECTION 1: Inputs --]]
