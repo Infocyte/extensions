@@ -37,12 +37,6 @@ globals:
     default: false
     required: false
 
-- test:
-    description: Run self tests
-    type: boolean
-    default: false
-    required: false
-
 # Runtime arguments
 args:
 - regex_bad:

@@ -43,6 +43,7 @@ args:
 
 trailing_days = hunt.arg.number("trailing_days") or
                 hunt.global.number("trailing_days", false, 60)
+                
 local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 
