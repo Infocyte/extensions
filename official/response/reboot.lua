@@ -37,7 +37,7 @@ reason =    hunt.arg.string("reboot_reason", false) or
 
 
 local verbose = hunt.global.boolean("verbose", false, false)
-local test = hunt.global.boolean("test", false, true)
+local test = hunt.global.boolean("test", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
