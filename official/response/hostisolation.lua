@@ -33,6 +33,8 @@ whitelisted_ips = hunt.global.string("whitelisted_ips", false)
 local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, false)
 
+local test = false
+
 -- Infocyte specific IPs DO NOT CHANGE or you will lose connectivity with Infocyte 
 infocyte_ips = {
     "3.221.153.58",
