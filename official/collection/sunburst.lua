@@ -52,8 +52,7 @@ dllnames = {
 
 hunt.debug(f"Inputs: max_size=${max_size}; additional_paths=${additional_paths}")
 
--- #region bad_rules
-bad_rules = [=[
+rules = [=[
 // Copyright 2020 by FireEye, Inc.
 // You may not use this file except in compliance with the license. The license should have been received with this file. You may obtain a copy of the license at:
 // https://github.com/fireeye/sunburst_countermeasures/blob/main/LICENSE.txt
@@ -144,34 +143,6 @@ rule APT_HackTool_PS1_COSMICGALE_1
         all of them
 }
 
-rule APT_Dropper_Win64_TEARDROP_1
-{
-    meta:
-        author = "FireEye"
-        description = "This rule is intended match specific sequences of opcode found within TEARDROP, including those that decode the embedded payload. TEARDROP is a memory only dropper that can read files and registry keys, XOR decode an embedded payload, and load the payload into memory. TEARDROP persists as a Windows service and has been observed dropping Cobalt Strike BEACON into memory."
-    strings:
-        $loc_4218FE24A5 = { 48 89 C8 45 0F B6 4C 0A 30 }
-        $loc_4218FE36CA = { 48 C1 E0 04 83 C3 01 48 01 E8 8B 48 28 8B 50 30 44 8B 40 2C 48 01 F1 4C 01 FA }
-        $loc_4218FE2747 = { C6 05 ?? ?? ?? ?? 6A C6 05 ?? ?? ?? ?? 70 C6 05 ?? ?? ?? ?? 65 C6 05 ?? ?? ?? ?? 67 }
-        $loc_5551D725A0 = { 48 89 C8 45 0F B6 4C 0A 30 48 89 CE 44 89 CF 48 F7 E3 48 C1 EA 05 48 8D 04 92 48 8D 04 42 48 C1 E0 04 48 29 C6 }
-        $loc_5551D726F6 = { 53 4F 46 54 57 41 52 45 ?? ?? ?? ?? 66 74 5C 43 ?? ?? ?? ?? 00 }
-    condition:
-        (uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550) and any of them
-}
-
-rule APT_Dropper_Raw64_TEARDROP_1
-{
-    meta:
-        author = "FireEye"
-        description = "This rule looks for portions of the TEARDROP backdoor that are vital to how it functions. TEARDROP is a memory only dropper that can read files and registry keys, XOR decode an embedded payload, and load the payload into memory. TEARDROP persists as a Windows service and has been observed dropping Cobalt Strike BEACON into memory."
-    strings:
-        $sb1 = { C7 44 24 ?? 80 00 00 00 [0-64] BA 00 00 00 80 [0-32] 48 8D 0D [4-32] FF 15 [4] 48 83 F8 FF [2-64] 41 B8 40 00 00 00 [0-64] FF 15 [4-5] 85 C0 7? ?? 80 3D [4] FF }
-        $sb2 = { 80 3D [4] D8 [2-32] 41 B8 04 00 00 00 [0-32] C7 44 24 ?? 4A 46 49 46 [0-32] E8 [4-5] 85 C0 [2-32] C6 05 [4] 6A C6 05 [4] 70 C6 05 [4] 65 C6 05 [4] 67 }
-        $sb3 = { BA [4] 48 89 ?? E8 [4] 41 B8 [4] 48 89 ?? 48 89 ?? E8 [4] 85 C0 7? [1-32] 8B 44 24 ?? 48 8B ?? 24 [1-16] 48 01 C8 [0-32] FF D0 }
-    condition:
-        all of them
-}
-
 import "pe"
 
 rule APT_Webshell_SUPERNOVA_1
@@ -206,21 +177,38 @@ rule APT_Webshell_SUPERNOVA_2
         uint16(0) == 0x5a4d and uint32(uint32(0x3C)) == 0x00004550 and filesize < 10KB and 3 of ($string*) and $dynamic and $solar
 }
 ]=]
--- #endregion
 
+-- #region memory_rules
+memory_rules = [=[
+rule APT_Dropper_Win64_TEARDROP_1
+{
+    meta:
+        author = "FireEye"
+        description = "This rule is intended match specific sequences of opcode found within TEARDROP, including those that decode the embedded payload. TEARDROP is a memory only dropper that can read files and registry keys, XOR decode an embedded payload, and load the payload into memory. TEARDROP persists as a Windows service and has been observed dropping Cobalt Strike BEACON into memory."
+    strings:
+        $loc_4218FE24A5 = { 48 89 C8 45 0F B6 4C 0A 30 }
+        $loc_4218FE36CA = { 48 C1 E0 04 83 C3 01 48 01 E8 8B 48 28 8B 50 30 44 8B 40 2C 48 01 F1 4C 01 FA }
+        $loc_4218FE2747 = { C6 05 ?? ?? ?? ?? 6A C6 05 ?? ?? ?? ?? 70 C6 05 ?? ?? ?? ?? 65 C6 05 ?? ?? ?? ?? 67 }
+        $loc_5551D725A0 = { 48 89 C8 45 0F B6 4C 0A 30 48 89 CE 44 89 CF 48 F7 E3 48 C1 EA 05 48 8D 04 92 48 8D 04 42 48 C1 E0 04 48 29 C6 }
+        $loc_5551D726F6 = { 53 4F 46 54 57 41 52 45 ?? ?? ?? ?? 66 74 5C 43 ?? ?? ?? ?? 00 }
+    condition:
+        (uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550) and any of them
+}
 
--- #region suspicious_rules
-suspicious_rules = [=[
-
+rule APT_Dropper_Raw64_TEARDROP_1
+{
+    meta:
+        author = "FireEye"
+        description = "This rule looks for portions of the TEARDROP backdoor that are vital to how it functions. TEARDROP is a memory only dropper that can read files and registry keys, XOR decode an embedded payload, and load the payload into memory. TEARDROP persists as a Windows service and has been observed dropping Cobalt Strike BEACON into memory."
+    strings:
+        $sb1 = { C7 44 24 ?? 80 00 00 00 [0-64] BA 00 00 00 80 [0-32] 48 8D 0D [4-32] FF 15 [4] 48 83 F8 FF [2-64] 41 B8 40 00 00 00 [0-64] FF 15 [4-5] 85 C0 7? ?? 80 3D [4] FF }
+        $sb2 = { 80 3D [4] D8 [2-32] 41 B8 04 00 00 00 [0-32] C7 44 24 ?? 4A 46 49 46 [0-32] E8 [4-5] 85 C0 [2-32] C6 05 [4] 6A C6 05 [4] 70 C6 05 [4] 65 C6 05 [4] 67 }
+        $sb3 = { BA [4] 48 89 ?? E8 [4] 41 B8 [4] 48 89 ?? 48 89 ?? E8 [4] 85 C0 7? [1-32] 8B 44 24 ?? 48 8B ?? 24 [1-16] 48 01 C8 [0-32] FF D0 }
+    condition:
+        all of them
+}
 ]=]
 -- #endregion
-
--- #region info_rules
-info_rules = [=[
-
-]=]
--- #endregion
-
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -255,11 +243,11 @@ function is_executable(path)
     end
 end
 
-
 function get_filename(path)
     match = path:match("^.+[\\/](.+)$")
     return match
 end
+
   
 function get_fileextension(path)
     match = path:match("^.+(%..+)$")
@@ -275,20 +263,116 @@ function string_to_list(str)
     return list
 end
 
+
+function yara_scan_memory(signatures)
+    --[=[
+        Scans all processes memory with yara signatures and returns list of matched processes 
+        Will also make a log entry with each match. 
+        Input:  [string]signatures
+        Output: [bool]match
+                [table]matches { pid, path, owner, signature }
+    ]=]
+
+    -- input validation
+    if type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [string]signatures=${type(signatures)}")
+        return
+    end
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided for memory")
+        return nil, {}
+    end
+        
+    yara_memory = hunt.yara.new()
+    yara_memory:add_rule(signatures)
+
+    procs = {}
+    matches = {}
+    -- Scan process memory with Yara signatures
+    for _, proc in pairs(hunt.process.list()) do
+        procname = string.match(proc:path(), "^.+[\\/](.+)$")
+        procpid = proc:pid()
+
+        hunt.debug(f"Scanning process memory for name=${procname} (pid=${procpid})")
+        for _, signature in pairs(yara_memory:scan_process(proc:pid())) do
+            hunt.verbose(f"Matched yara rule [BAD]${signature} within MEMORY of ${procname} [${procpid}]")
+            m = {}
+            m["owner"] = proc:owner()
+            m["path"] = proc:path()
+            m["pid"] = proc:pid()
+            m["procname"] = procname
+            m["signature"] = signature
+            table.insert(matches, m)
+        end
+    end
+    return #matches > 0, matches
+end
+
+function yara_scan(paths, signatures) 
+    --[=[
+        Scans list of files with yara signatures and returns list of matched file paths 
+        Will also make a log entry with each match. 
+        Input:  [table]paths
+                [string]signatures
+        Output: [bool]match
+                [table]matches { sha1, path, signature }
+    ]=]
+
+    -- Input validation
+    if type(paths) ~= "table" or type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [table]paths=${type(paths)}, [string]signatures=${type(signatures)}")
+    end 
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided")
+        return nil, {}
+    end
+    
+    unique_paths = {} -- add to keys of list to easily unique paths
+    matches = {}
+    print(#matches)
+    -- Load Yara rules
+    yara = hunt.yara.new()
+    yara:add_rule(signatures)
+
+    -- Scan all paths with Yara signatures
+    n=1
+    for i, path in pairs(paths) do
+        -- dedup paths
+        if unique_paths[path] then
+            goto continue
+        end
+        if verbose then hunt.log(f"[${n}] Scanning ${path} with ${levels[level]} signatures") end
+        for _, signature in pairs(yara:scan(path)) do
+            if not hash then
+                hash = hunt.hash.sha1(path)
+            end
+            hunt.verbose(f"Matched yara rule [${levels[level]}]${signature} on: ${path} <${hash}>")
+            m = {}
+            m["path"] = path
+            m["sha1"] = hash
+            m["signature"] = signature
+            table.insert(matches, m)
+        end
+        unique_paths[path] = true
+        n=n+1
+        hash = nil
+        if test and n > 3 then
+            return #matches > 0, matches
+        end
+        ::continue::
+    end
+    return #matches > 0, matches
+end
+
+
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
--- Load Yara rules
-yara_bad = hunt.yara.new()
-yara_bad:add_rule(bad_rules)
-
-yara_suspicious = hunt.yara.new()
-yara_suspicious:add_rule(suspicious_rules)
-
-yara_info = hunt.yara.new()
-yara_info:add_rule(info_rules)
+paths = {}
 
 opts = {
     "files",
@@ -296,16 +380,13 @@ opts = {
 }
 
 -- Add active processes
-paths = {} -- add to keys of list to easily unique paths
 if scan_activeprocesses then
     hunt.log("Scanning active processes with yara")
     procs = hunt.process.list()
-    for i, p in pairs(procs) do
-        proc = p
+    for i, proc in pairs(procs) do
         file = hunt.fs.ls(proc:path(), opts)
         if #file == 1 and file[1]:size() < max_size * 1000 then
-            --hunt.debug(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
-            paths[proc:path()] = true -- add to keys of list to unique paths
+           table.insert(paths, proc:path())
         end
     end
 end
@@ -321,7 +402,7 @@ if scan_userfolders then
     for _, userfolder in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
         for _, path in pairs(hunt.fs.ls(userfolder:path(), appdata_opts)) do
             if get_fileextension(path:path()) == "ps1" or is_executable(path:path()) then
-                paths[path:path()] = true
+                table.insert(paths, path:path())
             end
         end
     end
@@ -339,7 +420,7 @@ if primary_paths then
     for i, path in pairs(more_paths) do
         files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do
-            paths[path2:path()] = true
+            table.insert(paths, path2:path())
         end
     end
 end
@@ -357,51 +438,51 @@ if additional_paths then
         files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do
             if get_fileextension(path2:path()) == "ps1" or is_executable(path2:path()) then
-                paths[path2:path()] = true
+                table.insert(paths, path2:path())
             end
         end
     end
 end
 
-matchedpaths = {}
 
--- Scan all paths with Yara signatures
-n=1
-for path, i in pairs(paths) do
-    hunt.debug(f"[${n}] Scanning ${path}")
-    n=n+1
-    hunt.verbose("Scanning with bad_rules")
-    for _, signature in pairs(yara_bad:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [BAD]${signature} on: ${path} <${hash}>")
-        bad = true
-        matchedpaths[path] = true
+-- Scan
+level = 0 -- threat level (0 is not defined)
+all_matches = {}
+levels = {}
+levels[1] = "BAD"
+levels[2] = "SUSPICIOUS"
+levels[3] = "INFO"
+
+hunt.log(f"Scanning ${#paths} paths with file rules")
+match, matches = yara_scan(paths, rules) 
+if match then
+    hunt.log("Found matches!")
+    level = 1
+    all_matches = table.concat(all_matches,matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
     end
-    hunt.verbose("Scanning with suspicious_rules")
-    for _, signature in pairs(yara_suspicious:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [SUSPICIOUS]${signature} on: ${path} <${hash}>")
-        suspicious = true
-        matchedpaths[path] = true
-    end
-    hunt.verbose("Scanning with info_rules")
-    for _, signature in pairs(yara_info:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [INFO]${signature} on: ${path} <${hash}>")
-        lowrisk = true
-    end
-    hash = nil
+else
+    hunt.log("No matches found with bad_rules!")
 end
+
+-- Scan process memory with Yara signatures
+hunt.log(f"Scanning process memory with memory_rules")
+match, procs = yara_scan_memory(memory_rules)
+if match then
+    hunt.log(f"Found in-memory matches within ${#procs} processes")
+    level = 1
+    for _, m in pairs(procs) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} in process memory of ${m['procname']}-${m['pid']} owned by ${m['owner']}")
+    end
+elseif match == false then
+    hunt.log(f"No matches found within memory")
+end
+
 
 -- Add bad and suspicious files to Artifacts list for analysis
 n = 0
-for path,i in pairs(matchedpaths) do
+for path,i in pairs(all_matches) do
     if test and n > 3 then
         break
     end
@@ -430,8 +511,8 @@ for _, dll in pairs(dllnames) do
         hunt.log(f"${name} not found")
     elseif out and out ~= 'Not Found' then
         hunt.log(f"${name} FOUND!\n${out}")
-        if not bad then 
-            suspicious = true
+        if level ~= 1 then 
+            level = 2
         end
     elseif err then 
         hunt.error(err)
@@ -439,15 +520,14 @@ for _, dll in pairs(dllnames) do
     end
 end
 
-
 -- Set threat status
-if bad then
+if level == 1 then
     result = "Bad"
     hunt.status.bad()
-elseif suspicious then
+elseif level == 2 then
     result = "Suspicious"
     hunt.status.suspicious()
-elseif lowrisk then
+elseif level == 3 then
     result = "Low Risk"
     hunt.status.low_risk()
 else
@@ -455,4 +535,4 @@ else
     hunt.status.good()
 end
 
-hunt.log(f"Scan completed. Result=${result} Added ${n} paths (all bad and suspicious matches) to Artifacts for additional processing and retrieval.")
+hunt.log(f"Yara scan completed. Result=${result}. Found ${#procs} processes with memory matches. Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")

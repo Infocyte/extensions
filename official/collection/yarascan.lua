@@ -73,11 +73,24 @@ scan_appdata = hunt.arg.boolean("scan_appdata") or
 max_size = hunt.arg.number("max_size") or 
     hunt.global.number("yarascanner-max_size", false, 5000)
 
-
 additional_paths = hunt.arg.string("additional_paths", false) or 
     hunt.global.string("yarascanner_additional_paths", false)
 
 hunt.log(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
+
+
+-- #region memory_rules
+memory_rules = [=[
+rule embedded_url {
+    meta:
+        author = "Antonio S. <asanchez@plutec.net>"
+    strings:
+        $url_regex = /https?:\/\/([\w\.-]+)([\/\w \.-]*)/ wide ascii
+    condition:
+        $url_regex
+}
+]=]
+-- #endregion
 
 -- #region bad_rules
 bad_rules = [=[
@@ -1458,6 +1471,10 @@ function is_executable(path)
     end
 end
 
+function get_filename(path)
+    match = path:match("^.+[\\/](.+)$")
+    return match
+end
 
 function string_to_list(str)
     -- Converts a comma seperated list to a lua list object
@@ -1482,33 +1499,77 @@ function is_script(path)
     end
 end
 
-function yara_scan(paths, signatures, level) 
+function yara_scan_memory(signatures)
+    --[=[
+        Scans all processes memory with yara signatures and returns list of matched processes 
+        Will also make a log entry with each match. 
+        Input:  [string]signatures
+        Output: [bool]match
+                [table]matches { pid, path, owner, signature }
+    ]=]
+
+    -- input validation
+    if type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [string]signatures=${type(signatures)}")
+        return
+    end
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided for memory")
+        return nil, {}
+    end
+        
+    yara_memory = hunt.yara.new()
+    yara_memory:add_rule(signatures)
+
+    procs = {}
+    matches = {}
+    -- Scan process memory with Yara signatures
+    for _, proc in pairs(hunt.process.list()) do
+        procname = string.match(proc:path(), "^.+[\\/](.+)$")
+        procpid = proc:pid()
+
+        hunt.debug(f"Scanning process memory for name=${procname} (pid=${procpid})")
+        for _, signature in pairs(yara_memory:scan_process(proc:pid())) do
+            hunt.verbose(f"Matched yara rule [BAD]${signature} within MEMORY of ${procname} [${procpid}]")
+            m = {}
+            m["owner"] = proc:owner()
+            m["path"] = proc:path()
+            m["pid"] = proc:pid()
+            m["procname"] = procname
+            m["signature"] = signature
+            table.insert(matches, m)
+        end
+    end
+    return #matches > 0, matches
+end
+
+function yara_scan(paths, signatures) 
     --[=[
         Scans list of files with yara signatures and returns list of matched file paths 
         Will also make a log entry with each match. 
         Input:  [table]paths
                 [string]signatures
-                [int]level       --(3=info, 2=suspicious, 1=bad)
-        Output: [bool]matches
-                [table]matchedpaths
+        Output: [bool]match
+                [table]matches { sha1, path, signature }
     ]=]
 
-    if type(paths) ~= "table" or type(signatures) ~= "string" or level > 3 or level < 1 then
-        hunt.error(f"[yara_scan] Invalid format for inputs to function. [table]paths=${type(paths)}, [string]signatures=${type(signatures)}, [int 1-3]level=${level}")
+    -- Input validation
+    if type(paths) ~= "table" or type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [table]paths=${type(paths)}, [string]signatures=${type(signatures)}")
     end 
-
-    levels = {}
-    levels[1] = "BAD"
-    levels[2] = "SUSPICIOUS"
-    levels[3] = "INFO" 
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided")
+        return nil, {}
+    end
     
     unique_paths = {} -- add to keys of list to easily unique paths
-    matchedpaths = {}
-
+    matches = {}
+    
     -- Load Yara rules
     yara = hunt.yara.new()
     yara:add_rule(signatures)
-
 
     -- Scan all paths with Yara signatures
     n=1
@@ -1522,22 +1583,22 @@ function yara_scan(paths, signatures, level)
             if not hash then
                 hash = hunt.hash.sha1(path)
             end
-            hunt.log(f"Matched yara rule [${levels[level]}]${signature} on: ${path} <${hash}>")
-            table.insert(matchedpaths, path)
+            hunt.verbose(f"Matched yara rule [${levels[level]}]${signature} on: ${path} <${hash}>")
+            m = {}
+            m["path"] = path
+            m["sha1"] = hash
+            m["signature"] = signature
+            table.insert(matches, m)
         end
         unique_paths[path] = true
         n=n+1
         hash = nil
         if test and n > 3 then
-            return #matchedpaths > 0, matchedpaths
+            return #matches > 0, matches
         end
         ::continue::
     end
-    match = false
-    if #matchedpaths > 0 then
-        match = true
-    end
-    return #matchedpaths > 0, matchedpaths
+    return #matches > 0, matches
 end
 
 function table.concat(t1,t2)
@@ -1562,11 +1623,9 @@ if scan_activeprocesses then
         f"size<=${max_size}kb", -- any file below this size
     }
     procs = hunt.process.list()
-    for i, p in pairs(procs) do
-        proc = p
+    for i, proc in pairs(procs) do
         file = hunt.fs.ls(proc:path(), opts)
         if #file == 1 and file[1]:size() < max_size * 1000 then
-            -- hunt.debug(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
             table.insert(paths, proc:path())
         end
     end
@@ -1608,51 +1667,79 @@ if additional_paths then
     end
 end
 
+
 -- Scan
+all_matches = {}
 level = 0 -- threat level (0 is not defined)
-matchedpaths = {}
+levels = {}
+levels[1] = "BAD"
+levels[2] = "SUSPICIOUS"
+levels[3] = "INFO"
 
 hunt.log(f"Scanning ${#paths} paths with info_rules")
-match, mpaths = yara_scan(paths, info_rules, 3)
+match, matches = yara_scan(paths, info_rules)
 if match then 
     hunt.log("Found matches!")
     level = 3
-    matchedpaths = table.concat(matchedpaths,mpaths)
+    all_matches = table.concat(all_matches, matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+    end
 else
     hunt.log("No matches found with info_rules!")
 end
 
 hunt.log(f"Scanning ${#paths} paths with suspicious_rules")
-match, mpaths = yara_scan(paths, suspicious_rules, 2)
+match, matches = yara_scan(paths, suspicious_rules, 2)
 if match then
     hunt.log("Found matches!")
     level = 2
-    matchedpaths = table.concat(matchedpaths,mpaths)
+    all_matches = table.concat(all_matches,matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+    end
 else
     hunt.log("No matches found with suspicious_rules!")
 end
 
 
 hunt.log(f"Scanning ${#paths} paths with bad_rules")
-match, mpaths = yara_scan(paths, bad_rules, 1) 
+match, matches = yara_scan(paths, bad_rules, 1) 
 if match then
     hunt.log("Found matches!")
     level = 1
-    matchedpaths = table.concat(matchedpaths,mpaths)
+    all_matches = table.concat(all_matches,matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+    end
 else
     hunt.log("No matches found with bad_rules!")
 end
 
+
+hunt.log(f"Scanning process memory with memory_rules")
+match, procs = yara_scan_memory(memory_rules)
+if match then
+    hunt.log(f"Found in-memory matches within ${#procs} processes")
+    level = 1
+    for _, m in pairs(procs) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} in process memory of ${m['procname']}-${m['pid']} owned by ${m['owner']}")
+    end
+elseif match == false then
+    hunt.log(f"No matches found within memory")
+end
+
+
 -- Add bad and suspicious files to Artifacts list for further analysis
 n = 0
-for path,i in pairs(matchedpaths) do
-    print(path)
+for i,match in pairs(all_matches) do
     if test and n > 3 then
         break
     end
+
     -- Create a new artifact
     artifact = hunt.survey.artifact()
-    artifact:exe(path)
+    artifact:exe(match['path'])
     artifact:type("Yara Match")
     hunt.survey.add(artifact)
     n = n + 1
@@ -1673,4 +1760,4 @@ else
     hunt.status.good()
 end
 
-hunt.log(f"Yara scan completed. Result=${result} Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")
+hunt.log(f"Yara scan completed. Result=${result}. Found ${#procs} processes with memory matches. Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")
