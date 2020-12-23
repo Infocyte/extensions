@@ -34,11 +34,9 @@ args:
 
 -- max file size to scan
 max_size_default = 10000
-max_size =  hunt.arg.number("max_size") or 
-            hunt.global.number("yarascanner_max_size", false, max_size_default)
+max_size = hunt.global.number("yarascanner_max_size", false, max_size_default)
 
-additional_paths =  hunt.arg.string("additional_paths") or 
-    hunt.global.string("sunburst_additional_paths")
+additional_paths = hunt.global.string("sunburst_additional_paths")
 
 scan_activeprocesses = true
 scan_userfolders = true
@@ -244,7 +242,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        --hunt.debug(msg)
         return nil
     end
     local bytes = f:read(4)
@@ -483,7 +481,7 @@ if match then
         hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
     end
 else
-    hunt.log("No matches found with bad_rules!")
+    hunt.log("No matches found with file rules!")
 end
 
 -- Scan process memory with Yara signatures
