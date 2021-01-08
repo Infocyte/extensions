@@ -510,7 +510,7 @@ else
 end
 
 -- Scan process memory with Yara signatures
--- TBD (Memory scanning only in latest version. Uncomment if you have Infocyte version .3527 or greater)
+-- Memory scanning only in latest version. Uncomment if you have Infocyte version .3527 or greater
 hunt.log(f"Scanning process memory with memory_rules")
 match, procs = yara_scan_memory(memory_rules)
 if match then

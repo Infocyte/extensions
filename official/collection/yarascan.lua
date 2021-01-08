@@ -1716,7 +1716,7 @@ else
     hunt.log("No matches found with bad_rules!")
 end
 
---[=[ -- TBD (Memory scanning only in latest version. Uncomment if you have Infocyte version .3527 or greater)
+-- Memory scanning only in latest version. Uncomment if you have Infocyte version .3527 or greater
 hunt.log(f"Scanning process memory with memory_rules")
 match, procs = yara_scan_memory(memory_rules)
 if match then
@@ -1728,7 +1728,7 @@ if match then
 elseif match == false then
     hunt.log(f"No matches found within memory")
 end
-]=]
+
 
 -- Add bad and suspicious files to Artifacts list for further analysis
 n = 0
