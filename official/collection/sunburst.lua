@@ -16,7 +16,7 @@ description: |
 author: Infocyte
 guid: 88526dd4-bba9-40e0-a561-d108c1c1fa2b
 created: 2020-12-14
-updated: 2020-12-16
+updated: 2021-03-26
 
 # Global variables
 globals:
@@ -592,7 +592,7 @@ if match then
     level = 1
     all_matches = table.concat(all_matches,matches)
     for _, m in pairs(matches) do
-        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['sha1']}>")
     end
 else
     hunt.log("No matches found with file rules!")
