@@ -22,6 +22,12 @@ globals:
     default: false
     required: false
 
+- test:
+    description: Creates a file and deletes it as a test demonstration
+    type: boolean
+    default: false
+    required: false
+
 # Runtime arguments
 args:
 - path:
@@ -39,7 +45,7 @@ args:
 path = hunt.arg.string("path") or
         hunt.global.string("deletefile_default_path", true)
 local verbose = hunt.global.boolean("verbose", false, false)
-local test = hunt.global.boolean("test", false, true)
+local test = hunt.global.boolean("test", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
