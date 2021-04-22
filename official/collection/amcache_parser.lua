@@ -262,10 +262,10 @@ end
 sleep(3)
 
 -- Parse output using powershell
-script = f"$tmppath = '${tmppath}'\n"
+script = f"$infocytetemp  = '${tmppath}'\n"
 script = script..[=[
-$outpath = "$tmppath\amcache.csv"
-Get-ChildItem $tmppath -filter *_Amcache_*.csv | Foreach-Object { 
+$outpath = "$infocytetemp \amcache.csv"
+Get-ChildItem $infocytetemp -filter *_Amcache_*.csv | Foreach-Object { 
     $a += gc $_.fullname | convertfrom-csv |
         where { $_.isPeFile -AND $_.sha1 } |
             select-object sha1,fullpath,filekeylastwritetimestamp -unique 
