@@ -1,41 +1,35 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Collection Template
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Example script show format, style, and options for gathering
+    additional data from a host.
+author: Infocyte
+guid: f8e44229-4d8d-4909-b148-58130b660077
+created: 2019-09-19
+updated: 2020-12-14
 
-[info]
-name = "Collection Template"
-type = "Collection"
-description = """Example script show format, style, and options for gathering
-     additional data from a host."""
-author = "Infocyte"
-guid = "f8e44229-4d8d-4909-b148-58130b660077"
-created = "2019-09-19"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+-  proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+args:
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
 ]=]
 
@@ -43,10 +37,11 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 
-debug = hunt.arg.boolean("debug", false, false)
+verbose = hunt.arg.boolean("verbose", false, false)
 
 
 --[=[ SECTION 2: Functions ]=]
@@ -57,7 +52,7 @@ debug = hunt.arg.boolean("debug", false, false)
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 
 -- All OS-specific instructions should be behind an 'if' statement

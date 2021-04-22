@@ -1,43 +1,38 @@
 --[=[
-filetype = "Infocyte Extension"
-
-[info]
-name = "RDP Triage"
-type = "Collection"
-description = """RDP Lateral Movement
+name: RDP Triage
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    RDP Lateral Movement
     https://jpcertcc.github.io/ToolAnalysisResultSheet/details/mstsc.htm
     Gathers and combines 4624,4778,4648 logon events, rdp session 
-    events 21,24,25, and 1149 with processes started (4688) by those sessions"""
-author = "Infocyte"
-guid = "f606ff51-4e99-4687-90a7-43aaabae8634"
-created = "2020-03-01"
-updated = "2020-09-10"
+    events 21,24,25, and 1149 with processes started (4688) by those sessions
+author: Infocyte
+guid: f606ff51-4e99-4687-90a7-43aaabae8634
+created: 2020-03-01
+updated: 2020-12-14
 
-## GLOBALS ##
 # Global variables
+globals:
+- trailing_days:
+    description: Number of days to go back in the logs
+    type: number
+    default: 60
+    required: false
 
-    [[globals]]
-    name = "trailing_days"
-    description = "Number of days to go back in the logs"
-    type = "number"
-    default = 60
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[Args]]
-    name = "trailing_days"
-    description = "Number of days to go back in the logs"
-    type = "number"
-    required = false
+args:
+- trailing_days:
+    description: Number of days to go back in the logs
+    type: number
+    required: false
 
 ]=]
 
@@ -46,8 +41,11 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-trailing_days = hunt.arg.number("trailing_days") or hunt.global.number("trailing_days", false, 60)
-local debug = hunt.global.boolean("debug", false, false)
+trailing_days = hunt.arg.number("trailing_days") or
+                hunt.global.number("trailing_days", false, 60)
+                
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 
 if hunt.global.boolean("disable_powershell", false, false) then
     hunt.error("disable_powershell global is set. Cannot run extension without powershell")
@@ -106,9 +104,10 @@ end
 
 -- All Lua and hunt.* functions are cross-platform.
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 if not hunt.env.is_windows() then
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
+    return
 end
 
 tmppath = os.getenv("systemroot").."\\temp\\ic"
@@ -277,10 +276,10 @@ script = script..[==[
     return $true
 ]==]
 
-hunt.debug("Running powershell script")
+hunt.log("Running powershell script")
 out, err = hunt.env.run_powershell(script)
 if out then 
-    hunt.verbose(out)
+    hunt.log(f"Powershell Output: ${out}")
 else
     hunt.error(err)
     return
@@ -291,7 +290,7 @@ rdp_localSessionManager = parse_csv(tmppath.."\\RDP_LocalSessionManager.csv")
 rdp_remoteConnectionManager = parse_csv(tmppath.."\\RDP_RemoteConnectionManager.csv")
 rdp_logons = parse_csv(tmppath.."\\RDP_Logons.csv")
 
-if not debug then 
+if not test then 
     os.remove(tmppath.."\\RDP_Processes.csv") 
     os.remove(tmppath.."\\RDP_LocalSessionManager.csv")
     os.remove(tmppath.."\\RDP_RemoteConnectionManager.csv")

@@ -1,62 +1,51 @@
 --[=[ 
-filetype = "Infocyte Extension"
+name: Terminate Process
+filetype: Infocyte Extension
+type: Response
+description: Kills a process by path and/or deletes the associated file
+author: Infocyte
+guid: e7824ed1-7ac9-46eb-addc-6949bf2cc084
+created: 2020-01-23
+updated: 2020-12-14
 
-[info]
-name = "Terminate Process"
-type = "Response"
-description = """Kills a process by path and/or deletes the associated file"""
-author = "Infocyte"
-guid = "e7824ed1-7ac9-46eb-addc-6949bf2cc084"
-created = "2020-01-23"
-updated = "2020-09-10"
+# Global Variables
+globals:
+- terminateprocess_default_path:
+    description: path(s) to kill/delete (comma seperated for multiple)
+    type: string
+    required: true
 
-## GLOBALS ##
-# Global variables accessed within extensions via hunt.global('name')
+- terminateprocess_kill_process:
+    description: kills processes with the provided path
+    type: boolean
+    default: true
 
-    [[globals]]
-    name = "terminateprocess_default_path"
-    description = "path(s) to kill/delete (comma seperated for multiple)"
-    type = "string"
-    required = true
+- terminateprocess_delete_file:
+    description: deletes the provided path
+    type: boolean
+    default: false
 
-    [[globals]]
-    name = "terminateprocess_kill_process"
-    description = "kills processes with the provided path"
-    type = "boolean"
-    default = true
+- verbose:
+    description: Used to verbose the script
+    type: boolean
+    default: false
 
-    [[globals]]
-    name = "terminateprocess_delete_file"
-    description = "deletes the provided path"
-    type = "boolean"
-    default = false
+# Runtime arguments
+args:
+- path:
+    description: path(s) to kill/delete (comma seperated for multiple)
+    type: string
+    required: true
 
-    [[globals]]
-    name = "debug"
-    description = "Used to debug the script"
-    type = "boolean"
-    default = false
+- kill_process:
+    description: kills processes with the provided path
+    type: boolean
+    default: true
 
-## ARGUMENTS ##
-# Runtime arguments are accessed within extensions via hunt.arg('name')
-
-    [[args]]
-    name = "path"
-    description = "path(s) to kill/delete (comma seperated for multiple)"
-    type = "string"
-    required = true
-
-    [[args]]
-    name = "kill_process"
-    description = "kills processes with the provided path"
-    type = "boolean"
-    default = true
-
-    [[args]]
-    name = "delete_file"
-    description = "deletes the provided path"
-    type = "boolean"
-    default = false
+- delete_file:
+    description: deletes the provided path
+    type: boolean
+    default: false
 
 ]=]
 
@@ -65,10 +54,17 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-path = hunt.arg.string("path") or hunt.global.string("terminateprocess_default_path", true)
-kill_process = hunt.arg.boolean("kill_process") or hunt.global.boolean("terminateprocess_kill_process", false, true) 
-delete_file = hunt.arg.boolean("delete_file") or hunt.global.boolean("terminateprocess_delete_file", false, false)
-local debug = hunt.arg.boolean("debug", false, false) 
+path =  hunt.arg.string("path") or
+        hunt.global.string("terminateprocess_default_path", true)
+
+kill_process =  hunt.arg.boolean("kill_process") or
+                hunt.global.boolean("terminateprocess_kill_process", false, true) 
+
+delete_file =   hunt.arg.boolean("delete_file") or
+                hunt.global.boolean("terminateprocess_delete_file", false, false)
+
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, false)
 
 --[=[ SECTION 2: Functions ]=]
 
@@ -81,16 +77,31 @@ function string_to_list(str)
     return list
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
+
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
-if debug then 
-    hunt.log("Debugging: firing up notepad and killing it")
-    os.execute("notepad.exe")
-    os.execute("sleep 5")
-    path = [[C:\Windows\System32\notepad.exe]]
+if test then 
+    if hunt.env.is_windows() then
+        hunt.log("Debugging: firing up notepad and killing it")
+        pipe = io.popen("notepad.exe")
+        path = [[C:\Windows\System32\notepad.exe]]
+    else 
+        hunt.log("Debugging: firing up gedit and killing it")
+        pipe = io.popen("gedit &")      
+        path = [[gedit]]
+    end
+    hunt.log("Debugging: sleeping for 3")
+    sleep(3)
 end
 
 paths = string_to_list(path)
@@ -109,7 +120,6 @@ if kill_process then
                 hunt.log(f"SUCCESS: Killed ${proc:path()} [pid: ${proc:pid()}]")
                 hunt.status.good()
                 killed = true
-                os.execute("sleep 5")
             else
                 killed = false 
                 hunt.error(f"FAILED: Could not kill ${proc:path()} [pid: ${proc:pid()}]: ${err}")
@@ -124,13 +134,13 @@ if kill_process then
 end
 
 if delete_file then
-    if debug then
+    if test then
         path = "C:/windows/temp/test/txt"
         hunt.log(f"Debugging: creating ${path} and deleting it")
         os.execute(f"test > ${path}")
-        os.execute("sleep 5")
     end
 
+    sleep(3)
     hunt.log(f"Finding and deleting ${path}")
     file_found = false
     for _,i in pairs(hunt.fs.ls(path, {"files"})) do

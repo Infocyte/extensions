@@ -1,61 +1,49 @@
 --[=[
-filetype = "Infocyte Extension"
+name: PowerForensics MFT
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Deploy PowerForensics and gathers forensic data to Recovery
+    Location. This extension requires definition of a Recovery Location 
+    (S3)
+author: Infocyte
+guid: 0989cd2f-a781-4cea-8f43-fcc3092144a1
+created: 2019-10-18
+updated: 2020-12-14
 
-[info]
-name = "PowerForensics MFT"
-type = "Response"
-description = """Deploy PowerForensics and gathers forensic data to Recovery
-        Location. This extension requires definition of a Recovery Location 
-        (S3)"""
-author = "Infocyte"
-guid = "0989cd2f-a781-4cea-8f43-fcc3092144a1"
-created = "2019-10-18"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
-
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 
@@ -63,7 +51,8 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -102,7 +91,7 @@ function install_powerforensics()
     ]==]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
+        hunt.log(f"[install_powerforensics] Succeeded:\n${out}")
         return true
     else 
         hunt.error(f"[install_powerforensics] Failed:\n${err}")
@@ -127,7 +116,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 if not hunt.env.is_windows() or not hunt.env.has_powershell() then
     hunt.warn(f"Not a compatible operating system for this extension [${host_info:os()}]")
@@ -147,8 +136,8 @@ install_powerforensics()
 
 -- Get MFT w/ Powerforensics
 cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
-hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
-hunt.debug(f"Executing Powershell command: ${cmd}")
+hunt.log(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+hunt.log(f"Executing Powershell command: ${cmd}")
 out, err = hunt.env.run_powershell(cmd)
 if not out then 
     hunt.error(f"Failed to run Get-ForensicFileRecord: ${err}")
@@ -158,7 +147,7 @@ end
 -- Compress results
 file = hunt.fs.ls(temppath)
 if #file > 0 then
-    hunt.debug(f"Compressing (gzip) ${temppath} to ${outpath}")
+    hunt.log(f"Compressing (gzip) ${temppath} to ${outpath}")
     hunt.gzip(temppath, outpath, nil)
 else
     hunt.error("PowerForensics MFT Dump failed.")

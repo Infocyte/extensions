@@ -1,75 +1,66 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Recover Files
+filetype: Infocyte Extension
+type: Collection
+description: |
+    Recover custom list of files and folders to your recovery point (S3). 
+    S3 Path Format= <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+    Loads Powerforensics to bypass file locks. Currently only works on Windows
+author: Infocyte
+guid: 55f3d0f0-476a-44fe-a583-21e110c74541
+created: 2019-11-23
+updated: 2020-12-14
 
-[info]
-name = "Recover Files"
-type = "Collection"
-description = """Recover custom list of files and folders to your recovery point (S3). 
-        S3 Path Format= <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-        Loads Powerforensics to bypass file locks. Currently only works on Windows"""
-author = "Infocyte"
-guid = "55f3d0f0-476a-44fe-a583-21e110c74541"
-created = "2019-11-23"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+- disable_powershell:
+    description: Does not use powershell
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "disable_powershell"
-    description = "Does not use powershell"
-    type = "boolean"
-    default = false
-    required = false
 
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
-    name = "path"
-    description = '''Path(s) to recover. Accepts comma-seperated list of files and/or folders to recover.
-        Acceptable formats (escape backslashes): 
-            String literal (file): [[c:/bad.exe]],
-            Escaped string (file): "c:/users/adama/ntuser.dat", 
-            Escaped folder (folder): "c:\\windows\\temp\\"
-        '''
-    type = "string"
-    required = true
+args:
+- path:
+    description: | 
+        Path(s) to recover. Accepts comma-seperated list of files and/or folders to recover.
+        Acceptable formats (escape backslashes)
+            String literal (file)= [[c:/bad.exe]],
+            Escaped string (file)= "c:/users/adama/ntuser.dat", 
+            Escaped folder (folder)= "c:\\windows\\temp\\"
+    type: string
+    required: true
 
 ]=]
 
@@ -88,7 +79,8 @@ path = hunt.arg.string("path", true)
 -- Powerforensics can be used to bypass file locks
 use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -146,7 +138,7 @@ function install_powerforensics()
     ]==]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug(f"Powershell Succeeded: ${out}")
+        hunt.log(f"Powershell Succeeded: ${out}")
         return true
     else 
         hunt.error(f"Powershell Failed: ${err}")
@@ -157,7 +149,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Make tempdir
 logfolder = os.getenv("temp").."\\ic"
@@ -165,7 +157,7 @@ if not path_exists(logfolder) then os.execute("mkdir "..logfolder) end
 
 if use_powerforensics and hunt.env.has_powershell() then
     installed = install_powerforensics()
-    hunt.debug(f"PowerForensics was installed: ${installed}")
+    hunt.log(f"PowerForensics was installed: ${installed}")
 end
 
 
@@ -185,7 +177,7 @@ hunt.log("Uploaded evidence can be accessed here:")
 hunt.log(f"https://s3.console.aws.amazon.com/s3/buckets/${s3_bucket}/${s3path_preamble}/?region=${s3_region}&tab=overview")
 
 for i, p in pairs(paths) do
-    hunt.debug(f"Finding file: ${p}")
+    hunt.log(f"Finding file: ${p}")
     files = hunt.fs.ls(p)
     if files and #files > 0 then 
         for _, p2 in pairs(files) do
@@ -196,9 +188,9 @@ for i, p in pairs(paths) do
             if not infile and use_powerforensics and hunt.env.has_powershell() then
                 -- Assume file locked by kernel, use powerforensics to copy
                 cmd = f"Copy-ForensicFile -Path '${path:path()}' -Destination '${outpath}'"
-                hunt.debug(f"File Locked. Executing: ${cmd}")
+                hunt.log(f"File Locked. Executing: ${cmd}")
                 ret, out = powershell.run_cmd(cmd)
-                hunt.debug(f"Powerforensics output: ${out}")
+                hunt.log(f"Powerforensics output: ${out}")
             elseif not infile then
                 hunt.error(f"Could not open ${path:path()} [${err}].\nTry enabling powerforensics to bypass file lock.")
                 goto continue

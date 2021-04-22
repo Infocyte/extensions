@@ -29,9 +29,9 @@ else
 end
 
 --[[
-	What else could I do?
-	This 3rd party tool creates a log file of the results
-	It also creates a .dat file of all the findings
-	I could easily use extensions to take the log file and push it to
-	an offline location for analysis later (like S3, an FTP, etc)
+    What else could I do?
+    This 3rd party tool creates a log file of the results
+    It also creates a .dat file of all the findings
+    I could easily use extensions to take the log file and push it to
+    an offline location for analysis later (like S3, an FTP, etc)
 --]]

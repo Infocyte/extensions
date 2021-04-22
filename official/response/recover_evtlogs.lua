@@ -1,60 +1,52 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Recover Event Logs
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Collects raw event logs from system and forwards
+    them to your Recovery point. S3 Path Format
+    <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+    Loads Powerforensics to bypass file locks. Currently only works on Windows
+author: Infocyte
+guid: 2d34e7d7-86c4-42cd-9fa6-d50605e70bf4
+created: 2020-07-21
+updated: 2020-12-14
 
-[info]
-name = "Recover Event Logs"
-type = "Response"
-description = """Collects raw event logs from system and forwards
-        them to your Recovery point. S3 Path Format: 
-        <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-        Loads Powerforensics to bypass file locks. Currently only works on Windows"""
-author = "Infocyte"
-guid = "2d34e7d7-86c4-42cd-9fa6-d50605e70bf4"
-created = "2020-07-21"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example=myuser:password@10.11.12.88:8888
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 
@@ -62,7 +54,8 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-local debug = hunt.global.boolean("debug", false, false)
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -71,6 +64,33 @@ s3_bucket = hunt.global.string("s3_bucket", true)
 s3path_modifier = "evidence"
 
 --[=[ SECTION 2: Functions ]=]
+
+function run_cmd(cmd)    
+    --[=[
+        Runs a command on the default shell and captures output
+        Input:  [string] -- Command
+        Output: [boolean] -- success
+                [string] -- returned message
+    ]=]
+    verbose = verbose or true
+    if verbose or test then hunt.log("Running command: "..cmd.." 2>&1") end
+    local pipe = io.popen(cmd.." 2>&1", "r")
+    if pipe then
+        local out = pipe:read("*all")
+		pipe:close()
+		out = out:gsub("^%s*(.-)%s*$", "%1")
+        if out:find("failed|error|not recognized as an") then
+            hunt.error("[run_cmd]: "..out)
+            return false, out
+        else
+            if verbose or test then hunt.log("[run_cmd]: "..out) end
+            return true, out
+        end
+    else 
+        hunt.error("ERROR: No Output from pipe running command "..cmd)
+        return false, "ERROR: No output"
+    end
+end
 
 -- FileSystem Functions --
 function path_exists(path)
@@ -93,7 +113,7 @@ end
 --[=[ SECTION 3: Actions ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 files_uploaded = 0
 
@@ -125,21 +145,17 @@ cmds = {
     f"wevtutil.exe epl Microsoft-Windows-WMI-Activity/Operational ${tmp}\\Microsoft-Windows-WMIActivityOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-TerminalServices-RDPClient/Operational ${tmp}\\Microsoft-Windows-TerminalServicesRDPClientOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational ${tmp}\\Microsoft-Windows-RemoteDesktopServicesOperatonal.evtx",
-    f"wevtutil.exe epl 'Microsoft-Windows-Windows Defender/Operational' ${tmp}\\Microsoft-Windows-DefenderOperational.evtx",
+    f"wevtutil.exe epl \"Microsoft-Windows-Windows Defender/Operational\" ${tmp}\\Microsoft-Windows-DefenderOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-TerminalServices-Gateway/Operational ${tmp}\\Microsoft-Windows-TerminalServices-GatewayOperational.evtx",
     f"wevtutil.exe epl Microsoft-Windows-SmbClient/Security ${tmp}\\Microsoft-Windows-SMBClient.evtx"
 }
 for _, cmd in ipairs(cmds) do
-    hunt.debug(f"Running Command: ${cmd}")
-    pipe = io.popen(f"${cmd} 2>&1", "r")
-    if pipe then 
-        out = pipe:read("*all")
-        pipe:close()
-        if out:gmatch("failed|error") then
-            hunt.error(out)
-        else
-            hunt.debug(out)
-        end
+    hunt.log(f"Running Command: ${cmd}")
+    s, out = run_cmd(cmd)
+    if out and out:gmatch("failed|error") then
+        hunt.error(out)
+    else
+        hunt.log(out)
     end
 end
 
@@ -193,10 +209,16 @@ for name, p in pairs(files) do
     -- Upload file to S3
     s3path = f"${s3path_preamble}/${name}_${path:name()}"
     link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
-    s3:upload_file(path:path(), s3path)
-    size = string.format("%.2f", (path:size()/1000))
-    hunt.log(f"Uploaded ${path:name()} - ${path:path()} (size= ${size}KB, sha1=${hash}) to S3 bucket:")
-    hunt.log(link)
+
+    success, err = s3:upload_file(path:path(), s3path)
+    if not success then
+        hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+    else
+        size = string.format("%.2f", (path:size()/1000))
+        hunt.log(f"Uploaded ${path:name()} - ${path:path()} (size= ${size}KB, sha1=${hash}) to S3 bucket:")
+        hunt.log(link)
+    end
+
     files_uploaded = files_uploaded + 1
     os.remove(outpath)
 end

@@ -1,60 +1,47 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Test
+filetype: Infocyte Extension
+type: response
+description: | 
+    Tests Infocyte Extension functions
+author: Infocyte
+guid: 09dd57ff-2ebd-4e3c-9012-1d593fecf43b
+created: 2020-01-24
+updated: 2020-12-14
 
-[info]
-name = "Test"
-type = "response"
-description = """Tests Infocyte Extension functions"""
-author = "Infocyte"
-guid = "09dd57ff-2ebd-4e3c-9012-1d593fecf43b"
-created = "2020-01-24"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+- s3_region:
+    description: S3 Bucket key Id for uploading. i.e. 'us-east-2'
+    type: string
+    default: us-east-2
+    required: false
 
-    [[globals]]
-    name = "test"
-    description = "test global"
-    type = "boolean"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    default: test-extensions
+    required: false
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    default = "us-east-2"
-    required = false
+- verbose:
+    description: Print debug information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    default = "test-extensions"
-    required = false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
-
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- path:
+    description: This is a test of a path variable
+    type: string
+    required: false
+    default: C:\\users
 
-    [[args]]
-    name = "path"
-    description = 'This is a test of a path variable'
-    type = "string"
-    required = false
-    default = "C:\\users"
-
-    [[args]]
-    name = "arg1"
-    description = 'Test'
-    type = "string"
-    required = false
+- arg1:
+    description: Test
+    type: string
+    required: false
 
 ]=]
 
@@ -65,18 +52,18 @@ updated = "2020-09-10"
 
 path = hunt.arg.string("path", false, "C:\\Users")
 arg1 = hunt.arg.string("arg1", false, "arg1_default")
-test = hunt.arg.number("test", true)
 
-debugging = hunt.global.boolean("debug", false, false)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
 s3_region = hunt.global.string("s3_region", false, "us-east-2")
 s3_bucket = hunt.global.string("s3_bucket", false, "test-extensions")
 
+test = hunt.arg.number("test", true)
+verbose = hunt.global.boolean("verbose", false, false)
 
 hunt.log(f"Arguments: test=${test}, path=${path}, arg1=${arg1}")
-hunt.log(f"Globals:s3_region=${s3_region}, s3_bucket=${s3_bucket}, debugging=${debugging}, proxy=${proxy}")
+hunt.log(f"Globals:s3_region=${s3_region}, s3_bucket=${s3_bucket}, verbose=${verbose}, proxy=${proxy}")
 
 host_info = hunt.env.host_info()
 hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
@@ -149,6 +136,14 @@ function table.tostring( tbl )
     return "{" .. table.concat( result, "," ) .. "}"
 end
 
+function sleep(sec)
+    if hunt.env.is_windows() then
+        os.execute("ping -n "..(sec+1).." 127.0.0.1 > NUL")
+    else
+        os.execute("ping -c "..(sec+1).." 127.0.0.1 > /dev/null")
+    end
+end
+
 
 -- Tests
 
@@ -207,7 +202,7 @@ for _, proc in pairs(procs) do
     n = n+1
 end
 os.execute('C:\\windows\\system32\\calc.exe')
-os.execute('sleep 4')
+sleep(3)
 hunt.log("Killing calc.exe")
 ret = hunt.process.kill_process('Calculator.exe')
 if ret then 

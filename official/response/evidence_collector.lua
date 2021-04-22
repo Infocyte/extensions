@@ -1,122 +1,106 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Evidence Collector
+filetype: Infocyte Extension
+type: Response
+description: | 
+    Collects event logs, .dat files, etc. from system and forwards
+    them to your Recovery point. 
+    S3 Path Format
+    <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
+    Loads Powerforensics to bypass file locks. Currently only works on Windows
+author: Infocyte
+guid: e07252a1-4aea-47e4-80e8-c7ea8c558aed
+created: 2019-10-18
+updated: 2020-12-14
 
-[info]
-name = "Evidence Collector"
-type = "Response"
-description = """Collects event logs, .dat files, etc. from system and forwards
-        them to your Recovery point. S3 Path Format: 
-        <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
-        Loads Powerforensics to bypass file locks. Currently only works on Windows"""
-author = "Infocyte"
-guid = "e07252a1-4aea-47e4-80e8-c7ea8c558aed"
-created = "2019-10-18"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
-# -> hunt.global(name = string, isRequired = boolean, [default]) 
+globals: 
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
+- disable_powershell:
+    description: Does not use powershell
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "disable_powershell"
-    description = "Does not use powershell"
-    type = "boolean"
-    default = false
-    required = false
 
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- MFT:
+    description: Pulls MFT using Powerforenics -- warning, this is a big job
+    type: boolean
+    required: false
+    default: false
 
-    [[args]]
-    name = "MFT"
-    description = "Pulls MFT using Powerforenics -- warning: this is a big job"
-    type = "boolean"
-    required = false
-    default = false
+- SecurityEvents:
+    description: Pulls full security event logs
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "SecurityEvents"
-    description = "Pulls full security event logs"
-    type = "boolean"
-    required = false
-    default = true
+- IEHistory:
+    description: Pulls IE History
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "IEHistory"
-    description = "Pulls IE History"
-    type = "boolean"
-    required = false
-    default = true
+- FireFoxHistory:
+    description: Pulls Firefox History
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "FireFoxHistory"
-    description = "Pulls Firefox History"
-    type = "boolean"
-    required = false
-    default = true
+- ChromeHistory:
+    description: Pulls chrome history
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "ChromeHistory"
-    description = "Pulls chrome history"
-    type = "boolean"
-    required = false
-    default = true
+- OutlookPSTandAttachments:
+    description: Pulls chrome history
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "OutlookPSTandAttachments"
-    description = "Pulls chrome history"
-    type = "boolean"
-    required = false
-    default = true
+- UserDats:
+    description: Pulls all user dat files
+    type: boolean
+    required: false
+    default: true
 
-    [[args]]
-    name = "UserDats"
-    description = "Pulls all user dat files"
-    type = "boolean"
-    required = false
-    default = true
-
-    [[args]]
-    name = "USBHistory"
-    description = "Pulls USB history"
-    type = "boolean"
-    required = false
-    default = true
+- USBHistory:
+    description: Pulls USB history
+    type: boolean
+    required: false
+    default: true
 
 ]=]
 
@@ -136,7 +120,8 @@ USBHistory      = hunt.arg.boolean("USBHistory", false, true)
 
 -- Global Variables
 use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
-local debug     = hunt.global.boolean("debug", false, false)
+local verbose     = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 proxy           = hunt.global.string("proxy", false)
 s3_keyid        = hunt.global.string("s3_keyid", false)
 s3_secret       = hunt.global.string("s3_secret", false)
@@ -207,7 +192,7 @@ function install_powerforensics()
     ]=]
     out, err = hunt.env.run_powershell(script)
     if out then 
-        hunt.debug("[install_powerforensics] Succeeded:\n"..out)
+        hunt.log("[install_powerforensics] Succeeded:\n"..out)
         return true
     else 
         hunt.error("[install_powerforensics] Failed:\n"..err)
@@ -219,7 +204,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 files_uploaded = 0
 
 -- All OS-specific instructions should be behind an 'if' statement
@@ -324,11 +309,11 @@ if hunt.env.is_windows() then
         logfile = os.getenv("TEMP").."\\ic\\pslog.log"
 
         cmd = f"Get-ForensicFileRecord | Export-Csv -NoTypeInformation -Path '${temppath}' -Force"
-        hunt.debug(f"Getting MFT with PowerForensics and exporting to ${temppath}")
-        hunt.debug(f"Executing Powershell command: ${cmd}")
+        hunt.log(f"Getting MFT with PowerForensics and exporting to ${temppath}")
+        hunt.log(f"Executing Powershell command: ${cmd}")
         out, err = hunt.env.run_powershell(cmd)
         if out then 
-            hunt.debug(f"[install_powerforensics] Succeeded:\n${out}")
+            hunt.log(f"[install_powerforensics] Succeeded:\n${out}")
             return true
         else 
             hunt.error(f"[install_powerforensics] Failed:\n${err}")
@@ -390,7 +375,7 @@ for name,path in pairs(paths) do
         if not infile and hunt.env.has_powershell() then
             -- Assume file locked by kernel, use powerforensics to copy
             cmd = f"Copy-ForensicFile -Path '${path}' -Destination '${outpath}'"
-            hunt.debug(f"File Locked [${err}]. Executing: ${cmd}")
+            hunt.log(f"File Locked [${err}]. Executing: ${cmd}")
             out, err = hunt.env.run_powershell(cmd)
             if not out then 
                 hunt.error(f"Powerforensics error: ${err}")
@@ -413,22 +398,28 @@ for name,path in pairs(paths) do
         -- hash file
         hash, err = hunt.hash.sha1(outpath)
         if not hash then
-            hunt.debug(f"Error hashing file: ${outpath}, error: ${err}")
+            hunt.log(f"Error hashing file: ${outpath}, error: ${err}")
             goto continue
         end
 
         -- Upload file to S3
         s3path = f"${s3path_preamble}/${name}_${fi[1]:name()}"
         link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
-        s3:upload_file(outpath, s3path)
-        size = string.format("%.2f", (fi[1]:size()/1000))
-        hunt.log(f"Uploaded ${name} - ${path} (size=${size}KB, sha1=${hash}) to S3 bucket:")
-        hunt.log(link)
-        files_uploaded = files_uploaded + 1
+        
+        success, err = s3:upload_file(outpath, s3path)
+        if not success then
+            hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+        else
+            size = string.format("%.2f", (path:size()/1000))
+            hunt.log(f"Uploaded ${name} - ${path} (size=${size}KB, sha1=${hash}) to S3 bucket:")
+            hunt.log(link)
+            files_uploaded = files_uploaded + 1
+        end        
+        
         os.remove(outpath)
         ::continue::
     else
-        hunt.debug(f"${name} failed. ${path} does not exist.")
+        hunt.log(f"${name} failed. ${path} does not exist.")
     end
 end
 

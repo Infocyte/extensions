@@ -249,31 +249,31 @@ function is_agent_installed()
     Determines if infocyte agent is installed
     Output: [bool]ret -- true or false
     ]=]
-	if hunt.env.is_windows() then
-		key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
-		if hunt.registry.list_values(key) then
-			return true
-		else
-			return false
-		end
+    if hunt.env.is_windows() then
+        key = '\\Registry\\Machine\\System\\CurrentControlSet\\Services\\HUNTAgent'
+        if hunt.registry.list_values(key) then
+            return true
+        else
+            return false
+        end
 
-	elseif hunt.env.is_macos() then
-		installpath = [[/bin/infocyte/agent.exe]]
-		if path_exists(installpath) then
-			return true
-		else
-			return false
-		end
-	elseif hunt.env.is_linux() or hunt.env.has_sh() then
-		installpath = [[/bin/infocyte/agent.exe]]
-		if path_exists(installpath) then
-			return true
-		else
-			return false
-		end
-	else
-		return false
-	end
+    elseif hunt.env.is_macos() then
+        installpath = [[/bin/infocyte/agent.exe]]
+        if path_exists(installpath) then
+            return true
+        else
+            return false
+        end
+    elseif hunt.env.is_linux() or hunt.env.has_sh() then
+        installpath = [[/bin/infocyte/agent.exe]]
+        if path_exists(installpath) then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
 end
 
 

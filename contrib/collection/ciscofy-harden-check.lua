@@ -1,35 +1,26 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Ciscofy Hardening Check
+filetype: Infocyte Extension
+type: Collection
+description: |
+  Leverage 3rd Party utility to assess hardening level of a linux system.
+  Source =  https://cisofy.com/
+  Extension will simply pull down cisofy, unpack it run the utility and will look throught he logs to
+  capture the hardening results.  If the system shows as hardened, set the status to good; otherwise, set
+  the status to bad indicating a futher review of the system is required.
 
-[info]
-name = "Ciscofy Hardening Check"
-type = "Collection"
-description = """Leverage 3rd Party utility to assess hardening level
-        of a linux system.
-        Source =  https://cisofy.com/
-        Extension will simply pull down cisofy, unpack it
-        run the utility and will look throught he logs to
-        capture the hardening results.  If the system shows
-        as hardened, set the status to good; otherwise, set
-        the status to bad indicating a futher review of the
-        system is required.
+  Note, the extension may take up to 2 minutes to complete
+  This only runs on Linux operating systems
+author: Infocyte
+guid: 36e9e84e-efd3-481c-8c2b-9a9b0e419419
+created: 2019-11-20
+updated: 2020-12-14
 
-        Note, the extension may take up to 2 minutes to complete
-        This only runs on Linux operating systems"""
-author = "Infocyte"
-guid = "36e9e84e-efd3-481c-8c2b-9a9b0e419419"
-created = "2019-11-20"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
 
-    [[globals]]
-
-## ARGUMENTS ##
 # Runtime arguments
-
-    [[args]]
+args:
 
 ]=]
 

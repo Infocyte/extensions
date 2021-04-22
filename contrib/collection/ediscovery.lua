@@ -1,93 +1,81 @@
 --[=[
-filetype = "Infocyte Extension"
-
-[info]
-name = "EDiscovery"
-type = "Collection"
-description = """Proof of Concept. Searches the hard drive for office documents
+name: EDiscovery
+filetype: Infocyte Extension
+type: Collection
+description: |
+    Proof of Concept. Searches the hard drive for office documents
         (currently only .doc and .docx files) with specified keywords or alldocs.
         1. Find any office doc on a desktop/server
         2. Upload doc directly to S3 Bucket
         3. Upload metadata csv with filehash as key
+        https://asecuritysite.com/forensics/magic
+author: Multiple
+guid: 5a0e3b34-4692-4f3c-afff-c84102785756
+created: 2019-09-19
+updated: 2020-12-14
 
-        https://asecuritysite.com/forensics/magic"""
-author = "Multiple"
-guid = "5a0e3b34-4692-4f3c-afff-c84102785756"
-created = "2019-09-19"
-updated = "2020-09-10"
-
-## GLOBALS ##
 # Global variables
+globals:
+- ediscovery_default_patterns:
+    description: |
+        default search strings or regex patterns to search within files if not provided in runtime args. 
+        Comma seperated if more than one.
+    type: string
+    required: true
 
-    [[globals]]
-    name = "ediscovery_default_patterns"
-    description = "default search strings or regex patterns to search within files if not provided in runtime args. Comma seperated if more than one."
-    type = "string"
-    required = true
+- ediscovery_default_path:
+    description: Default root path to search (will recurse 3 deep) if not provided by runtime args
+    type: string
+    required: false
+    default: C:/users/
 
-    [[globals]]
-    name = "ediscovery_default_path"
-    description = "Default root path to search (will recurse 3 deep) if not provided by runtime args"
-    type = "string"
-    required = false
-    default = "C:/users/"
+- ediscovery_upload_to_s3:
+    description: Sets e-discovery extension to upload matching documents to S3. Otherwise just uploads metadata.
+    type: boolean
+    default: false
 
-    [[globals]]
-    name = "ediscovery_upload_to_s3"
-    description = "Sets e-discovery extension to upload matching documents to S3. Otherwise just uploads metadata."
-    type = "boolean"
-    default = false
+- s3_keyid:
+    description: S3 Bucket key Id for uploading
+    type: string
 
-    [[globals]]
-    name = "s3_keyid"
-    description = "S3 Bucket key Id for uploading"
-    type = "string"
+- s3_secret:
+    description: S3 Bucket key Secret for uploading
+    type: secret
 
-    [[globals]]
-    name = "s3_secret"
-    description = "S3 Bucket key Secret for uploading"
-    type = "secret"
+- s3_region:
+    description: S3 Bucket key Id for uploading. Example='us-east-2'
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_region"
-    description = "S3 Bucket key Id for uploading. Example: 'us-east-2'"
-    type = "string"
-    required = true
+- s3_bucket:
+    description: S3 Bucket name for uploading
+    type: string
+    required: true
 
-    [[globals]]
-    name = "s3_bucket"
-    description = "S3 Bucket name for uploading"
-    type = "string"
-    required = true
+- proxy:
+    description: Proxy info. Example='myuser:password@10.11.12.88:8888'
+    type: string
+    required: false
 
-    [[globals]]
-    name = "proxy"
-    description = "Proxy info. Example: myuser:password@10.11.12.88:8888"
-    type = "string"
-    required = false
+- verbose:
+    description: Print verbose information
+    type: boolean
+    default: false
+    required: false
 
-    [[globals]]
-    name = "debug"
-    description = "Print debug information"
-    type = "boolean"
-    default = false
-    required = false
 
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- patterns:
+    description: Pattern or comma seperated list of patterns to search for in documents
+    type: string
+    required: false
 
-    [[args]]
-    name = "patterns"
-    description = "Pattern or comma seperated list of patterns to search for in documents"
-    type = "string"
-    required = false
-
-    [[args]]
-    name = "path"
-    description = "Root path to search (will recurse 3 deep)"
-    type = "string"
-    required = false
-    default = "C:/users/"
+- path:
+    description: Root path to search (will recurse 3 deep)
+    type: string
+    required: false
+    default: C:/users/
 
 ]=]
 
@@ -95,14 +83,15 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-path = hunt.arg.string("path") or hunt.global.string("ediscovery_default_path", false, 'C:/Users/')
-patterns = hunt.arg.string("patterns", false) or hunt.global.string("ediscovery_default_patterns", true)
+path =  hunt.arg.string("path") or
+        hunt.global.string("ediscovery_default_path", false, 'C:/Users/')
+patterns =  hunt.arg.string("patterns", false) or
+            hunt.global.string("ediscovery_default_patterns", true)
 
 all_office_docs = hunt.global.boolean("ediscovery-all_office_docs", false, false) -- set to true to bypass string search
 
 -- S3 Bucket
 upload_to_s3 = hunt.global.boolean("ediscovery-upload_to_s3", false, false) -- set this to true to upload to your S3 bucket
-local debug = hunt.global.boolean("debug", false, false)
 proxy = hunt.global.string("proxy", false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
@@ -111,6 +100,8 @@ s3_bucket = hunt.global.string("s3_bucket", upload_to_s3)
 s3path_modifier = 'ediscovery'
 --S3 Path Format: <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
 
+local verbose = hunt.global.boolean("verbose", false, false)
+local test = hunt.global.boolean("test", false, true)
 
 --Options for all_office_docs:
 opts = {
@@ -267,7 +258,7 @@ end
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
 -- Check required inputs
 if upload_to_s3 and (not s3_region or not s3_bucket) then
@@ -399,13 +390,13 @@ function Get-FileSignature {
 
 Function Get-StringsMatch {
     [CmdletBinding()]
-	param (
-		[string]$Path = $env:systemroot,
-		[string[]]$Strings,
+    param (
+        [string]$Path = $env:systemroot,
+        [string[]]$Strings,
         [string]$Temppath="C:\windows\temp\icext.csv",
-		[int]$charactersAround = 30,
+        [int]$charactersAround = 30,
         [string[]]$filetypes = @("doc","docx","xls","xlsx")
-	)
+    )
     $results = @()
     $files = @()
     foreach ($filetype in $filetypes) {
@@ -466,7 +457,7 @@ Function Get-StringsMatch {
             }
             $results += New-Object -TypeName PsCustomObject -Property $properties
             $text = $Null
-			continue
+            continue
         }
 
         $filesize = [math]::Round($($file.length)/1KB)
@@ -486,18 +477,18 @@ Function Get-StringsMatch {
                         $hash = $Null
                     }
                 }
-				$properties = @{
+                $properties = @{
                     SHA1 = $hash
-					File = $file.FullName
-					FilesizeKB = $filesize
-					Match = $String
-					TextAround = $match
+                    File = $file.FullName
+                    FilesizeKB = $filesize
+                    Match = $String
+                    TextAround = $match
                     CreationTimeUtc = $file.CreationTimeUtc
                     ModifiedTimeUtc = $file.ModifiedTimeUtc
-				 }
-				 $results += New-Object -TypeName PsCustomObject -Property $properties
-			}
-		}
+                 }
+                 $results += New-Object -TypeName PsCustomObject -Property $properties
+            }
+        }
         $text = $Null
     }
 
@@ -538,7 +529,7 @@ if all_office_docs then
             hunt.error(f"Problem with file ${path:path()}, hash=${hash}")
             break
         end
-        --print("[${ext}] "..path:full().." [${hash}]") -- debug
+        --print("[${ext}] "..path:full().." [${hash}]") -- verbose
         
         local file = {
             hash = hash,
@@ -550,7 +541,15 @@ if all_office_docs then
             s3path = f"${s3path_preamble}/${hash}${ext}"
             link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
             hunt.log(f"Uploading ${path:path()} (size=${file.size}, sha1=${hash}) to S3 bucket ${link}")
-            s3:upload_file(path:path(), s3path)
+            name = path:name()
+            success, err = s3:upload_file(path:path(), s3path)
+            if not success then
+                hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+            else
+                hunt.log(f"Uploaded ${name} to S3 bucket:")
+                hunt.log(link)
+            end
+            
         else
             hunt.log(f"Found ${path:path()} (size= ${file.size}, sha1=${hash})")
         end
@@ -568,8 +567,14 @@ if all_office_docs then
         tmp:flush()
         tmp:close()
         s3path = f"${s3path_preamble}/index.csv"
-        s3:upload_file(tmpfile, s3path)
-        hunt.verbose("Index uploaded to S3.")
+        link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
+        success, err = s3:upload_file(tmpfile, s3path)
+        if not success then
+            hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+        else
+            hunt.log(f"Uploaded Index to S3 bucket:")
+            hunt.log(link)
+        end
         os.remove(tmpfile)
     end
 else
@@ -585,11 +590,11 @@ else
             script = script..'\n'..cmd
             out, err = hunt.env.run_powershell(script)
             if out then
-                hunt.debug(f"Powershell Returned: ${out}")
+                hunt.log(f"Powershell Returned: ${out}")
             else 
                 hunt.error(f"Powershell command errored: ${err}")
             end
-            os.execute("sleep 1")
+            os.execute("ping -n 2 127.0.0.1>null")
 
             -- Parse CSV output from Powershell
             csv = parse_csv(tempfile, '|')
@@ -606,8 +611,14 @@ else
                             ext = GetFileExtension(item['File'])
                             s3path = f"${s3path_preamble}/${item['SHA1']}${ext}"
                             link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
-                            s3:upload_file(item['File'], s3path)
-                            hunt.log(f"Uploaded ${item['File']} (size= ${item['FilesizeKB']}KB, sha1=${item['SHA1']} to S3 bucket: ${link})")
+                            
+                            success, err = s3:upload_file(item['File'], s3path)
+                            if not success then
+                                hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+                            else
+                                hunt.log(f"Uploaded ${item['File']} (size= ${item['FilesizeKB']}KB, sha1=${item['SHA1']}) to S3 bucket:")
+                                hunt.log(link)
+                            end  
                         else
                             hunt.error(f"Could not upload: ${item['File']} (${item['SHA1']})")
                         end
@@ -622,8 +633,16 @@ else
                 -- Upload Index
                 s3path = f"${s3path_preamble}/index.csv"
                 link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
-                s3:upload_file(tempfile, s3path)
-                hunt.log(f"Uploaded Index to S3 bucket ${link}")
+                
+                success, err = s3:upload_file(tempfile, s3path)
+                if not success then
+                    hunt.error("Upload to s3 bucket=${link} failed with err="..tostring(err))
+                else
+                    hunt.log(f"Uploaded Index to S3 bucket:")
+                    hunt.log(link)
+                    files_uploaded = files_uploaded + 1
+                end  
+
             end
 
             --Cleanup

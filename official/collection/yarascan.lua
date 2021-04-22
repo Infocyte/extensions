@@ -1,67 +1,57 @@
 --[=[
-filetype = "Infocyte Extension"
+name: Yara Scanner
+filetype: Infocyte Extension
+type: Collection
+description: | 
+    Scans files on disk with YARA signatures categorized as either informational, suspicious, or bad
+author: Infocyte
+guid: f0565351-1dc3-4a94-90b3-34a5765b33bc
+created: 2019-10-18
+updated: 2020-12-14
 
-[info]
-name = "Yara Scanner"
-type = "Collection"
-description = """Scans files on disk with YARA signatures 
-    categorized as either informational, suspicious, or bad"""
-author = "Infocyte"
-guid = "f0565351-1dc3-4a94-90b3-34a5765b33bc"
-created = "2019-10-18"
-updated = "2020-09-10"
 
-## GLOBALS ##
 # Global variables
+globals:
+- yarascanner_scan_activeprocesses:
+    description: Adds running processes to list of paths to scan
+    type: boolean
+    default: true
 
-    [[globals]]
-    name = "yarascanner_scan_activeprocesses"
-    description = "Adds running processes to list of paths to scan"
-    type = "boolean"
-    default = true
+- yarascanner_scan_appdata:
+    description: Recurse through each user's appdata for binaries to scan (windows only)
+    type: boolean
+    default: false
 
-    [[globals]]
-    name = "yarascanner_scan_appdata"
-    description = "Recurse through each user's appdata for binaries to scan (windows only)"
-    type = "boolean"
-    default = false
+- yarascanner_max_size:
+    description: Largest size of binary in Kb
+    type: number
+    default: 5000
 
-    [[globals]]
-    name = "yarascanner_max_size"
-    description = "Largest size of binary in Kb"
-    type = "number"
-    default = 5000
+- yarascanner_additional_paths:
+    description: Additional paths to scan
+    type: string
 
-    [[globals]]
-    name = "yarascanner_additional_paths" 
-    description = "Additional paths to scan"
-    type = "string"
 
-## ARGUMENTS ##
 # Runtime arguments
+args:
+- scan_activeprocesses:
+    description: Adds running processes to list of paths to scan
+    type: boolean
+    default: true
 
-    [[args]]
-    name = "scan_activeprocesses"
-    description = "Adds running processes to list of paths to scan"
-    type = "boolean"
-    default = true
+- scan_appdata:
+    description: Recurse through each user's appdata for binaries to scan (windows only)
+    type: boolean
+    default: false
 
-    [[args]]
-    name = "scan_appdata"
-    description = "Recurse through each user's appdata for binaries to scan (windows only)"
-    type = "boolean"
-    default = false
+- max_size:
+    description: Largest size of binary in Kb
+    type: number
+    default: 5000
 
-    [[args]]
-    name = "max_size"
-    description = "Largest size of binary in Kb"
-    type = "number"
-    default = 5000
-
-    [[args]]
-    name = "additional_paths" 
-    description = "Additional paths to scan"
-    type = "string"
+- additional_paths:
+    description: Additional paths to scan
+    type: string
 
 ]=]
 
@@ -70,33 +60,33 @@ updated = "2020-09-10"
 -- hunt.arg(name = <string>, isRequired = <boolean>, [default])
 -- hunt.global(name = <string>, isRequired = <boolean>, [default])
 
-scan_activeprocesses = hunt.arg.boolean("scan_activeprocesses") or hunt.global.boolean("yarascanner_scan_activeprocesses", false, true)
+paths = {
+    "c:\\windows\\temp"
+}
 
-scan_appdata = hunt.arg.boolean("scan_appdata") or hunt.global.boolean("yarascanner_scan_appdata", "boolean", "global", false, false)
+scan_activeprocesses = hunt.arg.boolean("scan_activeprocesses") or 
+    hunt.global.boolean("yarascanner_scan_activeprocesses", false, true)
 
-max_size = hunt.arg.number("max_size") or hunt.global.number("yarascanner-max_size", false, 5000)
+scan_appdata = hunt.arg.boolean("scan_appdata") or 
+    hunt.global.boolean("yarascanner_scan_appdata", "boolean", "global", false, false)
 
-additional_paths = hunt.arg.string("additional_paths", false) or hunt.global.string("yarascanner_additional_paths", false)
+max_size = hunt.arg.number("max_size") or 
+    hunt.global.number("yarascanner-max_size", false, 5000)
 
-hunt.debug(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
+additional_paths = hunt.arg.string("additional_paths", false) or 
+    hunt.global.string("yarascanner_additional_paths", false)
+
+hunt.log(f"Inputs: scan_activeprocesses=${scan_activeprocesses}, scan_appdata=${scan_appdata}, max_size=${max_size}, additional_paths=${additional_paths}")
+
+
+-- #region memory_rules
+memory_rules = [=[
+
+]=]
+-- #endregion
 
 -- #region bad_rules
 bad_rules = [=[
-rule Base64d_PE
-{
-	meta:
-		description = "Contains a base64-encoded executable"
-		author = "Florian Roth"
-		date = "2017-04-21"
-
-	strings:
-		$s0 = "TVqQAAIAAAAEAA8A//8AALgAAAA" wide ascii
-		$s1 = "TVqQAAMAAAAEAAAA//8AALgAAAA" wide ascii
-
-	condition:
-		any of them
-}
-
 rule APT_KimSuky_bckdr_dll {
 
    meta:
@@ -144,22 +134,22 @@ rule APT_KimSuky_bckdr_dll {
 }
 rule Shifu {
 
-	meta:
+    meta:
 
-		reference = "https://blogs.mcafee.com/mcafee-labs/japanese-banking-trojan-shifu-combines-malware-tools/"
-		author = "McAfee Labs"
+        reference = "https://blogs.mcafee.com/mcafee-labs/japanese-banking-trojan-shifu-combines-malware-tools/"
+        author = "McAfee Labs"
 
-	strings:
+    strings:
 
-		$b = "RegCreateKeyA"
-		$a = "CryptCreateHash"
-		$c = {2F 00 63 00 20 00 73 00 74 00 61 00 72 00 74 00 20 00 22 00 22 00 20 00 22 00 25 00 73 00 22 00 20 00 25 00 73 00 00 00 00 00 63 00 6D 00 64 00 2E 00 65 00 78 00 65 00 00 00 72 00 75 00 6E}
-		$d = {53 00 6E 00 64 00 56 00 6F 00 6C 00 2E 00 65 00 78 00 65}
-		$e = {52 00 65 00 64 00 69 00 72 00 65 00 63 00 74 00 45 00 58 00 45}
+        $b = "RegCreateKeyA"
+        $a = "CryptCreateHash"
+        $c = {2F 00 63 00 20 00 73 00 74 00 61 00 72 00 74 00 20 00 22 00 22 00 20 00 22 00 25 00 73 00 22 00 20 00 25 00 73 00 00 00 00 00 63 00 6D 00 64 00 2E 00 65 00 78 00 65 00 00 00 72 00 75 00 6E}
+        $d = {53 00 6E 00 64 00 56 00 6F 00 6C 00 2E 00 65 00 78 00 65}
+        $e = {52 00 65 00 64 00 69 00 72 00 65 00 63 00 74 00 45 00 58 00 45}
 
-	condition:
+    condition:
 
-		all of them
+        all of them
 }
 rule VPNFilter {
 
@@ -339,20 +329,20 @@ rule crime_ransomware_windows_GPGQwerty
 {
 meta:
 
-	author = "McAfee Labs"
-	description = "Detect GPGQwerty ransomware"
-	reference = "https://securingtomorrow.mcafee.com/mcafee-labs/ransomware-takes-open-source-path-encrypts-gnu-privacy-guard/"
-	date = "2018-03-21"
+    author = "McAfee Labs"
+    description = "Detect GPGQwerty ransomware"
+    reference = "https://securingtomorrow.mcafee.com/mcafee-labs/ransomware-takes-open-source-path-encrypts-gnu-privacy-guard/"
+    date = "2018-03-21"
 
 strings:
 
-	$a = "gpg.exe ???recipient qwerty  -o"
-	$b = "%s%s.%d.qwerty"
-	$c = "del /Q /F /S %s$recycle.bin"
-	$d = "cryz1@protonmail.com"
+    $a = "gpg.exe ???recipient qwerty  -o"
+    $b = "%s%s.%d.qwerty"
+    $c = "del /Q /F /S %s$recycle.bin"
+    $d = "cryz1@protonmail.com"
 
 condition:
-	all of them
+    all of them
 }
 
 rule kraken_cryptor_ransomware_loader {
@@ -1124,25 +1114,25 @@ rule AntivirusReferences
         $a575 = "zapro.exe" nocase wide ascii
         $a577 = "zatutor.exe" nocase wide ascii
         $a579 = "zonealarm.exe" nocase wide ascii
-		// Strings from Dubnium below
-		$a580 = "QQPCRTP.exe" nocase wide ascii
-		$a581 = "QQPCTray.exe" nocase wide ascii
-		$a582 = "ZhuDongFangYu.exe" nocase wide ascii
-		$a583 = /360(tray|sd|rp).exe/ nocase wide ascii
-		$a584 = /qh(safetray|watchdog|activedefense).exe/ nocase wide ascii
-		$a585 = "McNASvc.exe" nocase wide ascii
-		$a586 = "MpfSrv.exe" nocase wide ascii
-		$a587 = "McProxy.exe" nocase wide ascii
-		$a588 = "mcmscsvc.exe" nocase wide ascii
-		$a589 = "McUICnt.exe" nocase wide ascii
-		$a590 = /ui(WatchDog|seagnt|winmgr).exe/ nocase wide ascii
-		$a591 = "ufseagnt.exe" nocase wide ascii
-		$a592 = /core(serviceshell|frameworkhost).exe/ nocase wide ascii
-		$a593 = /ay(agent|rtsrv|updsrv).aye/ nocase wide ascii
-		$a594 = /avast(ui|svc).exe/ nocase wide ascii
-		$a595 = /ms(seces|mpeng).exe/ nocase wide ascii
-		$a596 = "afwserv.exe" nocase wide ascii
-		$a597 = "FiddlerUser"
+        // Strings from Dubnium below
+        $a580 = "QQPCRTP.exe" nocase wide ascii
+        $a581 = "QQPCTray.exe" nocase wide ascii
+        $a582 = "ZhuDongFangYu.exe" nocase wide ascii
+        $a583 = /360(tray|sd|rp).exe/ nocase wide ascii
+        $a584 = /qh(safetray|watchdog|activedefense).exe/ nocase wide ascii
+        $a585 = "McNASvc.exe" nocase wide ascii
+        $a586 = "MpfSrv.exe" nocase wide ascii
+        $a587 = "McProxy.exe" nocase wide ascii
+        $a588 = "mcmscsvc.exe" nocase wide ascii
+        $a589 = "McUICnt.exe" nocase wide ascii
+        $a590 = /ui(WatchDog|seagnt|winmgr).exe/ nocase wide ascii
+        $a591 = "ufseagnt.exe" nocase wide ascii
+        $a592 = /core(serviceshell|frameworkhost).exe/ nocase wide ascii
+        $a593 = /ay(agent|rtsrv|updsrv).aye/ nocase wide ascii
+        $a594 = /avast(ui|svc).exe/ nocase wide ascii
+        $a595 = /ms(seces|mpeng).exe/ nocase wide ascii
+        $a596 = "afwserv.exe" nocase wide ascii
+        $a597 = "FiddlerUser"
 
     condition:
         any of them
@@ -1204,9 +1194,9 @@ rule network_dyndns {
     meta:
         author = "x0r"
         description = "Communications dyndns network"
-	version = "0.1"
+    version = "0.1"
     strings:
-	$s1 =".no-ip.org"
+    $s1 =".no-ip.org"
         $s2 =".publicvm.com"
         $s3 =".linkpc.net"
         $s4 =".dynu.com"
@@ -1247,7 +1237,7 @@ rule network_tor {
     meta:
         author = "x0r"
         description = "Communications over TOR network"
-	version = "0.1"
+    version = "0.1"
     strings:
         $p1 = "tor\\hidden_service\\private_key" nocase
         $p2 = "tor\\hidden_service\\hostname" nocase
@@ -1261,20 +1251,20 @@ rule certificate {
     meta:
         author = "x0r"
         description = "Inject certificate in store"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "Crypt32.dll" nocase
         $r1 = "software\\microsoft\\systemcertificates\\spc\\certificates" nocase
         $c1 = "CertOpenSystemStore"
     condition:
-	all of them
+    all of them
 }
 
 rule lookupip {
     meta:
         author = "x0r"
         description = "Lookup external IP"
-	version = "0.1"
+    version = "0.1"
     strings:
         $n1 = "checkip.dyndns.org" nocase
         $n2 = "whatismyip.org" nocase
@@ -1289,7 +1279,7 @@ rule cred_local {
     meta:
         author = "x0r"
         description = "Steal credential"
-	version = "0.1"
+    version = "0.1"
     strings:
         $c1 = "LsaEnumerateLogonSessions"
         $c2 = "SamIConnect"
@@ -1312,9 +1302,9 @@ rule keylogger_strings {
     meta:
         author = "x0r"
         description = "Strings common to keyloggers. High FP"
-	version = "0.1"
+    version = "0.1"
     strings:
-	    $f1 = "User32.dll" nocase
+        $f1 = "User32.dll" nocase
         $c1 = "GetAsyncKeyState"
         $c2 = "GetKeyState"
         $c3 = "MapVirtualKey"
@@ -1327,9 +1317,9 @@ rule network_ftp {
     meta:
         author = "x0r"
         description = "Communications over FTP"
-	version = "0.1"
+    version = "0.1"
     strings:
-	   $f1 = "Wininet.dll" nocase
+       $f1 = "Wininet.dll" nocase
         $c1 = "FtpGetCurrentDirectory"
         $c2 = "FtpGetFile"
         $c3 = "FtpPutFile"
@@ -1350,7 +1340,7 @@ rule network_dropper {
     meta:
         author = "x0r"
         description = "File downloader/dropper"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "urlmon.dll" nocase
         $c1 = "URLDownloadToFile"
@@ -1364,9 +1354,9 @@ rule create_service {
     meta:
         author = "x0r"
         description = "Create a windows service"
-	version = "0.2"
+    version = "0.2"
     strings:
-	$f1 = "Advapi32.dll" nocase
+    $f1 = "Advapi32.dll" nocase
         $c1 = "CreateService"
         $c2 = "ControlService"
         $c3 = "StartService"
@@ -1378,9 +1368,9 @@ rule network_tcp_socket {
     meta:
         author = "x0r"
         description = "Communications over RAW socket"
-	version = "0.1"
+    version = "0.1"
     strings:
-	$f1 = "Ws2_32.dll" nocase
+    $f1 = "Ws2_32.dll" nocase
         $f2 = "wsock32.dll" nocase
         $c1 = "WSASocket"
         $c2 = "socket"
@@ -1399,17 +1389,17 @@ rule network_dns {
     meta:
         author = "x0r"
         description = "Communications use DNS"
-	version = "0.1"
+    version = "0.1"
     strings:
         $f1 = "System.Net"
         $f2 = "Ws2_32.dll" nocase
         $f3 = "Dnsapi.dll" nocase
         $f4 = "wsock32.dll" nocase
         $c2 = "GetHostEntry"
-	    $c3 = "getaddrinfo"
-	    $c4 = "gethostbyname"
-	    $c5 = "WSAAsyncGetHostByName"
-	    $c6 = "DnsQuery"
+        $c3 = "getaddrinfo"
+        $c4 = "gethostbyname"
+        $c5 = "WSAAsyncGetHostByName"
+        $c6 = "DnsQuery"
     condition:
         1 of ($f*) and  1 of ($c*)
 }
@@ -1440,7 +1430,7 @@ function is_executable(path)
     }
     local f,msg = io.open(path, "rb")
     if not f then
-        hunt.debug(msg)
+        hunt.log(msg)
         return nil
     end
     local bytes = f:read(4)
@@ -1459,6 +1449,10 @@ function is_executable(path)
     end
 end
 
+function get_filename(path)
+    match = path:match("^.+[\\/](.+)$")
+    return match
+end
 
 function string_to_list(str)
     -- Converts a comma seperated list to a lua list object
@@ -1469,134 +1463,274 @@ function string_to_list(str)
     return list
 end
 
+function is_script(path)
+    --[=[
+        Check if a file is an shell script by extension. 
+        Input:  [string]path
+        Output: [bool] Is Script
+    ]=] 
+    match = path:match("^.+%.(ps1|bat|sh)$")
+    if match then 
+        return true
+    else 
+        return false
+    end
+end
+
+function yara_scan_memory(signatures)
+    --[=[
+        Scans all processes memory with yara signatures and returns list of matched processes 
+        Will also make a log entry with each match. 
+        Input:  [string]signatures
+        Output: [bool]match
+                [table]matches { pid, path, owner, signature }
+    ]=]
+
+    -- input validation
+    if type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [string]signatures=${type(signatures)}")
+        return
+    end
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided for memory")
+        return nil, {}
+    end
+        
+    yara_memory = hunt.yara.new()
+    yara_memory:add_rule(signatures)
+
+    procs = {}
+    matches = {}
+    -- Scan process memory with Yara signatures
+    for _, proc in pairs(hunt.process.list()) do
+        procname = string.match(proc:path(), "^.+[\\/](.+)$")
+        procpid = proc:pid()
+
+        hunt.debug(f"Scanning process memory for name=${procname} (pid=${procpid})")
+        for _, signature in pairs(yara_memory:scan_process(proc:pid())) do
+            hunt.verbose(f"Matched yara rule [BAD]${signature} within MEMORY of ${procname} [${procpid}]")
+            m = {}
+            m["owner"] = proc:owner()
+            m["path"] = proc:path()
+            m["pid"] = proc:pid()
+            m["procname"] = procname
+            m["signature"] = signature
+            table.insert(matches, m)
+        end
+    end
+    return #matches > 0, matches
+end
+
+function yara_scan(paths, signatures) 
+    --[=[
+        Scans list of files with yara signatures and returns list of matched file paths 
+        Will also make a log entry with each match. 
+        Input:  [table]paths
+                [string]signatures
+        Output: [bool]match
+                [table]matches { sha1, path, signature }
+    ]=]
+
+    -- Input validation
+    if type(paths) ~= "table" or type(signatures) ~= "string" then
+        hunt.error(f"[yara_scan] Invalid format for inputs to function. [table]paths=${type(paths)}, [string]signatures=${type(signatures)}")
+    end 
+    str = string.gsub(signatures, '[ \t]+%f[\r\n%z]', '') -- strip whitespace
+    if not str or str == '' then
+        hunt.warn("No signatures provided")
+        return nil, {}
+    end
+    
+    unique_paths = {} -- add to keys of list to easily unique paths
+    matches = {}
+    
+    -- Load Yara rules
+    yara = hunt.yara.new()
+    yara:add_rule(signatures)
+
+    -- Scan all paths with Yara signatures
+    n=1
+    for i, path in pairs(paths) do
+        -- dedup paths
+        if unique_paths[path] then
+            goto continue
+        end
+        if verbose then hunt.log(f"[${n}] Scanning ${path} with ${levels[level]} signatures") end
+        for _, signature in pairs(yara:scan(path)) do
+            if not hash then
+                hash = hunt.hash.sha1(path)
+            end
+            hunt.verbose(f"Matched yara rule [${levels[level]}]${signature} on: ${path} <${hash}>")
+            m = {}
+            m["path"] = path
+            m["sha1"] = hash
+            m["signature"] = signature
+            table.insert(matches, m)
+        end
+        unique_paths[path] = true
+        n=n+1
+        hash = nil
+        if test and n > 3 then
+            return #matches > 0, matches
+        end
+        ::continue::
+    end
+    return #matches > 0, matches
+end
+
+function table.concat(t1,t2)
+    for i=1,#t2 do
+        t1[#t1+i] = t2[i]
+    end
+    return t1
+end
+
+
+
 --[=[ SECTION 3: Collection ]=]
 
 host_info = hunt.env.host_info()
-hunt.debug(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
+hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 
--- Load Yara rules
-yara_bad = hunt.yara.new()
-yara_bad:add_rule(bad_rules)
-
-yara_suspicious = hunt.yara.new()
-yara_suspicious:add_rule(suspicious_rules)
-
-yara_info = hunt.yara.new()
-yara_info:add_rule(info_rules)
-
-opts = {
-    "files",
-    f"size<=${max_size}kb", -- any file below this size
-}
-
--- Add active processes
-paths = {} -- add to keys of list to easily unique paths
+-- Add all file paths to a list
 if scan_activeprocesses then
+    -- Add active processes
+    opts = {
+        "files",
+        f"size<=${max_size}kb", -- any file below this size
+    }
     procs = hunt.process.list()
-    for i, p in pairs(procs) do
-        proc = p
+    for i, proc in pairs(procs) do
         file = hunt.fs.ls(proc:path(), opts)
         if #file == 1 and file[1]:size() < max_size * 1000 then
-            --hunt.debug(f"Adding processpath[${i}]: ${proc:path()} [${file[1]:name()}] size=${file[1]:size()}")
-            paths[proc:path()] = true -- add to keys of list to unique paths
+            table.insert(paths, proc:path())
         end
     end
 end
 
--- Add appdata paths
-appdata_opts = {
-    "files",
-    f"size<${max_size}kb", -- any file below this size
-    "recurse=1" -- depth of 1
-}
+
 if scan_appdata then
+    -- Add appdata paths
+    appdata_opts = {
+        "files",
+        f"size<${max_size}kb", -- any file below this size
+        "recurse=1" -- depth of 1
+    }
     for _, u in pairs(hunt.fs.ls("C:\\Users", {"dirs"})) do
         userfolder = u
         for _, path in pairs(hunt.fs.ls(f"${userfolder:path()}\\appdata\\roaming", appdata_opts)) do
-            if is_executable(path:path()) then
-                paths[path:path()] = true
+            if is_script(path:path()) or is_executable(path:path()) then
+                table.insert(paths, path:path())
             end
         end
     end
 end
 
--- Add additional paths
 if additional_paths then
+    -- Add additional paths
+    opts = {
+        "files",
+        f"size<=${max_size}kb", -- any file below this size
+    }
     more_paths = string_to_list(additional_paths)
     
     for i, path in pairs(more_paths) do
         files = hunt.fs.ls(path, opts)
         for _,path2 in pairs(files) do
-            if is_executable(path2:path()) then
-                paths[path2:path()] = true
+            if is_script(path2:path()) or is_executable(path2:path()) then
+                table.insert(paths, path2:path())
             end
         end
     end
 end
 
 
+-- Scan
+all_matches = {}
+level = 0 -- threat level (0 is not defined)
+levels = {}
+levels[1] = "BAD"
+levels[2] = "SUSPICIOUS"
+levels[3] = "INFO"
 
-matchedpaths = {}
-
--- Scan all paths with Yara signatures
-n=1
-for path, i in pairs(paths) do
-    if debug and n > 3 then
-        break
+hunt.log(f"Scanning ${#paths} paths with info_rules")
+match, matches = yara_scan(paths, info_rules)
+if match then 
+    hunt.log("Found matches!")
+    level = 3
+    all_matches = table.concat(all_matches, matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
     end
-    hunt.debug(f"[${n}] Scanning ${path}")
-    n=n+1
-    hunt.verbose("Scanning with bad_rules")
-    for _, signature in pairs(yara_bad:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [BAD]${signature} on: ${path} <${hash}>")
-        bad = true
-		matchedpaths[path] = true
-    end
-    hunt.verbose("Scanning with suspicious_rules")
-    for _, signature in pairs(yara_suspicious:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [SUSPICIOUS]${signature} on: ${path} <${hash}>")
-        suspicious = true
-		matchedpaths[path] = true
-    end
-    hunt.verbose("Scanning with info_rules")
-    for _, signature in pairs(yara_info:scan(path)) do
-        if not hash then
-            hash = hunt.hash.sha1(path)
-        end
-        hunt.log(f"Matched yara rule [INFO]${signature} on: ${path} <${hash}>")
-        lowrisk = true
-    end
-    hash = nil
+else
+    hunt.log("No matches found with info_rules!")
 end
 
--- Add bad and suspicious files to Artifacts list for analysis
+hunt.log(f"Scanning ${#paths} paths with suspicious_rules")
+match, matches = yara_scan(paths, suspicious_rules, 2)
+if match then
+    hunt.log("Found matches!")
+    level = 2
+    all_matches = table.concat(all_matches,matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+    end
+else
+    hunt.log("No matches found with suspicious_rules!")
+end
+
+
+hunt.log(f"Scanning ${#paths} paths with bad_rules")
+match, matches = yara_scan(paths, bad_rules, 1) 
+if match then
+    hunt.log("Found matches!")
+    level = 1
+    all_matches = table.concat(all_matches,matches)
+    for _, m in pairs(matches) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} on: ${m['path']} <${m['hash']}>")
+    end
+else
+    hunt.log("No matches found with bad_rules!")
+end
+
+-- Memory scanning only in latest version. Uncomment if you have Infocyte version .3527 or greater
+hunt.log(f"Scanning process memory with memory_rules")
+match, procs = yara_scan_memory(memory_rules)
+if match then
+    hunt.log(f"Found in-memory matches within ${#procs} processes")
+    level = 1
+    for _, m in pairs(procs) do
+        hunt.log(f"Matched yara rule [${levels[level]}]${m['signature']} in process memory of ${m['procname']}-${m['pid']} owned by ${m['owner']}")
+    end
+elseif match == false then
+    hunt.log(f"No matches found within memory")
+end
+
+
+-- Add bad and suspicious files to Artifacts list for further analysis
 n = 0
-for path,i in pairs(matchedpaths) do
-    if debug and n > 3 then
+for i,match in pairs(all_matches) do
+    if test and n > 3 then
         break
     end
-	-- Create a new artifact
-	artifact = hunt.survey.artifact()
-	artifact:exe(path)
-	artifact:type("Yara Match")
+
+    -- Create a new artifact
+    artifact = hunt.survey.artifact()
+    artifact:exe(match['path'])
+    artifact:type("Yara Match")
     hunt.survey.add(artifact)
     n = n + 1
 end
 
 -- Set threat status
-if bad then
+if level == 1 then
     result = "Bad"
     hunt.status.bad()
-elseif suspicious then
+elseif level == 2 then
     result = "Suspicious"
     hunt.status.suspicious()
-elseif lowrisk then
+elseif level == 3 then
     result = "Low Risk"
     hunt.status.low_risk()
 else
@@ -1604,6 +1738,4 @@ else
     hunt.status.good()
 end
 
-hunt.log(f"Yara scan completed. Result=${result} Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")
-
-
+hunt.log(f"Yara scan completed. Result=${result}. Found ${#procs} processes with memory matches. Added ${n} paths (all bad and suspicious matches) to Artifacts for processing and retrieval.")

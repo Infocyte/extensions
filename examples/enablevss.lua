@@ -1,12 +1,12 @@
 --[[
-    Infocyte Extension
-    Name: Enable Volume Shadow Copy
-    Type: Action
-    Description: Enables Volume Shadow Copy (VSS) on Windows hosts to harden against certain ransomware attacks.
-    Author: Infocyte
-    Guid: 75efc19f-c309-407c-9186-1171e689134d
-    Created: 20191008
-    Updated: 20191008 (Gerritz)
+name: Enable Volume Shadow Copy
+filetype: Infocyte Extension
+type: Action
+description: Enables Volume Shadow Copy (VSS) on Windows hosts to harden against certain ransomware attacks.
+author: Infocyte
+guid: 75efc19f-c309-407c-9186-1171e689134d
+created: 2019-10-08
+updated: 2019-10-08
 --]]
 
 --[[ SECTION 1: Inputs --]]
