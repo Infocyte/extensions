@@ -3,17 +3,23 @@ name: Recover Files
 filetype: Infocyte Extension
 type: Collection
 description: |
-    Recover custom list of files and folders to your recovery point (S3). 
+    Add custom list of files (including folders) to artifacts (Infocyte UI) or your recovery point (S3). 
+    Files can be recovered or analyzed within the artifact list. 
     S3 Path Format= <s3bucket>:<instancename>/<date>/<hostname>/<s3path_modifier>/<filename>
     Loads Powerforensics to bypass file locks. Currently only works on Windows
 author: Infocyte
 guid: 55f3d0f0-476a-44fe-a583-21e110c74541
 created: 2019-11-23
-updated: 2020-12-14
+updated: 2021-05-26
 
 
 # Global variables
 globals:
+- use_s3:
+    description: Uploads raw file to S3
+    type: boolean
+    default: false
+
 - s3_keyid:
     description: S3 Bucket key Id for uploading
     type: string
@@ -25,12 +31,12 @@ globals:
 - s3_region:
     description: S3 Bucket key Id for uploading. Example='us-east-2'
     type: string
-    required: true
+    required: false
 
 - s3_bucket:
     description: S3 Bucket name for uploading
     type: string
-    required: true
+    required: false
 
 - proxy:
     description: Proxy info. Example='myuser:password@10.11.12.88:8888'
@@ -82,10 +88,11 @@ use_powerforensics = not hunt.global.boolean("disable_powershell", false, false)
 local verbose = hunt.global.boolean("verbose", false, false)
 local test = hunt.global.boolean("test", false, true)
 proxy = hunt.global.string("proxy", false)
+use_s3 =  hunt.global.boolean("use_s3", false, false)
 s3_keyid = hunt.global.string("s3_keyid", false)
 s3_secret = hunt.global.string("s3_secret", false)
-s3_region = hunt.global.string("s3_region", true)
-s3_bucket = hunt.global.string("s3_bucket", true)
+s3_region = hunt.global.string("s3_region", false)
+s3_bucket = hunt.global.string("s3_bucket", false)
 s3path_modifier = "evidence"
 
 
@@ -107,7 +114,7 @@ function path_exists(path)
     -- add '/' on end to test if it is a folder
    local ok, err = os.rename(path, path)
    if not ok then
-      if err == 13 then
+      if err == 13 or err == 'Permission denied' then
          -- Permission denied, but it exists
          return true
       end
@@ -168,13 +175,21 @@ elseif instance:match("infocyte") then
     -- get instancename
     instancename = instance:match("(.+).infocyte.com")
 end
-s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
-s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
+
+if use_s3 then
+    if not s3_keyid and s3_secret then 
+        hunt.error("s3_keyid or s3_secret not defined in global variables. Aborting.")
+        return
+    end
+    s3 = hunt.recovery.s3(s3_keyid, s3_secret, s3_region, s3_bucket)
+    s3path_preamble = f"${instancename}/${os.date('%Y%m%d')}/${host_info:hostname()}/${s3path_modifier}"
+    hunt.log("S3 Upload Selected. Uploaded evidence can be accessed here:")
+    hunt.log(f"https://s3.console.aws.amazon.com/s3/buckets/${s3_bucket}/${s3path_preamble}/?region=${s3_region}&tab=overview")
+else
+    hunt.log("Raw S3 file upload not selected. Found files will be added to Artifacts and can be recovered from the UI.")
+end
 
 paths = string_to_list(path)
-
-hunt.log("Uploaded evidence can be accessed here:")
-hunt.log(f"https://s3.console.aws.amazon.com/s3/buckets/${s3_bucket}/${s3path_preamble}/?region=${s3_region}&tab=overview")
 
 for i, p in pairs(paths) do
     hunt.log(f"Finding file: ${p}")
@@ -182,51 +197,69 @@ for i, p in pairs(paths) do
     if files and #files > 0 then 
         for _, p2 in pairs(files) do
             path = p2
-            -- If file is being used or locked, this copy will get passed it (usually)
-            outpath = os.getenv("temp").."\\ic\\"..path:name()
-            infile, err = io.open(path:path(), "rb")
-            if not infile and use_powerforensics and hunt.env.has_powershell() then
-                -- Assume file locked by kernel, use powerforensics to copy
-                cmd = f"Copy-ForensicFile -Path '${path:path()}' -Destination '${outpath}'"
-                hunt.log(f"File Locked. Executing: ${cmd}")
-                ret, out = powershell.run_cmd(cmd)
-                hunt.log(f"Powerforensics output: ${out}")
-            elseif not infile then
-                hunt.error(f"Could not open ${path:path()} [${err}].\nTry enabling powerforensics to bypass file lock.")
-                goto continue
-            else
-                data = infile:read("*all")
-                infile:close()
-
-                outfile = io.open(outpath, "wb")
-                outfile:write(data)
-                outfile:flush()
-                outfile:close()
-            end
-
-            -- Hash the file copy
-            if path_exists(outpath) then
-                hash = hunt.hash.sha1(outpath)
-                s3path = s3path_preamble.."/"..path:name().."-"..hash
-                link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
-
-                -- Upload to S3
-                success, err = s3:upload_file(outpath, s3path)
-                if success then
-                    hunt.log(f"Uploaded ${path:path()} (sha1=${hash}) to S3 at:")
-                    hunt.log(link)
+            if use_s3 then
+                -- If file is being used or locked, this copy will get passed it (usually)
+                outpath = os.getenv("temp").."\\ic\\"..path:name()
+                infile, err = io.open(path:path(), "rb")
+                if not infile and use_powerforensics and hunt.env.has_powershell() then
+                    -- Assume file locked by kernel, use powerforensics to copy
+                    cmd = f"Copy-ForensicFile -Path '${path:path()}' -Destination '${outpath}'"
+                    hunt.log(f"File Locked. Executing: ${cmd}")
+                    ret, out = powershell.run_cmd(cmd)
+                    hunt.log(f"Powerforensics output: ${out}")
+                elseif not infile then
+                    hunt.error(f"Could not open ${path:path()} [${err}].\nTry enabling powerforensics to bypass file lock.")
+                    goto continue
                 else
-                    hunt.error(f"Error on s3 upload of ${path:path()}: ${err}")
+                    data = infile:read("*all")
+                    infile:close()
+
+                    outfile = io.open(outpath, "wb")
+                    outfile:write(data)
+                    outfile:flush()
+                    outfile:close()
                 end
 
-                os.remove(outpath)
+                -- Hash the file copy
+                if path_exists(outpath) then
+                    hash = hunt.hash.sha1(outpath)
+                    s3path = s3path_preamble.."/"..path:name().."-"..hash
+                    link = f"https://${s3_bucket}.s3.${s3_region}.amazonaws.com/${s3path}"
+
+                    -- Upload to S3
+                    success, err = s3:upload_file(outpath, s3path)
+                    if success then
+                        hunt.log(f"Uploaded ${path:path()} (sha1=${hash}) to S3 at:")
+                        hunt.log(link)
+                    else
+                        hunt.error(f"Error on s3 upload of ${path:path()}: ${err}")
+                    end
+
+                    os.remove(outpath)
+                else
+                    hunt.error(f"File read/copy failed on ${path:path()}")
+                end
             else
-                hunt.error(f"File read/copy failed on ${path:path()}")
+                -- Add to artifacts
+                if path_exists(path:path()) then
+                    hash = hunt.hash.sha1(path:path())
+                    -- Create a new artifact
+                    artifact = hunt.survey.artifact()
+                    artifact:exe(path:path())
+                    artifact:type("Recovered File Extension")
+                    hunt.survey.add(artifact)
+                    hunt.log(f"Added ${path:path()} [${hash}] to artifacts (type = 'Recover Files Extension')")
+                else
+                    hunt.error(f"${path:path()} does not exist")
+                end
             end
+            
             ::continue::
         end
     else
         hunt.warn(f"No files found at: ${p}")
     end
 end
-os.execute(f"RMDIR /S/Q ${os.getenv('temp')}\\ic")
+if use_s3 then
+    os.execute(f"RMDIR /S/Q ${os.getenv('temp')}\\ic")
+end
