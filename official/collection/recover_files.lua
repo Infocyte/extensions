@@ -247,6 +247,8 @@ for i, p in pairs(paths) do
                     artifact = hunt.survey.artifact()
                     artifact:exe(path:path())
                     artifact:sha1(hash)
+                    artifact:sha256(hunt.hash.sha256(path:path()))
+                    artifact:md5(hunt.hash.md5(path:path()))
                     artifact:type("Recovered File Extension")
                     hunt.survey.add(artifact)
                     hunt.log(f"Added ${path:path()} [${hash}] to artifacts (type = 'Recover Files Extension')")
