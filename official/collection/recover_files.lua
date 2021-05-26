@@ -242,16 +242,23 @@ for i, p in pairs(paths) do
             else
                 -- Add to artifacts
                 if path_exists(path:path()) then
-                    hash = hunt.hash.sha1(path:path())
                     -- Create a new artifact
                     artifact = hunt.survey.artifact()
-                    artifact:exe(path:path())
-                    artifact:sha1(hash)
-                    artifact:sha256(hunt.hash.sha256(path:path()))
-                    artifact:md5(hunt.hash.md5(path:path()))
                     artifact:type("Recovered File Extension")
+                    artifact:exe(path:path())
+                    sha1, err = hunt.hash.sha1(path:path())
+                    if sha1 then
+                        sha256 = hunt.hash.sha256(path:path())
+                        md5 = hunt.hash.sha256(path:path())
+                        artifact:sha1(sha1)
+                        artifact:sha256(sha256)
+                        artifact:md5(md5)
+                    else
+                        hunt.error(f"Hashing error: @{err}")
+                    end                                 
+                    
                     hunt.survey.add(artifact)
-                    hunt.log(f"Added ${path:path()} [${hash}] to artifacts (type = 'Recover Files Extension')")
+                    hunt.log(f"Added ${path:path()} [${sha1}] to artifacts (type = 'Recover Files Extension')")
                 else
                     hunt.error(f"${path:path()} does not exist")
                 end
