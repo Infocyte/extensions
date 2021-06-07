@@ -194,16 +194,19 @@ elseif hunt.env.is_windows() then
 	success, out = run_cmd("netsh advfirewall firewall set rule all NEW enable=no")
 	-- Set Isolation Rules
 	success, out = run_cmd('netsh advfirewall set allprofiles firewallpolicy "blockinbound,blockoutbound"')
-	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe" service="dnscache"')
+	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe"')
 	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DHCP-Out)" dir=out action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
-	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (infocyte)\" dir=out action=allow protocol=ANY remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
+	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DNS-In)" dir=in action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe"')
+	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DHCP-In)" dir=in action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
+	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (infocyte-IPs)\" dir=out action=allow protocol=ANY remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
 	if whitelisted_ips ~= nil and whitelisted_ips ~= '' then
 		success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (custom)\" dir=out action=allow protocol=ANY remoteip=\"${whitelisted_ips}\"")
 	end
  
 	hunt.log("Enabling Windows Firewall")
 	success, out = run_cmd("Netsh advfirewall set allprofiles state on")
-    success, out = run_cmd("Netsh advfirewall show allprofiles state")    
+    success, out = run_cmd("Netsh advfirewall show allprofiles state")
+    hunt.log(out)
 elseif hunt.env.is_macos() then
 	-- TODO: ipfw (old) or pf (10.6+)
 
