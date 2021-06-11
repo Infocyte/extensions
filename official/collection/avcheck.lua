@@ -140,6 +140,9 @@ hunt.status.good()
 
 -- Check AV Configurations
 hunt.log("Checking Antivirus configurations")
+--hunt.log(f"Running powershell script:\n${script}")
+
+hunt.log("\n== Malware Protection Status Checks ==")
 script = [=[
 try {
     $MpStatus = Get-CimInstance -Class MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender -ErrorAction Stop
@@ -149,71 +152,75 @@ try {
     return "ERROR: $_"
 }
 ]=]
-
---hunt.log(f"Running powershell script:\n${script}")
 out, err = hunt.env.run_powershell(script)
 if not out then 
     hunt.error(err)
     return
-else
-    hunt.log("== Malware Protection Configuration ==")
-    csv = parse_csv(out, ",")
-    for _, item in pairs(csv) do
-        --for key, value in pairs(item) do
-        --    print(f"${key}: ${value}")
-        --end
-        -- AMServiceEnabled,AntispywareEnabled,AntivirusEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,IsTamperProtected,NISEnabled,RealTimeProtectionEnabled,OnAccessProtectionEnabled,AntispywareSignatureAge,AntivirusSignatureAge,NISSignatureAge,FullScanAge,QuickScanAge,ComputerState        
-        if not item['AMServiceEnabled'] then
-            hunt.warn("Anti-malware Service is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['AntispywareEnabled'] then
-            hunt.warn("Anti-spyware Service is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['AntivirusEnabled'] then
-            hunt.warn("Anti-virus Service is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['BehaviorMonitorEnabled'] then
-            hunt.warn("Behavior Monitoring is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['IoavProtectionEnabled'] then
-            hunt.warn("IE & Office Download (IOAV) Protection is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['IsTamperProtected'] then
-            hunt.warn("Tamper Protection is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['NISEnabled'] then
-            hunt.warn("Network Intrusion Prevention Service is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['RealTimeProtectionEnabled'] then
-            hunt.warn("Real Time Protection is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['OnAccessProtectionEnabled'] then
-            hunt.warn("On Access Protection is Disabled!")
-            hunt.status.suspicious()
-        end
-        if not item['AntispywareSignatureAge'] or (tonumber(item['AntispywareSignatureAge']) or 0) > 5 then
-            hunt.warn("Anti-spyware Signature Age (${item['AntispywareSignatureAge']}) days) is greater than 5 days old!")
-            hunt.status.suspicious()
-        end
-        if not item['AntivirusSignatureAge'] or (tonumber(item['AntivirusSignatureAge']) or 0) > 5 then
-            hunt.warn("AntivirusSignatureAge Signature Age (${item['AntivirusSignatureAge']}) days) is greater than 5 days old!")
-            hunt.status.suspicious()
-        end
-        if not item['NISSignatureAge'] or (tonumber(item['NISSignatureAge']) or 0) > 5 then
-            hunt.warn("NIS Signature Age (${item['NISSignatureAge']}) days) is greater than 5 days old!")
-            hunt.status.suspicious()
-        end
-    end   
 end
 
+csv = parse_csv(out, ",")
+for _, item in pairs(csv) do
+    --for key, value in pairs(item) do
+    --    print(f"${key}: ${value}")
+    --end
+    -- AMServiceEnabled,AntispywareEnabled,AntivirusEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,IsTamperProtected,NISEnabled,RealTimeProtectionEnabled,OnAccessProtectionEnabled,AntispywareSignatureAge,AntivirusSignatureAge,NISSignatureAge,FullScanAge,QuickScanAge,ComputerState        
+    if not item['AMServiceEnabled'] then
+        hunt.warn("Anti-malware Service is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['AntispywareEnabled'] then
+        hunt.warn("Anti-spyware Service is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['AntivirusEnabled'] then
+        hunt.warn("Anti-virus Service is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['BehaviorMonitorEnabled'] then
+        hunt.warn("Behavior Monitoring is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['IoavProtectionEnabled'] then
+        hunt.warn("IE & Office Download (IOAV) Protection is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['IsTamperProtected'] then
+        hunt.warn("Tamper Protection is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['NISEnabled'] then
+        hunt.warn("Network Intrusion Prevention Service is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['RealTimeProtectionEnabled'] then
+        hunt.warn("Real Time Protection is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['OnAccessProtectionEnabled'] then
+        hunt.warn("On Access Protection is Disabled!")
+        hunt.status.suspicious()
+    end
+    if not item['AntispywareSignatureAge'] or (tonumber(item['AntispywareSignatureAge']) or 0) > 5 then
+        hunt.warn("Anti-spyware Signature Age (${item['AntispywareSignatureAge']}) days) is greater than 5 days old!")
+        hunt.status.suspicious()
+    end
+    if not item['AntivirusSignatureAge'] or (tonumber(item['AntivirusSignatureAge']) or 0) > 5 then
+        hunt.warn("AntivirusSignatureAge Signature Age (${item['AntivirusSignatureAge']}) days) is greater than 5 days old!")
+        hunt.status.suspicious()
+    end
+    if not item['NISSignatureAge'] or (tonumber(item['NISSignatureAge']) or 0) > 5 then
+        hunt.warn("NIS Signature Age (${item['NISSignatureAge']}) days) is greater than 5 days old!")
+        hunt.status.suspicious()
+    end
+end   
+
+hunt.log("\n== Malware Protection Configuration ==")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender | Select AMServiceEnabled,AntispywareEnabled,AntivirusEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,IsTamperProtected,NISEnabled,RealTimeProtectionEnabled,OnAccessProtectionEnabled,AntispywareSignatureAge,AntivirusSignatureAge,NISSignatureAge,FullScanAge,QuickScanAge,ComputerState")
+hunt.log(out)
+
+hunt.log("\n== Malware Protection Preferences ==")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreferences -Namespace root/Microsoft/Windows/Defender")
+hunt.log(out)
 
 -- Grab AV Alerts
 paths = {}
@@ -429,23 +436,12 @@ if not out then
     hunt.error(err)
     return
 else
-    hunt.log("\n== Malware Protection Alerts ==")
-    --print(out)
     avhits = parse_csv(out, ",")
-    print(#avhits)
+    hunt.log(f"\n== Malware Protection Alerts (${#avhits})==")
 end
 
 
 -- Add AV Hits to Artifacts list
-
-for key, value in pairs(avhits) do
-    --print(f"${key}: ${value}")
-    for key2, value2 in pairs(value) do
-        --print(f"${key2}: ${value2}")
-        k = key2
-    end
-end
-
 n = 1
 for _, avhit in pairs(avhits) do
     hunt.status.bad()
@@ -465,3 +461,79 @@ for _, avhit in pairs(avhits) do
 end
 
 hunt.log(f"AV Check completed. Added ${n} paths to Artifacts for processing and retrieval.")
+
+
+
+[[
+CheckForSignaturesBeforeRunningScan           : False
+CloudBlockLevel                               : 1
+DisableArchiveScanning                        : False
+DisableAutoExclusions                         : False
+DisableBehaviorMonitoring                     : False
+DisableBlockAtFirstSeen                       : False
+DisableCatchupFullScan                        : True
+DisableCatchupQuickScan                       : True
+DisableCpuThrottleOnIdleScans                 : True
+DisableDatagramProcessing                     : False
+DisableDnsOverTcpParsing                      : False
+DisableDnsParsing                             : False
+DisableEmailScanning                          : True
+DisableGradualRelease                         : False
+DisableHttpParsing                            : False
+DisableInboundConnectionFiltering             : False
+DisableIntrusionPreventionSystem              :
+DisableIOAVProtection                         : False
+DisableNetworkProtectionPerfTelemetry         : False
+DisablePrivacyMode                            : False
+DisableRdpParsing                             : False
+DisableRealtimeMonitoring                     : False
+DisableRemovableDriveScanning                 : True
+DisableRestorePoint                           : True
+DisableScanningMappedNetworkDrivesForFullScan : True
+DisableScanningNetworkFiles                   : False
+DisableScriptScanning                         : False
+DisableSshParsing                             : False
+DisableTlsParsing                             : False
+EnableControlledFolderAccess                  : 0
+EnableDnsSinkhole                             : False
+EnableFileHashComputation                     : False
+EnableFullScanOnBatteryPower                  : False
+EnableLowCpuPriority                          : False
+EnableNetworkProtection                       : 0
+
+ExclusionExtension                            :
+ExclusionIpAddress                            :
+ExclusionPath                                 : {C:\Users\cgerr\Documents\GitHub}
+ExclusionProcess                              : {agent.exe}
+
+ForceUseProxyOnly                             : False
+ProxyBypass                                   :
+ProxyPacUrl                                   :
+ProxyServer                                   :
+
+PUAProtection                                 : 1
+MAPSReporting                                 : 2
+
+SevereThreatDefaultAction                     : 0
+HighThreatDefaultAction                       : 0
+ModerateThreatDefaultAction                   : 0
+LowThreatDefaultAction                        : 0
+UnknownThreatDefaultAction                    : 0  
+
+QuarantinePurgeItemsAfterDelay                : 90
+
+ScanAvgCPULoadFactor                          : 50
+ScanOnlyIfIdleEnabled                         : True
+ScanParameters                                : 1
+ScanScheduleDay                               : 0
+ScanScheduleQuickScanTime                     : 00:00:00
+ScanScheduleTime                              : 02:00:00
+SchedulerRandomizationTime                    : 4
+RandomizeScheduleTaskTimes                    : True
+
+
+SignatureUpdateInterval                       : 0
+SubmitSamplesConsent                          : 1
+UILockdown                                    : False
+  
+]]
