@@ -215,11 +215,19 @@ for _, item in pairs(csv) do
 end   
 
 hunt.log("\n== Malware Protection Configuration ==")
-out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender | Select AMServiceEnabled,AntispywareEnabled,AntivirusEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,IsTamperProtected,NISEnabled,RealTimeProtectionEnabled,OnAccessProtectionEnabled,AntispywareSignatureAge,AntivirusSignatureAge,NISSignatureAge,FullScanAge,QuickScanAge,ComputerState")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpComputerStatus -Namespace root/Microsoft/Windows/Defender | Select AMServiceEnabled,AntispywareEnabled,AntivirusEnabled,BehaviorMonitorEnabled,IoavProtectionEnabled,IsTamperProtected,NISEnabled,RealTimeProtectionEnabled,OnAccessProtectionEnabled,AntispywareSignatureAge,AntivirusSignatureAge,NISSignatureAge,FullScanAge,QuickScanAge,ComputerState | fl")
 hunt.log(out)
-
 hunt.log("\n== Malware Protection Preferences ==")
-out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreferences -Namespace root/Microsoft/Windows/Defender")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreference -Namespace root/Microsoft/Windows/Defender | select enable*,disable*,UI*,PUAProtection | fl")
+hunt.log(out)
+hunt.log("\n== Malware Protection Preferences (Exclusions) ==")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreference -Namespace root/Microsoft/Windows/Defender | select Exclusion* | fl")
+hunt.log(out)
+hunt.log("\n== Malware Protection Preferences (Default Actions) ==")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreference -Namespace root/Microsoft/Windows/Defender | select *DefaultAction,QuarantinePurgeItemsAfterDelay | fl")
+hunt.log(out)
+hunt.log("\n== Malware Protection Preferences (Scan Preferences) ==")
+out, err = hunt.env.run_powershell("Get-CimInstance -Class MSFT_MpPreference -Namespace root/Microsoft/Windows/Defender | select ScanAvgCPULoadFactor,ScanOnlyIfIdleEnabled,ScanParameters,ScanScheduleDay,ScanScheduleQuickScanTime,ScanScheduleTime,SchedulerRandomizationTime,RandomizeScheduleTaskTimes,CheckForSignaturesBeforeRunningScan,CloudBlockLevel,SignatureUpdateInterval,SubmitSamplesConsent | fl")
 hunt.log(out)
 
 -- Grab AV Alerts
@@ -464,76 +472,4 @@ hunt.log(f"AV Check completed. Added ${n} paths to Artifacts for processing and 
 
 
 
-[[
-CheckForSignaturesBeforeRunningScan           : False
-CloudBlockLevel                               : 1
-DisableArchiveScanning                        : False
-DisableAutoExclusions                         : False
-DisableBehaviorMonitoring                     : False
-DisableBlockAtFirstSeen                       : False
-DisableCatchupFullScan                        : True
-DisableCatchupQuickScan                       : True
-DisableCpuThrottleOnIdleScans                 : True
-DisableDatagramProcessing                     : False
-DisableDnsOverTcpParsing                      : False
-DisableDnsParsing                             : False
-DisableEmailScanning                          : True
-DisableGradualRelease                         : False
-DisableHttpParsing                            : False
-DisableInboundConnectionFiltering             : False
-DisableIntrusionPreventionSystem              :
-DisableIOAVProtection                         : False
-DisableNetworkProtectionPerfTelemetry         : False
-DisablePrivacyMode                            : False
-DisableRdpParsing                             : False
-DisableRealtimeMonitoring                     : False
-DisableRemovableDriveScanning                 : True
-DisableRestorePoint                           : True
-DisableScanningMappedNetworkDrivesForFullScan : True
-DisableScanningNetworkFiles                   : False
-DisableScriptScanning                         : False
-DisableSshParsing                             : False
-DisableTlsParsing                             : False
-EnableControlledFolderAccess                  : 0
-EnableDnsSinkhole                             : False
-EnableFileHashComputation                     : False
-EnableFullScanOnBatteryPower                  : False
-EnableLowCpuPriority                          : False
-EnableNetworkProtection                       : 0
 
-ExclusionExtension                            :
-ExclusionIpAddress                            :
-ExclusionPath                                 : {C:\Users\cgerr\Documents\GitHub}
-ExclusionProcess                              : {agent.exe}
-
-ForceUseProxyOnly                             : False
-ProxyBypass                                   :
-ProxyPacUrl                                   :
-ProxyServer                                   :
-
-PUAProtection                                 : 1
-MAPSReporting                                 : 2
-
-SevereThreatDefaultAction                     : 0
-HighThreatDefaultAction                       : 0
-ModerateThreatDefaultAction                   : 0
-LowThreatDefaultAction                        : 0
-UnknownThreatDefaultAction                    : 0  
-
-QuarantinePurgeItemsAfterDelay                : 90
-
-ScanAvgCPULoadFactor                          : 50
-ScanOnlyIfIdleEnabled                         : True
-ScanParameters                                : 1
-ScanScheduleDay                               : 0
-ScanScheduleQuickScanTime                     : 00:00:00
-ScanScheduleTime                              : 02:00:00
-SchedulerRandomizationTime                    : 4
-RandomizeScheduleTaskTimes                    : True
-
-
-SignatureUpdateInterval                       : 0
-SubmitSamplesConsent                          : 1
-UILockdown                                    : False
-  
-]]
