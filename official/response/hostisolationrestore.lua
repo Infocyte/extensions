@@ -77,15 +77,20 @@ hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:do
 osversion = host_info:os()
 
 -- Test
-client = hunt.web.new("https://www.google.com/favicon.ico")
-data, err = client:download_data()
-if not data then
-    hunt.log(f"System is isolated. Restoring...")
-    hunt.log(f"Error=${err}")
-else
-    hunt.error(f"System is not isolated. Was able to communicate with www.google.com via HTTPS/443")
-    success, out = run_cmd("Netsh advfirewall show allprofiles")
+--[[
+if test then
+    client = hunt.web.new("https://www.google.com/favicon.ico")
+    data, err = client:download_data()
+    if not data then
+        hunt.log(f"System is isolated. Restoring...")
+        hunt.log(f"Error=${err}")
+    else
+        hunt.error(f"System is not isolated. Was able to communicate with www.google.com via HTTPS/443")
+        success, out = run_cmd("Netsh advfirewall show allprofiles")
+    end
 end
+]]
+
 
 if string.find(osversion, "windows xp") then
 	-- TO DO: XP's netsh firewall
@@ -110,21 +115,25 @@ elseif  hunt.env.has_sh() then
 		hunt.log("Restoring iptables from backup")
 		success, out = run_cmd('iptables-restore < '..iptables_bkup)
 		os.remove(iptables_bkup)
-		hunt.log("Host has been restored and is no longer isolated")
+		
+
+        client = hunt.web.new("https://www.google.com/favicon.ico")
+        data, err = client:download_data()
+        if not data then
+            hunt.error(f"Possible Error. System is still unable to communicate out. Error=${err}")
+            hunt.status.suspicious()
+            hunt.summary("Restoral Failure")
+        else
+            hunt.log(f"SUCCESS: System was able to communicate with www.google.com via HTTPS/443")
+            hunt.log("Host has been restored and is no longer isolated")
+            hunt.status.good()
+            hunt.summary("Restored from Backup")
+        end
+        
 	else
 		hunt.error("Host has no backup. Cannot be restored (it may not have been isolated).")
 	end
 end
 
-client = hunt.web.new("https://www.google.com/favicon.ico")
-data, err = client:download_data()
-if not data then
-    hunt.error(f"Possible Error. System is still unable to communicate out. Error=${err}")
-    hunt.status.unknown()
-    hunt.summary("Restoral Failure")
-else
-    hunt.log(f"SUCCESS: System was able to communicate with www.google.com via HTTPS/443")
-    hunt.status.good()
-    hunt.summary("Restored from Backup")
-end
+
 

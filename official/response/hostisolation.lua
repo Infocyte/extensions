@@ -159,10 +159,21 @@ disabled = false
 client = hunt.web.new("https://www.google.com/favicon.ico")
 data, err = client:download_data()
 if not data then
-    hunt.error(f"System is unable to communicate out. Error=${err}")
+    hunt.error(f"Pre-Isolation Test WARNING: System is unable to communicate out. Error=${err}")
     return
 else
-    hunt.log(f"Pre-Isolation Test: System was able to communicate with www.google.com via HTTPS/443")
+    hunt.log(f"Pre-Isolation Test SUCCESS: System was able to communicate with www.google.com via HTTPS/443")
+end
+
+client = hunt.web.new("https://upload.infocyte.com")
+data, err = client:download_string()
+if not data then
+    hunt.error(f"Possible Error. System is unable to communicate to Infocyte. Error=${err}")
+    hunt.status.suspicious()
+    hunt.summary("Isolation Partial Failure")
+else
+    hunt.log(f"SUCCESS: System was able to communicate with Infocyte via HTTPS/443")
+    hunt.status.good()
 end
 
 if string.find(osversion, "windows xp") then
@@ -193,12 +204,23 @@ elseif hunt.env.is_windows() then
 	-- Disable all rules
 	success, out = run_cmd("netsh advfirewall firewall set rule all NEW enable=no")
 	-- Set Isolation Rules
-	success, out = run_cmd('netsh advfirewall set allprofiles firewallpolicy "blockinbound,blockoutbound"')
-	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DNS-Out)" dir=out action=allow protocol=UDP remoteport=53 program="%systemroot%\\system32\\svchost.exe" service="dnscache"')
-	success, out = run_cmd('netsh advfirewall firewall add rule name="Core Networking (DHCP-Out)" dir=out action=allow protocol=UDP program="%systemroot%\\system32\\svchost.exe" service="dhcp"')
-	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (infocyte)\" dir=out action=allow protocol=ANY remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
+	success, out = run_cmd("netsh advfirewall set allprofiles firewallpolicy \"blockinbound,blockoutbound\"")
+    
+	--success, out = run_cmd("netsh advfirewall firewall add rule name=\"DNS-Out-UDP (Infocyte)\" dir=out action=allow protocol=udp remoteport=53 program=\"%systemroot%\\system32\\svchost.exe\" service=\"dnscache\"")
+    success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"DNS-Out-UDP (Infocyte)\" dir=out action=allow protocol=udp remoteport=53")
+    success, out = run_cmd("netsh advfirewall firewall add rule name=\"DNS-Out-TCP (Infocyte)\" dir=out action=allow protocol=tcp remoteport=53 program=\"%systemroot%\\system32\\svchost.exe\" service=\"dnscache\"")
+    success, out = run_cmd("sc query dns")
+    if success and out:find("RUNNING") then
+       success, out = run_cmd("netsh advfirewall firewall add rule name=\"DNS Srv-In (Infocyte)\" dir=in action=allow program=\"%systemroot%\\system32\\svchost.exe\" service=\"dns\"")
+       success, out = run_cmd("netsh advfirewall firewall add rule name=\"DNS Srv-Out (Infocyte)\" dir=out action=allow program=\"%systemroot%\\system32\\svchost.exe\" service=\"dns\"")
+    end
+	success, out = run_cmd("netsh advfirewall firewall add rule name=\"DHCP-Out (Infocyte)\" dir=out action=allow program=\"%systemroot%\\system32\\svchost.exe\" service=\"dhcp\"")
+	success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Allow Infocyte (Infocyte)\" dir=out action=allow remoteip=\"${list_to_string(hunt.net.api_ipv4())}\"")
+    success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Allow Infocyte Agent (Infocyte)\" dir=out action=allow program=\"%ProgramFiles%\\Infocyte\\Agent\\agent.exe\"")
+    --success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"System (infocyte)\" Program=System Action=allow Dir=Out")
+    
 	if whitelisted_ips ~= nil and whitelisted_ips ~= '' then
-		success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Infocyte Host Isolation (custom)\" dir=out action=allow protocol=ANY remoteip=\"${whitelisted_ips}\"")
+		success, out = run_cmd(f"netsh advfirewall firewall add rule name=\"Allow Custom (Infocyte)\" dir=out action=allow protocol=ANY remoteip=\"${whitelisted_ips}\"")
 	end
  
 	hunt.log("Enabling Windows Firewall")
@@ -262,19 +284,28 @@ elseif  hunt.env.has_sh() then
 	success, out = run_cmd("iptables -P INPUT DROP")
 end
 
+hunt.status.good()
+
 -- Test
+client = hunt.web.new("https://upload.infocyte.com")
+data, err = client:download_string()
+if not data then
+    hunt.warning(f"Exception Test FAILURE: System is unable to communicate to Infocyte via exception. Error=${err}")
+    hunt.status.suspicious()
+    hunt.summary("Isolation Partial Failure")
+else
+    hunt.log(f"Exception Test Passed: System was able to communicate with Infocyte via HTTPS/443 using firewall exception")
+end
+
 client = hunt.web.new("https://www.google.com/favicon.ico")
 data, err = client:download_data()
 if not data then
-    hunt.log(f"System is isolated successfully.")
+    hunt.log(f"Isolation Test Passed: System blocked other traffic -- system is isolated successfully.")
     hunt.debug(f"Error=${err}")
-    hunt.status.good()
-    hunt.summary("System Isolated")
+    hunt.summary("System Isolated SUCCESSFULLY")
 else
-    hunt.error(f"FAILURE: System was able to communicate with www.google.com via HTTPS/443")
+    hunt.error(f"Isolation Test FAILURE: System was able to communicate with www.google.com via HTTPS/443")
     success, out = run_cmd("Netsh advfirewall show allprofiles")
     hunt.status.bad()
     Hunt.summary("FAILED to Isolate")
 end
-
-
