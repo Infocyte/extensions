@@ -8,7 +8,7 @@ description: |
 author: Infocyte
 guid: 0c18bac7-5fbf-445d-ada5-0626295a9a81
 created: 2019-09-16
-updated: 2020-12-14
+updated: 2021-06-29
 
 
 # Global variables
@@ -156,26 +156,6 @@ end
 
 disabled = false
 
-client = hunt.web.new("https://www.google.com/favicon.ico")
-data, err = client:download_data()
-if not data then
-    hunt.error(f"Pre-Isolation Test WARNING: System is unable to communicate out. Error=${err}")
-    return
-else
-    hunt.log(f"Pre-Isolation Test SUCCESS: System was able to communicate with www.google.com via HTTPS/443")
-end
-
-client = hunt.web.new("https://upload.infocyte.com")
-data, err = client:download_string()
-if not data then
-    hunt.error(f"Possible Error. System is unable to communicate to Infocyte. Error=${err}")
-    hunt.status.suspicious()
-    hunt.summary("Isolation Partial Failure")
-else
-    hunt.log(f"SUCCESS: System was able to communicate with Infocyte via HTTPS/443")
-    hunt.status.good()
-end
-
 if string.find(osversion, "windows xp") then
 	-- TODO: XP's netsh
 
@@ -233,7 +213,7 @@ elseif hunt.env.is_macos() then
 	hunt.summary("Not Compatible with MacOS")
 	return nil
 
-elseif  hunt.env.has_sh() then
+elseif hunt.env.has_sh() then
 	-- Assume linux-type OS and iptables
 
 	--backup existing IP Tables Configuration
@@ -248,7 +228,6 @@ elseif  hunt.env.has_sh() then
 	if test then 
 		hunt.log("Debugging: skipping changes to firewall")
 		hunt.summary("DEBUG: Isolation Aborted")
-		hunt.summary("verbose: Isolation Aborted")
 		return nil
 	end
 
@@ -292,8 +271,8 @@ data, err = client:download_string()
 if not data then
     hunt.warning(f"Exception Test FAILURE: System is unable to communicate to Infocyte via exception. Error=${err}")
     hunt.status.suspicious()
-    hunt.summary("Isolation Partial Failure")
 else
+    hunt.debug(data)
     hunt.log(f"Exception Test Passed: System was able to communicate with Infocyte via HTTPS/443 using firewall exception")
 end
 
@@ -302,10 +281,11 @@ data, err = client:download_data()
 if not data then
     hunt.log(f"Isolation Test Passed: System blocked other traffic -- system is isolated successfully.")
     hunt.debug(f"Error=${err}")
-    hunt.summary("System Isolated SUCCESSFULLY")
+    hunt.summary("System Isolated")
 else
+    hunt.debug(data)
     hunt.error(f"Isolation Test FAILURE: System was able to communicate with www.google.com via HTTPS/443")
     success, out = run_cmd("Netsh advfirewall show allprofiles")
     hunt.status.bad()
-    Hunt.summary("FAILED to Isolate")
+    hunt.summary("FAILED to Isolate")
 end
