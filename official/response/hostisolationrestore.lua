@@ -8,7 +8,7 @@ description: |
 author: Infocyte
 guid: 2896731a-ef52-4569-9669-e9a6d8769e76
 created: 2019-9-16
-updated: 2020-12-14
+updated: 2021-06-29
 
 # Global variables
 globals:
@@ -75,22 +75,6 @@ end
 host_info = hunt.env.host_info()
 hunt.log(f"Starting Extention. Hostname: ${host_info:hostname()} [${host_info:domain()}], OS: ${host_info:os()}")
 osversion = host_info:os()
-
--- Test
---[[
-if test then
-    client = hunt.web.new("https://www.google.com/favicon.ico")
-    data, err = client:download_data()
-    if not data then
-        hunt.log(f"System is isolated. Restoring...")
-        hunt.log(f"Error=${err}")
-    else
-        hunt.error(f"System is not isolated. Was able to communicate with www.google.com via HTTPS/443")
-        success, out = run_cmd("Netsh advfirewall show allprofiles")
-    end
-end
-]]
-
 
 if string.find(osversion, "windows xp") then
 	-- TO DO: XP's netsh firewall
