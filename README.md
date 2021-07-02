@@ -163,6 +163,8 @@ file:name() -- returns the name of the file
 file:size() -- returns the size of the file in bytes
 file:is_dir() -- returns if the item is a directory
 file:is_file() -- returns if the item is a non-directory file 
+file:modified() -- returns last modified time of file
+file:created() -- returns created time of file
 ```
 
 #### Network
